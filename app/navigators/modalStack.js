@@ -1,10 +1,10 @@
 import {
-    StackNavigator,
+    createStackNavigator,
 } from 'react-navigation';
 
 import Settings from '../components/card/settings'
 
-export default StackNavigator({
+export default createStackNavigator({
 
     SettingsModal: { screen: Settings },
 

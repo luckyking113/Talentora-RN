@@ -6,7 +6,6 @@ export default function(state = null, action) {
 
         // Set user object
         case ActionTypes.SET_USER:
-            // console.log('reducer : ', action.user);
             return action.user
 
         default:

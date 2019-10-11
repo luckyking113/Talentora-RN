@@ -3,36 +3,11 @@
 const colors = {
 
   defaultBg: '#eeeeee',
-  primaryCol: '#FF3C42',
-  primaryColDark: '#3b5998',
+
+  primaryCol: '#3498db',
+  primaryColDark: '#2980b9',
   secondaryCol: '#27ae60',
   thirtCol: '#ecf0f1', 
-  white: '#ffffff',
-  black: '#000',
-
-  // talentora_color
-  screenBg: '#FFFFFF',
-  primaryColor: '#ff3c42',
-  primaryColorDark:'#b92e32',
-  componentBackgroundColor: '#F6F6F6',
-  componentDarkBackgroundColor: '#EDEDED',
-  textBlack: '#4a4a4a',
-  textColor: '#C1C1C1',
-  textColorDark: '#9B9B9B',
-  buttonColor: '#FF3C42',
-  lineColor: '#E5E5E5',
- 
-  placeHolder: '#B9B9B9',
-
-  grayLess: 'gray',
-
-
-  // color for tab-bar
-  tabBarBg: 'white',
-  tabBarInactiveTintColor: '#7d7d7d',
-  tabBarActiveTintColor: '#3e3e3e',
-
-  darkishRed: '#b3070c',
 
   // background: '#1F0808',
   // clear: 'rgba(0,0,0,0)',

@@ -67,15 +67,6 @@ export default {
         paddingLeft: 10,
         overflow: 'hidden'
     },
-    textInfo: {
-        flex: 1,
-        paddingLeft: 10,
-        overflow: 'hidden'
-    },
-    cardTitle: {
-        color: "black",
-        fontSize: 16, 
-    },
     icon: {
         // fontSize: 22
     },

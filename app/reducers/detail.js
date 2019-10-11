@@ -4,7 +4,7 @@ import * as ActionTypes from '../constants/ActionTypes'
 const initialState = []
 
 export default function(state = initialState, action) {
-    
+
     switch(action.type) {
 
         // Push detail items

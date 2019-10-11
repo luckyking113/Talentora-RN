@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, StatusBar, Image } from 'react-native';
 import {
-    StackNavigator, NavigationActions
+  NavigationActions
 } from 'react-navigation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -15,26 +15,19 @@ import { Colors } from '../../themes/index';
 
 export default class MediaRecord extends React.Component {
 
-  // static navigationOptions = {
-  //   title: 'Take Media',
-  //   header: () => ({
-  //     visible: false
-  //   }),
-  //   tabBar: () => ({
-  //       visible: true,
-  //       icon: (props) => { 
-  //           return( 
-  //               <TouchableHighlight onPress={() => { navigate('Record') }}><Icon name={'photo-camera'} /> </TouchableHighlight>
-  //           ); 
-  //       }
+static navigationOptions = {
+    title: 'Take Media',
+    headerVisible:false,
+    tabBarOptions: () => ({
+        headerVisible: true,
+        icon: (props) => { 
+            return( 
+                <TouchableHighlight onPress={() => { navigate('Record') }}><Icon name={'photo-camera'} /> </TouchableHighlight>
+            ); 
+        }
 
-  //   }),
-  // };
-
-    static navigationOptions = ({ navigation }) => ({
-            headerVisible: false,
-            headerTitle: 'Take Media',
-        });
+    }),
+  };
 
   takePicture() {
     Alert.alert('hi');
