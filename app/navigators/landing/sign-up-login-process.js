@@ -4,7 +4,7 @@ import {
     createStackNavigator,
 } from 'react-navigation';
 
-import SignUp from '@components/signup/signup-info'
+// import SignUp from '@components/signup/signup-info'
 // import WhoAreYou from '@components/signup/who-are-you'
 
 // // Talent Seeker
@@ -26,6 +26,14 @@ import Authenticate from '@components/authentication/authenticate'
 import { Colors } from '@themes/index';
 import { transparentHeaderStyle, titleStyle } from '@styles/components/transparentHeader.style';
 
+// const options = {
+//     headerMode: 'screen',  
+//     initialRouteName: 'LogIn',
+//     // initialRouteName: 'SignUp',
+//     // initialRouteName: 'TalentUploadVideo',
+    
+// }
+
 const options = {
     headerMode: 'screen',  
     // initialRouteName: 'UploadPhoto', 
@@ -46,13 +54,22 @@ const navOptions =  ({ navigation }) => ({
 });
 
 export default createStackNavigator({
-    LogIn:   { screen: Authenticate, navigationOptions: {navOptions}},   
-    SignUp: { screen: SignUp, navigationOptions: navOptions },
 
-    // LogIn:   { 
-    //     screen: (props) => <Authenticate navigate = {props.navigation.navigate} />,navigationOptions: navOptions
-    // },
-    // SignUp: { 
-    //     screen: (props) => <SignUp navigate = {props.navigation.navigate} />, navigationOptions: navOptions }
+    // sign-up & sign-in main page
+    LogIn:   { screen: Authenticate, navigationOptions: {navOptions}},   
+    // SignUp: { screen: SignUp, navigationOptions: navOptions },
+    // WhoAreYou: { screen: WhoAreYou , navigationOptions: navOptions},
+
+    // // talent seeker (who need actor ...)
+    // TalentSeekerCategory: { screen: TalentSeekerCategory, navigationOptions: navOptions },
+    // TalentSeekerWelcome: { screen: TalentWelcome, navigationOptions: navOptions },
+
+    // // talent (w ho need job)
+    // TalentCategory: { screen: TalentCategory, navigationOptions: navOptions },
+    // TalentWelcome: { screen: TalentWelcome, navigationOptions: navOptions },
+    // TalentDetail: { screen: TalentDetail, navigationOptions: navOptions },
+
+    // UploadPhoto: { screen: UploadPhoto, navigationOptions: navOptions },
+    // UploadVideo: { screen: UploadVideo, navigationOptions: navOptions },
 
 }, options);

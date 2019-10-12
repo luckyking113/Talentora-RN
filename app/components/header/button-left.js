@@ -1,10 +1,13 @@
 import React, { Component } from 'react'
 import {
     StyleSheet,
-    TouchableOpacity
+    TouchableOpacity,
+    PixelRatio
 } from 'react-native'
-import Icon from 'react-native-vector-icons/MaterialIcons';
 
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { Colors } from '@themes/index';
+const ICON_SIZE_ANDROID = __DEV__ ? 24 : PixelRatio.getPixelSizeForLayoutSize(24);
 class ButtonLeft extends Component {
 
     render() {
@@ -12,7 +15,7 @@ class ButtonLeft extends Component {
         const { icon, onPress, navigate, to } = this.props
 
         return (<TouchableOpacity
-            style={{ left: 15 }}
+            style={{ marginLeft: 15 }}
             onPress={ () => navigate(to) }
         >
             <Icon
@@ -24,7 +27,11 @@ class ButtonLeft extends Component {
 }
 
 const styles = StyleSheet.create({
-    icon: { fontSize: 20 }
+    icon: { 
+        // width: 50,
+        fontSize: ICON_SIZE_ANDROID,
+        color: Colors.tabBarActiveTintColor  
+    }
 })
 
 export default ButtonLeft

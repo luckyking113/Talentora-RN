@@ -3,6 +3,9 @@ package com.talentora;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.brentvatne.react.ReactVideoPackage;
+import com.geektime.rnonesignalandroid.ReactNativeOneSignalPackage;
+import com.imagepicker.ImagePickerPackage;
 import com.RNFetchBlob.RNFetchBlobPackage;
 import com.learnium.RNDeviceInfo.RNDeviceInfo;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
@@ -29,6 +32,9 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new ReactVideoPackage(),
+            new ReactNativeOneSignalPackage(),
+            new ImagePickerPackage(),
             new RNFetchBlobPackage(),
             new RNDeviceInfo(),
             new FBSDKPackage(),

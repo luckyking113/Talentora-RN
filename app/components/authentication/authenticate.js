@@ -161,8 +161,7 @@ class Authenticate extends Component {
 
 
     signupPress = function() {      
-        console.log(this.props);
-        
+          
         let that = this;
 
         // load sign up process (if user sign up success on first step & they missed next 'internet problem or ...') 
