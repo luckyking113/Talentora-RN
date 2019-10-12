@@ -10,7 +10,7 @@ import Record from '../components/media/media-record'
 const MainNavigator = createStackNavigator({
 
     Home:       { screen: TabNavigator, navigationOptions: { headerVisible: false }},
-    Settings:   { screen: Settings },
+    Settings:   { screen: (props) => <Settings navigate = {props.navigation.navigate} /> },
     Record:   { screen: Record }
 
 }, {

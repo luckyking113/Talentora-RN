@@ -51,26 +51,26 @@ export default createBottomTabNavigator({
         }
     },
     Record:      { 
-            screen: Record, 
-            navigationOptions: { 
+        screen: Record, 
+        navigationOptions: { 
             tabBarLabel: '', 
             tabBarIcon: (props) => (<Tab {...props} icon="photo-camera" />) 
         }
-    },
-    Message: { 
-            screen: Message, 
-            navigationOptions: { 
+    },    
+    Message:      { 
+        screen: Message, 
+        navigationOptions: { 
             tabBarLabel: '', 
             tabBarIcon: (props) => (<Tab {...props} icon="chat" />) 
         }
     },
-    User: { 
-            screen: Profile, 
-            navigationOptions: { 
+
+    User:      { 
+        screen: Profile, 
+        navigationOptions: { 
             tabBarLabel: '', 
             tabBarIcon: (props) => (<Tab {...props} icon="person" />) 
         }
-    },
-    // Admin:      { screen: Home, navigationOptions: { tabBar: { label: '', icon: (props) => (<Tab {...props} icon="settings" />) }}},
+    }   
 
 }, options);

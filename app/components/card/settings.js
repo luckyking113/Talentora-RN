@@ -4,16 +4,22 @@ import {
 } from 'react-native'
 
 class Settings extends Component {
+    constructor(props){
+        super(props);
+        this.goBackNavigator = this.goBackNavigator.bind(this);
+    }
 
     static navigationOptions = { title: 'Settings' };
-  
-    render() {
-  
-        const { navigate, goBack } = this.props.navigation
 
+    goBackNavigator = function() {
+        const { navigate, goBack } = this.props;            
+        navigate.goBack();
+    }
+  
+    render() { 
         return (
             <Button
-                onPress={() => goBack()}
+                onPress={() => goBackNavigator()}
                 title="Settings Screen"
             />
         );

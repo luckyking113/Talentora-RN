@@ -37,18 +37,21 @@ class Profile extends Component {
         // title: ({ state }) => `${state.params.item.title}`,
         title: 'Panhna',
         headerStyle:headerStyle,
-        headerTitleStyle:titleStyle,
+        headerTitleStyle:titleStyle,   
         headerRight: ({ state, navigate }, defaultHeader) => (
                 <ButtonRight
                     icon="settings"
                     navigate={navigate}
                     to="Settings"
                 />
-        )
+        ),
+        drawer: () => ({
+            label: 'Menu'
+         }),
     }
 
-    // If no detail items loaded, load now 
-    componentWillMount() {
+       // If no detail items loaded, load now 
+       componentWillMount() {
 
 
     }
