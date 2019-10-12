@@ -5,9 +5,9 @@ export default function(state = null, action) {
     switch(action.type) {
 
         // Set user object
-        case ActionTypes.SET_USER:
-            // console.log('reducer : ', action.user);
-            return action.user
+        case ActionTypes.MESSAGE:
+            // console.log('reducer  chat_obj : ', action.messageObj);
+            return action.messageObj
 
         default:
             return state
