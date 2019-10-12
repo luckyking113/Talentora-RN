@@ -7,7 +7,8 @@ import {
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Colors } from '@themes/index';
-const ICON_SIZE_ANDROID = __DEV__ ? 24 : PixelRatio.getPixelSizeForLayoutSize(24);
+// const ICON_SIZE_ANDROID = __DEV__ ? 24 : PixelRatio.getPixelSizeForLayoutSize(24);
+const ICON_SIZE_ANDROID = 24;
 class ButtonLeft extends Component {
 
     render() {

@@ -4,8 +4,10 @@ import {
 
 import TabNavigator from '@navigators/tabs'
 // import Authenticate from '../components/authentication/authenticate'
-import Settings from '@components/card/settings'
-import Message from './tabs/message'  
+// import Settings from '@components/card/settings'
+// import InviteFriend from '@components/user/invite-friend';
+// import Message from './tabs/message'  
+// import Filters from '@components/discovery/filters'
 
 // import Record from '../components/media/media-record'
 
@@ -46,17 +48,28 @@ const MainNavigator = createStackNavigator({
             headerVisible: false,
         }
     },
-    Settings:   { 
-        screen: Settings,     
-        navigationOptions: {
-            headerVisible: false,
-        }},
-    ChatModal:   { 
-        screen: Message,     
-        navigationOptions: {
-            headerVisible: false,
-            header: null,
-        }},
+    // Settings:   { 
+    //     screen: Settings,     
+    //     navigationOptions: {
+    //         headerVisible: false,
+    //     }},
+    // InviteFriend:   { 
+    //     screen: InviteFriend,     
+    //     navigationOptions: {
+    //         headerVisible: false,
+    //     }},
+    // Filters:   { 
+    //     screen: Filters,     
+    //     navigationOptions: {
+    //         headerVisible: false,
+    //         header: null,
+    //     }},
+    // ChatModal:   { 
+    //     screen: Message,     
+    //     navigationOptions: {
+    //         headerVisible: false,
+    //         header: null,
+    //     }},
 },options);
 
 // export default TabNavigator;
