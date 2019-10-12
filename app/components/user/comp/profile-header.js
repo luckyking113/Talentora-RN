@@ -1,28 +1,28 @@
 import React, {Component} from 'react'
-import {connect} from 'react-redux'
-import * as DetailActions from '@actions/detail'
+// import {connect} from 'react-redux'
+// import * as DetailActions from '@actions/detail'
 import {
     View,
     Text,
-    TextInput,
+    // TextInput,
     StyleSheet,
-    Button,
+    // Button,
     ScrollView,
     TouchableOpacity,
-    TouchableWithoutFeedback,
+    // TouchableWithoutFeedback,
     Image,
-    StatusBar,
-    Alert,
-    Picker,
-    Platform,
+    // StatusBar,
+    // Alert,
+    // Picker,
+    // Platform,
     Dimensions,
-    InteractionManager,
-    FlatList,
+    // InteractionManager,
+    // FlatList,
     Modal,
-    ActivityIndicator
+    // ActivityIndicator
 } from 'react-native'
 
-import {view_profile_category} from '@api/response'
+// import {view_profile_category} from '@api/response'
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Styles from '@styles/card.style'
 import {Colors} from '@themes/index';
@@ -31,10 +31,10 @@ import TagsSelect from '@styles/components/tags-select.style';
 import BoxWrap from '@styles/components/box-wrap.style';
 import Utilities from '@styles/extends/ultilities.style';
 
-import ButtonRight from '@components/header/button-right'
-import ButtonTextRight from '@components/header/button-text-right'
-import ButtonLeft from '@components/header/button-left'
-import ButtonBack from '@components/header/button-back'
+// import ButtonRight from '@components/header/button-right'
+// import ButtonTextRight from '@components/header/button-text-right'
+// import ButtonLeft from '@components/header/button-left'
+// import ButtonBack from '@components/header/button-back'
 
 import {UserHelper, StorageData, Helper, ChatHelper} from '@helper/helper';
 import SendBird from 'sendbird';

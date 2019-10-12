@@ -1,31 +1,31 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import * as DetailActions from '@actions/detail'
+// import * as DetailActions from '@actions/detail'
 import {
     View,
-    Text,
-    TextInput,
+    // Text,
+    // TextInput,
     StyleSheet,
-    Button,
-    ScrollView,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    Image,
-    StatusBar,
-    Alert,
-    Picker,
-    Platform,
-    Modal,
+    // Button,
+    // ScrollView,
+    // TouchableOpacity,
+    // TouchableWithoutFeedback,
+    // Image,
+    // StatusBar,
+    // Alert,
+    // Picker,
+    // Platform,
+    // Modal,
     Dimensions,
-    InteractionManager,
+    // InteractionManager,
     FlatList,
     ActivityIndicator
 } from 'react-native'
 
-import { view_profile_category } from '@api/response'
+// import { view_profile_category } from '@api/response'
 
 
-import Icon from 'react-native-vector-icons/MaterialIcons';
+// import Icon from 'react-native-vector-icons/MaterialIcons';
 import Styles from '@styles/card.style'
 import { Colors } from '@themes/index';
 import FlatForm from '@styles/components/flat-form.style';
@@ -33,19 +33,19 @@ import TagsSelect from '@styles/components/tags-select.style';
 import BoxWrap from '@styles/components/box-wrap.style';
 import Utilities from '@styles/extends/ultilities.style'; 
 
-import ButtonRight from '@components/header/button-right'
-import ButtonTextRight from '@components/header/button-text-right'
+// import ButtonRight from '@components/header/button-right'
+// import ButtonTextRight from '@components/header/button-text-right'
 import ButtonLeft from '@components/header/button-left'
-import ButtonBack from '@components/header/button-back'
+// import ButtonBack from '@components/header/button-back'
 
 
 import PeopleItem from '@components/discovery/comp/people-list'  
-import ProfileHeader from '@components/user/comp/profile-header'
+// import ProfileHeader from '@components/user/comp/profile-header'
 
 import { transparentHeaderStyle, defaultHeaderStyle, titleStyle } from '@styles/components/transparentHeader.style';
 
 
-import { UserHelper, StorageData, Helper } from '@helper/helper';
+// import { UserHelper, StorageData, Helper } from '@helper/helper';
 import _ from 'lodash'
 
 import { getApi } from '@api/request';

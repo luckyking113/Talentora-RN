@@ -201,7 +201,7 @@ class AvailableJob extends Component {
         // /api/users/me/jobs
         let _SELF = this;
         let _offset
-        console.log('Paging : ', this.state.page);
+        // console.log('Paging : ', this.state.page);
         if(this.state.refreshing || isLoading){
             _offset = 0;
             this.setState({ 
@@ -220,10 +220,10 @@ class AvailableJob extends Component {
             API_URL += '&search=' + this.state.searchText || _search;
         }
         
-        console.log('API_URL : ',API_URL);
+        // console.log('API_URL : ',API_URL);
 
         getApi(API_URL).then((_response) => {
-            console.log('All Available Job : ', _response);
+            // console.log('All Available Job : ', _response);
             if(_response.code == 200){
                 let _allAvailableJob = _response.result;
 
@@ -335,13 +335,13 @@ class AvailableJob extends Component {
     };
 
     testRefresh = () => {
-        console.log('testRefresh');
+        // console.log('testRefresh');
     }
 
     handleRefresh = () => { 
         // return;
         let that = this;
-        console.log('handleRefresh');
+        // console.log('handleRefresh');
         
         this.setState({
             refreshing: true,
@@ -354,7 +354,7 @@ class AvailableJob extends Component {
 
     handleLoadMore = () => {
         // return;
-        console.log('handleLoadMore', this.state.loading);
+        // console.log('handleLoadMore', this.state.loading);
         // return;
         let that = this;
 

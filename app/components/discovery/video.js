@@ -1,33 +1,33 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import * as DetailActions from '@actions/detail'
+// import * as DetailActions from '@actions/detail'
 import {
     View,
-    Text,
-    TextInput,
+    // Text,
+    // TextInput,
     StyleSheet,
-    Button,
-    ScrollView,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    Image,
-    StatusBar,
-    Alert,
-    Picker,
-    Platform,
-    Modal,
+    // Button,
+    // ScrollView,
+    // TouchableOpacity,
+    // TouchableWithoutFeedback,
+    // Image,
+    // StatusBar,
+    // Alert,
+    // Picker,
+    // Platform,
+    // Modal,
     Dimensions,
-    InteractionManager,
+    // InteractionManager,
     FlatList,
     ActivityIndicator
 } from 'react-native'
 
-import { view_profile_category } from '@api/response'
+// import { view_profile_category } from '@api/response'
 
-import Video from 'react-native-video';
+// import Video from 'react-native-video';
 
 
-import Icon from 'react-native-vector-icons/MaterialIcons';
+// import Icon from 'react-native-vector-icons/MaterialIcons';
 import Styles from '@styles/card.style'
 import { Colors } from '@themes/index';
 import FlatForm from '@styles/components/flat-form.style';
@@ -35,12 +35,12 @@ import TagsSelect from '@styles/components/tags-select.style';
 import BoxWrap from '@styles/components/box-wrap.style';
 import Utilities from '@styles/extends/ultilities.style'; 
 
-import ButtonRight from '@components/header/button-right'
-import ButtonTextRight from '@components/header/button-text-right'
+// import ButtonRight from '@components/header/button-right'
+// import ButtonTextRight from '@components/header/button-text-right'
 import ButtonLeft from '@components/header/button-left'
-import ButtonBack from '@components/header/button-back'
+// import ButtonBack from '@components/header/button-back'
 
-import uuid from 'react-native-uuid';
+// import uuid from 'react-native-uuid';
 
 import TalentFeedItem from '@components/lists/feed/talent-feed-list'
 import ProfileHeader from '@components/user/comp/profile-header'
@@ -228,9 +228,9 @@ class Videos extends React.PureComponent {
         });
     }
 
-    test = () => {
-        this.props.navigation.setParams({ handleFunc: this.goToSetting });
-    }
+    // test = () => {
+    //     this.props.navigation.setParams({ handleFunc: this.goToSetting });
+    // }
 
     // test flatlist
     _keyExtractor = (item, index) => index;

@@ -49,13 +49,13 @@ class DiscoveryRoot extends Component {
         //your codes ....
         this.state = {  
             selectedTab: 0
-        }
+        }  
     }
 
     static navigationOptions = ({ navigation }) => {
         // console.log('navigation : ', navigation);
         _SELF = navigation;
-        // console.log('_SELF NAV: ',_SELF);
+         
         return ({
 
             // headerVisible: true,
@@ -82,7 +82,7 @@ class DiscoveryRoot extends Component {
         })};
 
     componentDidMount() {
-
+        
 
     }
 
@@ -108,7 +108,7 @@ class DiscoveryRoot extends Component {
                     scrollWithoutAnimation={true}
                     tabBarTextStyle={{fontSize: 16}}
 
-                    >
+                    >            
                         <Videos  tabLabel='Videos' navigation={_SELF}/>
                         <People  tabLabel='People' navigation={_SELF}/>
                     </ScrollableTabView>
