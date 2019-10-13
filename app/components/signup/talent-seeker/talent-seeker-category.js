@@ -20,7 +20,7 @@ import { transparentHeaderStyle, titleStyle } from '@styles/components/transpare
 
 import _ from 'lodash'
 
-import { UserHelper, StorageData, Helper } from '@helper/helper';
+import { UserHelper, StorageData, Helper, GoogleAnalyticsHelper } from '@helper/helper';
 
 import { postApi, putApi } from '@api/request';
 
@@ -137,6 +137,9 @@ class WhatAreYou extends Component{
         }
     }
 
+    componentDidMount() {
+        GoogleAnalyticsHelper._trackScreenView('Sign Up - Category - Talent Seeker');         
+    }
 
     render() {
         return (    

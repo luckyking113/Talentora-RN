@@ -7,17 +7,10 @@ import { connect } from 'react-redux'
 
 import * as AuthActions from '@actions/authentication'
 
-import AllJobPosted from '@components/job/talent-seeker/post-job-list' // for talent seeker (employer)
-import AvailableJobApplied from '@navigators/tabs/job-tabs' // for talent (user)
-
-import { StyleSheet, Text, View, AsyncStorage, Alert, TouchableOpacity,ScrollView, TextInput, Modal,Picker } from 'react-native';
+import { StyleSheet, Text, View, AsyncStorage, Alert, TouchableOpacity,ScrollView, TextInput, Modal,Picker, DeviceEventEmitter } from 'react-native';
 import { transparentHeaderStyle, defaultHeaderStyle } from '@styles/components/transparentHeader.style';
 
-import Authenticate from '@components/authentication/authenticate';
-import LoadingScreen from '@components/other/loading-screen'; 
-import OneSignal from 'react-native-onesignal'; 
-
-import { UserHelper, StorageData, Helper } from '@helper/helper';
+import { UserHelper, StorageData, Helper, GoogleAnalyticsHelper } from '@helper/helper';
 
 import _ from 'lodash'
 import { Colors } from '@themes/index';
@@ -29,21 +22,20 @@ import BoxWrap from '@styles/components/box-wrap.style';
 import TagsSelect from '@styles/components/tags-select.style';
 import FlatForm from '@styles/components/flat-form.style';
 
-import Tabs from '@styles/tab.style';
 
 import { headerStyle, titleStyle } from '@styles/header.style'
 import ButtonRight from '@components/header/button-right'
 import ButtonLeft from '@components/header/button-left'
 import ButtonBack from '@components/header/button-back'
 
-import { talent_category } from '@api/response';
-import { talent_seeker_category} from '@api/response';
-import { ethnicities, hair_colors, eye_colors, languages, ages,heights,weights } from '@api/response'
+import ModalCustomHeader from '@components/header/modal-custom-header';
+import { talent_seeker_category, talent_category, filterData} from '@api/response';
+import { ethnicities, hair_colors, eye_colors, languages, ages,heights,weights,gendersFilter } from '@api/response'
 
 import CountryPicker, {getAllCountries} from 'react-native-country-picker-modal';
 import DeviceInfo from 'react-native-device-info';
 import MinMaxPicker from '@components/ui/minMaxPicker';
-import ALL_COUNTRIES from '@store/data/cca2';
+import ALL_COUNTRIES from '@store/data/cca2'; 
 
 // import AvailableJob from '@components/job/talent/available-job'
 // import AppliedJob from '@components/job/talent/applied-job'
@@ -54,17 +46,46 @@ import ALL_COUNTRIES from '@store/data/cca2';
 
 let _SELF = null;
 let originalLanguage = _.cloneDeep(languages);
+let originalGender=_.cloneDeep(gendersFilter);
 const Item = Picker.Item;
+let _initState;
+
 class filters extends Component {
 
     constructor(props){
         super(props);
         //your codes ....
+     
         let userLocaleCountryCode = DeviceInfo.getDeviceCountry();
         const userCountryData = getAllCountries();
         let callingCode = null;
         let name = null;
         let cca2 = userLocaleCountryCode;
+        const { navigate, state, goBack } = this.props.navigation;
+        let talentcate=_.cloneDeep(talent_category);
+        let talentseekercate=_.cloneDeep(talent_seeker_category);
+        let allTalentCate=[];
+        let tmptalent=[];
+        if(state.params.filterType == 'job'){
+            console.log('Emit FilterJob');
+            _.forEach(talentcate,function(v,k){
+                tmptalent.push(v);
+            });
+            allTalentCate=tmptalent;
+        }
+        else if(state.params.filterType == 'discover'){
+            console.log('Emit FilterPeople');            
+            _.forEach(talentcate,function(v,k){
+                tmptalent.push(v);
+            });
+            allTalentCate=tmptalent;
+            _.forEach(talentseekercate,function(v,k){
+                allTalentCate.push(v);
+            });
+        }
+
+        // allTalentCate.push(tmptalent);
+        
         if (!cca2 || !name || !userCountryData) {
             // cca2 = 'US';
             // name = 'United States';
@@ -72,9 +93,10 @@ class filters extends Component {
         } else {
             callingCode = userCountryData.callingCode;
         }
-        this.state = {  
+        _initState = null;
+        _initState = {
             selectedTab: 0,
-            talent_cate : _.cloneDeep(talent_category),
+            talent_cate : allTalentCate,
             age:{
                 val:''
             },
@@ -87,26 +109,26 @@ class filters extends Component {
             myweight:{
                 val:''
             },
-            hair_color:UserHelper.UserInfo.profile.attributes.hair_color.value,
+            hair_color: '',
             myhaircolor:{
-                val:UserHelper.UserInfo.profile.attributes.hair_color.value || ''
+                val: ''
             },
-            eye_color:UserHelper.UserInfo.profile.attributes.eye_color.value,
+            eye_color: '',
             myeyecolor:{
-                val:UserHelper.UserInfo.profile.attributes.eye_color.value || ''
+                val: ''
             },
             cca2,
             name,
-            callingCode,
+            callingCode, 
             country: {
                 val: '',
-                langCode: UserHelper.UserInfo.profile.country_code,
+                langCode: '',
                 callingCode: '',
                 isErrRequired: false
             },
             languages: originalLanguage,       
-            selectedLanguages:UserHelper.UserInfo.profile.attributes.language.value,
-            displayLanguages: UserHelper.UserInfo.profile.attributes.language.value,
+            selectedLanguages: '',
+            displayLanguages: '',
             selectedLanguagesCount: 0,
             ethnicityModalVisible: false,
             languageModalVisible: false,
@@ -118,60 +140,91 @@ class filters extends Component {
             mode: Picker.MODE_DIALOG,  
             prevoius_gender:'', 
             selectedEthnicity  : '', 
-
+            Genders:originalGender,
+            displayGendersAndroid:'',
+            genderAndroidVisible:false
         }
+        if(state.params.filterType == 'job'){
+            // console.log('Filter Data: ', filterData.job);
+            this.state = filterData.job ? _.cloneDeep(filterData.job.data) : _.cloneDeep(_initState);
+
+        }else if(state.params.filterType == 'discover'){
+            // console.log('Filter Data: ', filterData, ', ' , state.params.tabType);
+            if(state.params.tabType == 'Videos'){
+                this.state = filterData.video ? _.cloneDeep(filterData.video.data) : _.cloneDeep(_initState);
+            }else{
+                this.state = filterData.people ? _.cloneDeep(filterData.people.data) : _.cloneDeep(_initState);
+            }
+        }
+        // this.state = _.cloneDeep(_initState);
+        // console.log(_.cloneDeep(_initState));
+        // console.log('Filter Navigation: ', this.props.navigation);
     }
 
     static navigationOptions = ({ navigation }) => {
         // console.log('navigation : ', navigation);
-        _SELF = navigation;
-        // console.log('_SELF NAV: ',_SELF);
         return ({
             headerStyle: defaultHeaderStyle,  
-            // headerTitleStyle :{textAlign: 'center',alignSelf:'center'}, 
-            // headerVisible: true,
-            // headerTitle: UserHelper._isEmployer() ? 'Posted Jobs' : 'Jobs',
-            headerTitle: 'Filters',
-            headerLeft: (<ButtonBack
-            isGoBack={ navigation }
-            btnLabel= ""
-        />),
-            headerRight: UserHelper._isEmployer() ? (
-                
-                <View style={[styles.flexVerMenu, styles.flexCenter]}>
+            header: () => <ModalCustomHeader {...navigation} self={_SELF} title={'Filters'} />,
+    })};
 
-                    <ButtonRight
-                        text={"Clear Filters"}
-                        style={{marginRight: 10}}   
-                        navigate={navigation.navigate}
-                        // to="CreatePostJob"
-                    />
+    componentDidMount() {        
 
-                </View>
-            ) : null,
-        })};
+        const { navigate, state, goBack } = this.props.navigation;
+        _SELF = this;
+        let langTmp="";
+        console.log("objct filterdata",filterData);
+        if(state.params.filterType == 'job'){
 
-    componentDidMount() {
-        let res=UserHelper.UserInfo.profile.attributes.kind.value;
-        let talentType=res.split(",");
-        let tmp = [];
-        _.each(_.cloneDeep(this.state.talent_cate), function(v,k){
+            GoogleAnalyticsHelper._trackScreenView('Job Filter'); 
+
+            console.log("blah");
+        }else if(state.params.filterType == 'discover'){
+
+            //console.log('tabType: ', state.params.tabType);
+            // console.log("discover tab true");
+            if(state.params.tabType == 'Videos'){
+                langTmp=filterData.video? filterData.video.data.displayLanguages: "";
+                GoogleAnalyticsHelper._trackScreenView('Video Filter'); 
+            
+            }else{
+               langTmp=filterData.people? filterData.people.data.displayLanguages: "";
+               
+            }
+            
+            // if(state.params.tabType == 'Videos'){
+            //     console.log("langtmp in tab videos true",langTmp);
+            // }else{
+            //    console.log("langtmp in tab people true",langTmp);
+            // }
+        }
+        // console.log("original filter selected languages value",filterData.people.data.displayLanguages);
+        // let langTmp=UserHelper.UserInfo.profile.attributes.language.value;
+        let langSplit=langTmp.split(", ");
+      
+        let tmpp = [];
+        // console.log("OBJECT LANGUAGE",this.state.languages);
+        _.each(_.cloneDeep(this.state.languages), function(v,k){
             // if(v.category == talentType)
-            _.each(talentType, function(v_sub, k_sub){
-                if(v.category == v_sub){
+            _.each(langSplit, function(v_sub, k_sub){
+                if(v.display_name == v_sub){
                     v.selected = true;
                 }
             })
-            tmp.push(v);
+            tmpp.push(v);
         })
+        originalLanguage=tmpp;
+        console.log("tcmpp",tmpp);
+      
         this.setState({
-            talent_cate:tmp
+            languages:tmpp
         },function(){
-            // console.log("ORIGIAL LANGUAGE",originalLanguage);
-            // console.log("Language",this.state.languages)
-            console.log("ComponetDidMount Selected Gender",this.state.selectedGender);
+            console.log("object language after assign new value",this.state.languages);
         })
-
+    }
+    
+    componentWillUnmount() {
+        originalLanguage = _.cloneDeep(languages);
     }
 
     onTabPress = (_tabIndex) => {
@@ -179,6 +232,7 @@ class filters extends Component {
             selectedTab: _tabIndex,
         })
     }
+
     selectedTalentTag = (item, index) => {
         
         let _tmp = this.state.talent_cate;
@@ -193,34 +247,127 @@ class filters extends Component {
         // let _talentCate = this.state.talent_cate
         return _.filter(this.state.talent_cate, function(_item) { return _item.selected; });
     }
+
     checkTalentActiveTag = (item) => {
         return item.selected;
     }
+
     checkColorCountryInput = () => {
         // console.log(this.state.country);
         if(this.state.country.val == '')
-            return 'black';
+            return '#9B9B9B';
         else if(this.state.country.isErrRequired){
             return 'red';
         }
         else{
-            return Colors.textBlack;
+            return 'black';
         }
-    }   
-    languageSelect = (item, index) => {
-        console.log("LANGUAGE FIELD CONSOLE",this.state.languages);
+    }
+
+    // genderSelect=(item,index)=>{
+    //     let temp=this.state.Genders;
+    //     // temp[index].selected=!temp[index].selected;
+    //     // console.log("Temp in gendeselect", temp);
+    //     // console.log("Item in genderselect",item);
+    //     let selectedCount=[];
+    //     _.map(temp,function(v,k){
+    //        if(v.id==item.id){
+    //            v.selected=true;
+    //            console.log("condition v select is true");
+    //        }
+    //        else{
+    //            v.selected=false;
+    //        }
+    //        selectedCount.push(v);
+    //     });
+    //         console.log("temp in genderselect",selectedCount);
+    //     let displayGendersAndroid;
+    //     _.map(selectedCount,function(val,key){
+    //         if(val.selected){
+    //             displayGendersAndroid=val.display_name;
+    //         }
+    //     })
+    //     console.log("display gender android",displayGendersAndroid);
+    //     this.setState({
+    //         Genders:selectedCount,
+    //         selectedGender:displayGendersAndroid=='Both(Male & Female)' ? 'B':(displayGendersAndroid=='Male' ? 'M':'F'),
+    //         displayGendersAndroid:displayGendersAndroid
+    //     })
+    //     // let selectedCount=[];
+    //     // _.map(temp,function(val){
+    //     //     if(val.selected){
+    //     //         selectedCount.push(val);
+    //     //     }
+    //     // });
+    //     // if(selectedCount.length<=1){
+    //     //     let displayGendersAndroid;
+    //     //     _.map(selectedCount,function(val,key){
+    //     //         displayGendersAndroid=key==0 ? val.display_name : displayGendersAndroid + ','+ val.display_name;
+    //     //     });
+    //     //     this.setState({
+    //     //         Genders:temp,
+    //     //         selectedGenderCount:selectedCount.length,
+    //     //         selectedGenderAndroid:displayGendersAndroid,
+    //     //         displayGendersAndroid:displayGendersAndroid?displayGendersAndroid.replace(/,/g, ', '):''
+    //     //     })
+    //     // }
+    //     // else{
+    //     //     temp[index].selected = !temp[index].selected;
+    //     //     this.setState({Genders : temp});
+    //     //     Alert.alert('You can select one type of gender only');
+    //     // }
+    //     this.setModalVisible(false,"genderAndroid");
+    // }
+
+    genderSelect=(item,index,type)=>{
+        // let temp=this.state.Genders;
+        // let selectedCount=[];
+        // _.map(temp,function(v,k){
+        //    if(v.id==item.id){
+        //        v.selected=true;
+        //        console.log("condition v select is true");
+        //    }
+        //    else{
+        //        v.selected=false;
+        //    }
+        //    selectedCount.push(v);
+        // });
+        //     console.log("temp in genderselect",selectedCount);
+        // let displayGendersAndroid;
+        // _.map(selectedCount,function(val,key){
+        //     if(val.selected){
+        //         displayGendersAndroid=val.display_name;
+        //     }
+        // })
+        // console.log("display gender android",displayGendersAndroid);
+        // this.setState({
+        //     Genders:selectedCount,
+        //     selectedGender:displayGendersAndroid=='Both(Male & Female)' ? 'B':(displayGendersAndroid=='Male' ? 'M':'F'),
+        //     displayGendersAndroid:displayGendersAndroid
+        // })
+        // this.setModalVisible(false,"genderAndroid");
+        let temp=(type=='genderAndroid' ? this.state.Genders: (type=='ethnicity'? ethnicities:(type=='hair'? hair_colors:eye_colors)));
+       
+        let selectedvalue;
+        _.map(temp,function(v,k){
+            if(v.id==item.id){
+                selectedvalue=v.display_name;
+            }
+        });
+        (type=='genderAndroid'? this.setState({selectedGender:selectedvalue=='Both(Male & Female)' ? 'B':(selectedvalue=='Male' ? 'M':'F'),displayGendersAndroid:selectedvalue}):(type=='ethnicity' ? this.setState({selectedEthnicity:selectedvalue}):(type=='hair'? this.setState({myhaircolor:{val:selectedvalue}}):this.setState({myeyecolor:{val:selectedvalue}}))));
+        (type=='genderAndroid' ? this.setModalVisible(false,'genderAndroid'):(type=='ethnicity' ? this.setModalVisible(false,'ethnicity'):(type=='hair'? this.setModalVisible(false,'hair'):this.setModalVisible(false,'eye'))));
+       
+    }
+
+    languageSelect = (item, index) => { 
         let temp = this.state.languages;
         temp[index].selected = !temp[index].selected;
-        // console.log('This is data: ', this.state.languages);
-        
         let selectedCount = [];
         _.map(originalLanguage, function(val){
             if(val.selected)
                 selectedCount.push(val);
         });
-        console.log("selected count",selectedCount);
         if(selectedCount.length <= 3){
-            // console.log('Filter for true object: ', selectedCount.length);
             let displayLanguages;
             _.map(selectedCount, function(val, key){
                 displayLanguages = key == 0 ? val.display_name : displayLanguages + ',' + val.display_name;
@@ -230,7 +377,9 @@ class filters extends Component {
                 languages : temp,
                 selectedLanguagesCount : selectedCount.length,
                 selectedLanguages: displayLanguages,
-                displayLanguages: displayLanguages.replace(/,/g, ', ')
+                displayLanguages: displayLanguages?displayLanguages.replace(/,/g, ', '):''
+            },function(){
+
             });
             
         }else{
@@ -241,38 +390,39 @@ class filters extends Component {
     }
 
     onLanguageSearch(text){
+        console.log("this is language from search box",text);
         let _dataFilter = _.filter(originalLanguage, function(v,k){
             return _.includes(v.display_name.toLowerCase(), text.toLowerCase());
         })
-        this.setState({languages:_dataFilter})
+        this.setState({languages:_dataFilter},function(){
+            console.log("Language state after search and choose",this.state.languages);
+        })
 
-        // console.log('Languages: ', languages)
-        // console.log('Original Lang: ', originalLanguage);
-        // console.log('Filter Lang: ', _dataFilter);
     }  
     
     generateLanguageList(){
+        console.log("this state language before language is generated",this.state.languages);
         return(
             <Modal
+                onRequestClose={() => {}}
                 visible = {this.state.languageModalVisible}>
                 <View style={[ styles.justFlexContainer, styles.mainVerticalPadding, {paddingBottom:0}]}>
 
                     <View style={[styles.languageNav ]} >
                         <TouchableOpacity style={[{ flex:1 }]} 
-                        onPress = {() => {
-                            this.setModalVisible(false, 'language')
-                            this.setState({languages:originalLanguage});
-                        }}>
-                            <Icon name={"close"} style={[ styles.languageNavIcon ]} />
-                        </TouchableOpacity>
-                        
-                        <Text style={[ styles.languageNavTitle ]} >Language</Text>
-                        <Text style={[ styles.languageNavStatus ]} >{this.state.selectedLanguagesCount} /3 selected</Text>
+                            onPress = {() => {
+                                this.setModalVisible(false, 'language')
+                                this.setState({languages:originalLanguage});
+                            }}>
+                            <Icon name={"close"} style={[ styles.languageNavIcon ,{textAlign:'left'}]} />
+                        </TouchableOpacity>        
+                        <Text style={[ styles.languageNavTitle, styles.inputLabelFontSize ]} >Language</Text>
+                        <Text style={[ styles.languageNavStatus ,styles.inputLabelFontSize]} >{this.state.selectedLanguagesCount} /3 selected</Text>
                     </View>
 
                     <View style={[styles.mainHorizontalPadding, {marginTop: 20}]}>
                         <TextInput
-                            style={{marginBottom:7, height: 30, borderColor:Colors.componentBackgroundColor, borderRadius:5,textAlign:'center', backgroundColor:Colors.componentBackgroundColor,borderWidth: 1}}
+                            style={[styles.inputLabelValueSize,{marginBottom:7, height: Helper._isAndroid()?40:30, borderColor:Colors.componentBackgroundColor, borderRadius:5,textAlign:'center', backgroundColor:Colors.componentBackgroundColor,borderWidth: 1}]}
                             onChangeText={(text) => this.onLanguageSearch(text)}
                             value={this.state.text}
                             placeholder="Search"
@@ -286,7 +436,7 @@ class filters extends Component {
                                     {/* {when search first time click on the row is not work cus not yet lost focus from text input */}
                                     <TouchableOpacity onPress={() => this.languageSelect(lang, idx) } activeOpacity={.8}
                                         style={[ styles.flexVer, styles.rowNormal, {justifyContent:'space-between'}]}>
-                                        <Text style={[ styles.itemText, {paddingTop: 7, paddingBottom:7, 
+                                        <Text style={[ styles.itemText,styles.inputValueFontSize, {paddingTop: 7, paddingBottom:7, 
                                             color: lang.selected ? 'red' : 'black'} ]}>   
                                             { lang.display_name }
                                         </Text>
@@ -301,18 +451,74 @@ class filters extends Component {
             </Modal>  
         )
     }
+
     generatePicker(itemObject, type){
+
+        let _prepareRenderPicker = (type=='genderAndroid' ? this.state.Genders:(type=='ethnicity' ? ethnicities:(type=='hair'? hair_colors : eye_colors)));
+       
         return(
             <View style={[styles.justFlexContainer]}>
                 { Helper._isAndroid()  && 
-                    <View style = {styles.itemPicker}>
-                        <Picker
-                            selectedValue={this.state.selectedEthnicity}
-                            onValueChange={(item) => this.onEthnicityChange(item)}>
-                            <Item label="Male" value="Male" color={ this.state.selectedEthnicity == 'Male' ? '#4a4a4a':'#9B9B9B'} />
-                            <Item label="Female" value="Female" color={ this.state.selectedEthnicity == 'Female' ? '#4a4a4a':'#9B9B9B'} />
-                        </Picker>
-                    </View>
+                    <View>
+                        <View style = {[ {flex: 1} ]}>
+                            <Modal
+                                transparent={true}
+                                presentationStyle={'pageSheet'}
+                                onRequestClose={() => {}}
+                                visible = {type == 'genderAndroid' ? this.state.genderAndroidVisible:(type=='ethnicity' ? this.state.ethnicityModalVisible:(type=='hair'? this.state.hairModalVisible: this.state.eyeModalVisible))}>
+                                <TouchableOpacity style={[styles.mainVerticalPadding, {flex:1,flexDirection:'column',paddingBottom:0,justifyContent:'center',alignItems:'center',backgroundColor:'rgba(0,0,0,0.8)'}]} onPressOut={() => {this.setModalVisible(false,type)}}>
+                                    <View style={{width:300,height:type=='genderAndroid'? 200:(type=='ethnicity'? 300:(type=='hair'? 270:270)),backgroundColor:'white'}}>
+                                        <View style={[styles.languageNav]} >
+                                            <Text style={[ styles.languageNavTitle ,styles.inputLabelFontSize,{flex:2,textAlign:'left'}]} >Please select {type=='genderAndroid'?'gender':type}</Text>
+                                        </View>
+                                        {/*Language Search*/}
+                                        {/*<View style={[styles.mainHorizontalPadding, {marginTop: 20}]}>
+                                            <TextInput
+                                                style={{marginBottom:7, height: Helper._isAndroid()?40:30, borderColor:Colors.componentBackgroundColor, borderRadius:5,textAlign:'center', backgroundColor:Colors.componentBackgroundColor,borderWidth: 1}}
+                                                onChangeText={(text) => this.onLanguageSearch(text)}
+                                                value={this.state.text}
+                                                placeholder="Search"
+                                            />
+                                        </View>*/}
+                                        <ScrollView contentContainerStyle={[styles.mainVerticalPadding, styles.mainHorizontalPadding ]}>
+                                            {_prepareRenderPicker.map((item, idx) => {
+                                                return (
+                                                    <View key={idx} >
+                                                        {/*{console.log('Item ZIN: ', lang, idx)}*/}
+                                                        {/* {when search first time click on the row is not work cus not yet lost focus from text input */}
+                                                        <TouchableOpacity onPress={() => this.genderSelect(item, idx,type) } activeOpacity={.8}
+                                                            style={[ styles.flexVer, styles.rowNormal, {justifyContent:'space-between'}]}>
+                                                            <Text style={[ styles.itemText,styles.inputValueFontSize, {paddingTop: 7, paddingBottom:7, 
+                                                                color: item.selected ? 'red' : 'black'} ]}>   
+                                                                { item.display_name }
+                                                            </Text>
+                                                            {item.selected && <Icon name={"done"} style={[ styles.itemIcon, 3, {color:'red' }]} /> }
+                                                        </TouchableOpacity>
+                                                        <View style={[{borderWidth:1,borderColor:Colors.componentBackgroundColor}]}></View>
+                                                    </View>
+                                                )
+                                            })}
+                                        </ScrollView>
+                                    </View>
+                                </TouchableOpacity>
+                            </Modal>
+                            {/*Old Picker*/}
+                            {/*<Picker
+                                ref = 'genderPicker'
+                                selectedValue={this.state.selectedGender}
+                                onValueChange={this.onValueChange.bind(this, 'selectedGender')}>
+                                <Item label="Please select gender" value=""/>  
+                                <Item label="Male" value="M" /> 
+                                <Item label="Female" value="F" />
+                            </Picker>*/}
+                        </View>
+                        <TouchableOpacity onPress={() => this.setModalVisible(true, type)}>
+                            <View style = {[styles.itemPicker,{flex:0.7}]}>
+                                <Text style={[ styles.flatInputBoxFont,styles.inputValueFontSize, {color: type=="genderAndroid" ? (this.state.selectedGender? 'black':'#9B9B9B'):(type=="ethnicity"? (this.state.selectedEthnicity? 'black':'#9B9B9B'):(type=="hair"? (this.state.myhaircolor.val ? 'black':'#9B9B9B'):(this.state.myeyecolor.val? 'black':'#9B9B9B'))),textAlign:'right'}]}>{ type=='genderAndroid'? this.state.displayGendersAndroid || 'Both(Male & Female)' :(type=='ethnicity' ? this.state.selectedEthnicity || 'Select ethnicity' :(type=='hair' ? this.state.myhaircolor.val || 'Select hair color' :this.state.myeyecolor.val|| 'Select eyes color') ) }</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>     
+
                 } 
 
                 { Helper._isIOS()  && 
@@ -320,19 +526,20 @@ class filters extends Component {
                         <Modal
                             animationType={"slide"}
                             transparent={true}
+                            onRequestClose={() => {}}
                             visible={ type == 'ethnicity' ? this.state.ethnicityModalVisible : 
                             (type == 'hair' ? this.state.hairModalVisible : this.state.eyeModalVisible)}
-                            onRequestClose={() => {alert("Modal has been closed.")}} >
+                            >
 
                             <View onPress = {()=>{ }} style={{flex: 1, justifyContent: 'flex-end',marginTop: 22}}>
                                 <View style = {styles.pickerTitleContainer}>
-                                    <Text style={[styles.fontBold, {textAlign: 'left', color: '#4a4a4a', padding:10, left: 10} ]}>Select {type == 'ethnicity' ? type : type + ' color'} </Text>
+                                    <Text style={[styles.fontBold, styles.inputLabelFontSize,{textAlign: 'left', padding:10, left: 10} ]}>Select {type == 'ethnicity' ? type : type + ' color'} </Text>
                                 <TouchableOpacity activeOpacity = {0.8}
                                     style={[ {backgroundColor: Colors.componentDarkBackgroundColor, position:'absolute', padding:10, right:10} ]}
                                     onPress={() => {
                                         this.setModalVisible(false, type)
                                     }}>
-                                    <Text style={[styles.fontBold, {textAlign: 'right', color: '#3b5998'} ]}>Done</Text>
+                                    <Text style={[styles.fontBold, styles.inputLabelFontSize,{textAlign: 'right', color: '#3b5998'} ]}>Done</Text>
                                 </TouchableOpacity>
                                 </View>
                                 <View style={[ {backgroundColor: 'white'} ]}>
@@ -363,17 +570,17 @@ class filters extends Component {
                             <View style = {styles.itemPicker}>
                                 {
                                     type == 'ethnicity' && 
-                                    <Text style={[ styles.flatInputBoxFont, {textAlign:'right',color:'black'}]}>{ this.state.selectedEthnicity || 'Select ethnicity' }</Text>
+                                    <Text style={[ styles.flatInputBoxFont, styles.inputValueFontSize, {textAlign:'right',color: this.state.selectedEthnicity ? 'black':'#9B9B9B'}]}>{ this.state.selectedEthnicity || 'Select ethnicity' }</Text>
                                 }
 
                                 {
                                     type == 'hair' && 
-                                    <Text style={[ styles.flatInputBoxFont, {textAlign:'right',color: 'black'}]}>{ this.state.myhaircolor.val || 'Select hair color' }</Text>
+                                    <Text style={[ styles.flatInputBoxFont,styles.inputValueFontSize, {textAlign:'right',color: this.state.myhaircolor.val ? 'black':'#9B9B9B'}]}>{ this.state.myhaircolor.val || 'Select hair color' }</Text>
                                 }
 
                                 {
                                     type == 'eye' && 
-                                    <Text style={[ styles.flatInputBoxFont, {textAlign:'right',color:'black'}]}>{ this.state.myeyecolor.val || 'Select eye color' }</Text>
+                                    <Text style={[ styles.flatInputBoxFont,styles.inputValueFontSize, {textAlign:'right',color: this.state.myeyecolor.val ? 'black':'#9B9B9B'}]}>{ this.state.myeyecolor.val || 'Select eye color' }</Text>
                                 }
                             </View>
                         </TouchableOpacity>
@@ -391,16 +598,26 @@ class filters extends Component {
         }else if(type == 'eye'){
             this.setState({eyeModalVisible: visible})
         }else if(type == 'language'){
-            this.setState({languageModalVisible: visible})
+            let selectedCount = [];
+            _.map(originalLanguage, function(val){
+                if(val.selected)
+                    selectedCount.push(val);
+            });
+            this.setState({languageModalVisible: visible,selectedLanguagesCount:selectedCount.length})
         }else if(type == 'gender'){
             this.setState({genderModalVisible: visible})
         }
+        else if(type=='genderAndroid'){
+            this.setState({genderAndroidVisible:visible})
+        }
     }
+
     onValueChange = (key, value) => {
         const newState = {};
         newState[key] = value;
         this.setState(newState);
     };
+
     onPickerChange(text, type){
         if(type == 'ethnicity'){
             this.setState({selectedEthnicity: text})
@@ -419,22 +636,21 @@ class filters extends Component {
         // console.log('Ethnicity: ', text);
         this.setState({selectedEthnicity: text})
     }  
-    onHeightChanged(text){
-        let reSing=/^[0-9]{0,3}$/;
-        if(reSing.test(text)){
-            this.setState({ height:text })
-        }
-    }
 
-    onWeightChanged(text){
-        let reSing=/^[0-9]{0,3}$/;
-        if(reSing.test(text)){
-            this.setState({ myweight: {val:text} })
-        }
-    }
-    applyFilter =()=>{
-        console.log("Apply Filter selectedGender",this.state);
-    }   
+    // onHeightChanged(text){
+    //     let reSing=/^[0-9]{0,3}$/;
+    //     if(reSing.test(text)){
+    //         this.setState({ height:text })
+    //     }
+    // }
+
+    // onWeightChanged(text){
+    //     let reSing=/^[0-9]{0,3}$/;
+    //     if(reSing.test(text)){
+    //         this.setState({ myweight: {val:text} })
+    //     }
+    // }
+
     onPickerChangeValue =(value,type) =>{
         if(type=="age"){
             this.setState({
@@ -464,6 +680,107 @@ class filters extends Component {
             })
         }
     }
+    // onMyModalVisible=(value,type)=>{
+    //     this.setModalVisible(true,"ethnicity");
+    // }
+    isNotJobFilter = () =>{
+        const { navigate, state } = this.props.navigation
+        return  state.params && state.params.filterType != 'job';
+    }
+
+    _clearFilters = () => {
+
+        GoogleAnalyticsHelper._trackEvent('Filter', 'Clear');         
+
+        originalLanguage = _.cloneDeep(languages);
+        originalGender=_.cloneDeep(gendersFilter);
+        const {state} = this.props.navigation;
+        if(state.params.filterType == 'job'){
+            filterData.job = null
+        }else if(state.params.filterType == 'discover'){
+            if(state.params.tabType == 'Videos'){
+                filterData.video = null;
+            }else{
+                filterData.people = null;
+            }
+        }
+        this.triggerEmitFunc(null);
+        
+        return;        
+
+        console.log('Clear Filters', _initState);
+        // this.state = _.cloneDeep(this._initState);
+        this.setState({
+            ..._.cloneDeep(_initState)
+        },function(){
+            console.log('After Clear: ', this.state);
+            DeviceEventEmitter.emit('FilterJob', { dataFilter: null});
+            _SELF.applyFilter();
+        })
+    }
+
+    // func for check which screen need to trigger
+    triggerEmitFunc = (filterData) => { // null : mean reset data
+        const { navigate, state, goBack } = this.props.navigation;
+        console.log('Filter State :', state.params);
+        if(state.params.filterType == 'job'){
+
+            console.log('Emit FilterJob');
+            GoogleAnalyticsHelper._trackEvent('Job Filter', 'Apply', {custom_data: filterData});         
+        
+            DeviceEventEmitter.emit('FilterJob', { dataFilter: filterData});
+
+        }
+        else if(state.params.filterType == 'discover'){
+            
+            
+            if(state.params.tabType == 'Videos'){
+
+                console.log('Emit FilterVideo');
+                GoogleAnalyticsHelper._trackEvent('Video Filter', 'Apply', {custom_data: filterData});         
+            
+                DeviceEventEmitter.emit('FilterVideos', { dataFilter: filterData});
+                
+            }
+            else{
+                // console.log('Emit FilterPeople', filterData);            
+                DeviceEventEmitter.emit('FilterPeople', { dataFilter: filterData});        
+            }
+
+            // DeviceEventEmitter.emit('UpdateFilterIconDiscover', { dataFilter: filterData});
+
+        }
+        goBack();
+    }
+
+    applyFilter = () => {
+        // console.log("Apply Filter selectedGender",this.state);
+        const {state} = this.props.navigation;
+        // console.log('This is type: ', state.params.filterType);
+
+        let filterObj = {};
+        filterObj.data = this.state;
+        filterObj.type = state.params.filterType;
+
+        if(filterObj.type == 'job'){
+            filterData.job = filterObj;
+
+        }else if(filterObj.type == 'discover'){
+            //console.log('tabType: ', state.params.tabType);
+            if(state.params.tabType == 'Videos'){
+                filterData.video = filterObj;
+            }else{
+                filterData.people = filterObj;
+            }
+        }
+        console.log('This is filter object: ', filterData);
+        console.log("this is state object",this.state);
+        this.triggerEmitFunc(this.state);
+    }   
+
+    focusOnMe = (e) => {
+
+    }
 
     render() {
         // console.log(this.props.user, this.state.userData);
@@ -471,23 +788,12 @@ class filters extends Component {
 
             return (
                 <View style={{flex:1, backgroundColor:'white'}}>
-                    <View style={{flexDirection:'row', marginTop:30, paddingLeft:20, paddingBottom:20, marginBottom:1,borderBottomWidth:1,borderBottomColor:'grey'}}>
-                        <TouchableOpacity
-                            onPress={() => goBack()}
-                            activeOpacity={.8}>
-                            <Icon name={'close'}
-                                style={{fontSize:20}} />
-                        </TouchableOpacity>
-                        <Text style={{flex:1, textAlign:'center', fontSize:16, fontWeight:'bold'}}>
-                            Filters
-                        </Text>
-                        <TouchableOpacity>
-                            <Text>Clear Filters</Text>
-                        </TouchableOpacity>
-                    </View>
+
                     <ScrollView>
                         <View style={[styles.mainPadding,{marginVertical:10}]}>
-                            <Text style={[{fontSize:15,fontWeight:'bold'}]}>Select talent types</Text>
+
+                            {/* select talent category */}
+                            <Text style={[styles.inputLabelFontSize,{fontWeight:'bold'}]}>Select talent types</Text>
                             <View style={[styles.tagContainerNormal, styles.marginTopSM]}> 
                                 {this.state.talent_cate.map((item, index) => {
                                     return (
@@ -497,7 +803,7 @@ class filters extends Component {
                                             style={[{backgroundColor:Colors.componentBackgroundColor},styles.tagsSelectNormal, this.checkTalentActiveTag(item) && styles.tagsSelected]} 
                                             onPress={ () => this.selectedTalentTag(item, index) }
                                         >
-                                            <Text style={[styles.tagTitle, styles.btFontSize, this.checkTalentActiveTag(item) && styles.tagTitleSelected]}>
+                                            <Text style={[styles.tagTitle, styles.btFontSize,styles.inputValueFontSize, this.checkTalentActiveTag(item) && styles.tagTitleSelected]}>
                                                 {item.display_name}
 
                                                 {item.selected}
@@ -507,59 +813,79 @@ class filters extends Component {
                                     )
                                 })}   
                             </View>    
+
                             <View style={[{marginVertical:15,borderColor: Colors.componentBackgroundColor, borderWidth: 1}]} />
+
+                            {/* age */}
                             <View style={[{flex:1}]}>
-                                <TouchableOpacity style={[{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center'}]} activeOpacity = {0.9} onPress={(event) => { this.refs.ThirdInput.focus();}}>
-                                    <Text style={[styles.titleBold,{flex:0.3}]}>Age</Text>
-                                    <MinMaxPicker onPickerChangeValue={this.onPickerChangeValue} myData={ages} type="age"/>
+                                <TouchableOpacity style={[{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center'}]} activeOpacity = {0.9} onPress={(event) => { }}>
+                                    <Text style={[styles.titleBold,styles.inputLabelFontSize,{flex:0.3}]}>Age</Text>
+                                    <MinMaxPicker onPickerChangeValue={this.onPickerChangeValue}  myData={ages} type="age" default={this.state.age.val}/>
                                 </TouchableOpacity>
                                 <View style={[{marginVertical:15,borderColor: Colors.componentBackgroundColor, borderWidth: 1}]} />
                             </View>
+
+                            {/* gender */}
                             <View style={[{flex:1}]}>
-                                <TouchableOpacity style={[{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center'}]} activeOpacity = {0.9} onPress={(event) => { this.refs.FourthInput.focus();}}>
-                                    <Text style={[styles.titleBold,{flex:0.3}]}>Gender</Text>
-                                    <View> 
-                                        <Modal
-                                            animationType={"slide"}
-                                            transparent={true}
-                                            visible={this.state.genderModalVisible}
-                                            onRequestClose={() => {alert("Modal has been closed.")}} >
-
-                                            <View onPress = {()=>{ }} style={{flex: 1, justifyContent: 'flex-end',marginTop: 22}}>
-                                                <TouchableOpacity
-                                                    style={[ {backgroundColor: Colors.componentDarkBackgroundColor, padding: 15} ]}
-                                                    onPress={() => {
-                                                        this.setModalVisible(!this.state.genderModalVisible, 'gender')
-                                                    }}>
-                                                    <Text style={[styles.fontBold, {textAlign: 'right', color: '#3b5998'} ]} >Done</Text>
-                                                </TouchableOpacity>
-                                                <View style={[ {backgroundColor: 'white'} ]}>
-                                                    <Picker
-                                                        selectedValue={this.state.selectedGender}
-                                                        onValueChange={this.onValueChange.bind(this, 'selectedGender')}>
-                                                        <Item label="Both" value="B"/>
-                                                        <Item label="Male" value="M" /> 
-                                                        <Item label="Female" value="F" />
-                                                    </Picker>
-                                                </View>
-                                            </View>
-                                        </Modal>
-
-                                        <TouchableOpacity
-                                            onPress={() => {
-                                                this.setModalVisible(true, 'gender')
-                                            }}>
-                                            <View style = {styles.genderPicker}>
-                                                <Text style={[ styles.flatInputBoxFont, {color: this.state.gender.isErrRequired ? 'red': '#B9B9B9'} , !_.isEmpty(this.state.selectedGender) && {color: 'black'}  ]}>{ Helper._getGenderLabel(this.state.selectedGender)}</Text>
-                                            </View>
+                                { Helper._isAndroid()  && 
+                                    <View style={[{flex:1}]}>
+                                        <TouchableOpacity style={[{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center'}]} activeOpacity = {0.9}>
+                                            <Text style={[styles.titleBold,styles.inputLabelFontSize,{flex:0.3}]}>Gender</Text>
+                                            {this.generatePicker(this.state.Genders, 'genderAndroid')}
                                         </TouchableOpacity>
-                                    </View>
-                                </TouchableOpacity>
+                                    </View> 
+                                } 
+
+                                { Helper._isIOS()  && 
+                                    <TouchableOpacity style={[{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center'}]} activeOpacity = {0.9} onPress={(event) => { this.focusOnMe(event) }}>
+                                        <Text style={[styles.titleBold,styles.inputLabelFontSize,{flex:0.3}]}>Gender</Text>
+                                        <View> 
+                                            <Modal
+                                                animationType={"slide"}
+                                                transparent={true}
+                                                visible={this.state.genderModalVisible}
+                                                onRequestClose={() => {}}
+                                                >
+
+                                                <View onPress = {()=>{ }} style={{flex: 1, justifyContent: 'flex-end',marginTop: 22}}>
+                                                    <TouchableOpacity
+                                                        style={[ {backgroundColor: Colors.componentDarkBackgroundColor, padding: 15} ]}
+                                                        onPress={() => {
+                                                            this.setModalVisible(!this.state.genderModalVisible, 'gender')
+                                                        }}>
+                                                        <Text style={[styles.fontBold, {textAlign: 'right', color: '#3b5998'} ]} >Done</Text>
+                                                    </TouchableOpacity>
+                                                    <View style={[ {backgroundColor: 'white'} ]}>
+                                                        <Picker
+                                                            ref = 'genderPicker'
+                                                            selectedValue={this.state.selectedGender}
+                                                            onValueChange={this.onValueChange.bind(this, 'selectedGender')}>
+                                                            <Item label="Both" value="B"/>
+                                                            <Item label="Male" value="M" /> 
+                                                            <Item label="Female" value="F" />
+                                                        </Picker>
+                                                    </View>
+                                                </View>
+                                            </Modal>
+
+                                            <TouchableOpacity
+                                                onPress={() => {
+                                                    this.setModalVisible(true, 'gender')
+                                                }}>
+                                                <View style = {styles.genderPicker}>
+                                                    <Text style={[ styles.flatInputBoxFont,styles.inputValueFontSize, {color: this.state.gender.isErrRequired ? 'red': '#B9B9B9'} , !_.isEmpty(this.state.selectedGender) && {color: 'black'}  ]}>{ Helper._getGenderLabel(this.state.selectedGender)}</Text>
+                                                </View>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </TouchableOpacity> 
+                                }
                                 <View style={[{marginVertical:15,borderColor: Colors.componentBackgroundColor, borderWidth: 1}]} />
                             </View>
+
+                            {/*country*/}
                             <View style={[{flex:1}]}>
-                                <TouchableOpacity style={[{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center'}]} activeOpacity = {0.9} onPress={(event) => { this.refs.FifthInput.focus();}}>
-                                    <Text style={[styles.titleBold,{flex:0.3}]}>Country</Text>
+                                <TouchableOpacity style={[{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center'}]} activeOpacity = {0.9}>
+                                    <Text style={[styles.titleBold,styles.inputLabelFontSize,{flex:0.3}]}>Country</Text>
                                     <CountryPicker
                                         countryList={ALL_COUNTRIES}
                                         closeable = {true}
@@ -585,59 +911,69 @@ class filters extends Component {
                                         translation='eng' >
 
                                         <View style = {styles.countryPicker} >     
-                                            <Text style={[ {fontSize: 17, color:  this.checkColorCountryInput() } ]}> { this.state.country.val || 'Country' } </Text>
+                                            <Text style={[ styles.inputValueFontSize,{ color:  this.checkColorCountryInput() } ]}> { this.state.country.val || 'Country' } </Text>
                                         </View>
                                     </CountryPicker>
                                 </TouchableOpacity>
                                 <View style={[{marginVertical:15,borderColor: Colors.componentBackgroundColor, borderWidth: 1}]} />
                             </View> 
-                            <View style={[{flex:1}]}>
-                                <TouchableOpacity style={[{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center'}]} activeOpacity = {0.9}>
-                                    <Text style={[styles.titleBold,{flex:0.3}]}>Ethnicity</Text>
-                                    {this.generatePicker(ethnicities, 'ethnicity')}
-                                </TouchableOpacity>
-                                <View style={[{marginVertical:15,borderColor: Colors.componentBackgroundColor, borderWidth: 1}]} />
-                            </View> 
-                            <View style={[{flex:1}]}>
-                                <TouchableOpacity style={[{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center'}]} activeOpacity = {0.9} onPress={() => this.setModalVisible(true, 'language')}>
-                                    <Text style={[styles.titleBold,{flex:0.3}]}>Language</Text>
-                                    <View style = {styles.itemPicker}>
-                                        <Text style={[ styles.flatInputBoxFont, {color:'black'}]}>{ this.state.displayLanguages || 'Select languages' }</Text>
-                                    </View>
-                                </TouchableOpacity>
-                                {this.generateLanguageList()}
-                                <View style={[{marginVertical:15,borderColor: Colors.componentBackgroundColor, borderWidth: 1}]} />
-                            </View>  
-                            <View style={[{flex:1}]}>
-                                <TouchableOpacity style={[{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center'}]} activeOpacity = {0.9} onPress={(event) => { this.refs.FourthInput.focus();}}>
-                                    <Text style={[styles.titleBold,{flex:0.3}]}>Height</Text>
-                                    <MinMaxPicker onPickerChangeValue={this.onPickerChangeValue} myData={heights} type="height"/>
-                                    <Text style={{fontSize:16}}> cm</Text>
-                                </TouchableOpacity>
-                                <View style={[{marginVertical:15,borderColor: Colors.componentBackgroundColor, borderWidth: 1}]} />
-                            </View>
-                            <View style={[{flex:1}]}>
-                                <TouchableOpacity style={[{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center'}]} activeOpacity = {0.9} onPress={(event) => { this.refs.NinethInput.focus();}}>
-                                    <Text style={[styles.titleBold,{flex:0.3}]}>Weight</Text>
-                                    <MinMaxPicker onPickerChangeValue={this.onPickerChangeValue} myData={weights} type="weight"/>
-                                    <Text style={{fontSize:16}}> kg</Text>
-                                </TouchableOpacity>
-                                <View style={[{marginVertical:15,borderColor: Colors.componentBackgroundColor, borderWidth: 1}]} />
-                            </View>       
-                            <View style={[{flex:1}]}>
-                                <TouchableOpacity style={[{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center'}]} activeOpacity = {0.9}>
-                                    <Text style={[styles.titleBold,{flex:0.3}]}>Hair color</Text>
-                                    {this.generatePicker(hair_colors, 'hair')}
-                                </TouchableOpacity>
-                                <View style={[{marginVertical:15,borderColor: Colors.componentBackgroundColor, borderWidth: 1}]} />
-                            </View>    
-                            <View style={[{flex:1}]}>
-                                <TouchableOpacity style={[{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center'}]} activeOpacity = {0.9}>
-                                    <Text style={[styles.titleBold,{flex:0.3}]}>Eyes color</Text>
-                                    {this.generatePicker(eye_colors, 'eye')}
-                                </TouchableOpacity>
-                                <View style={[{marginVertical:15,borderColor: Colors.componentBackgroundColor, borderWidth: 1}]} />
-                            </View>   
+
+                            { this.isNotJobFilter() && <View style={[{flex:1}]}>
+
+                                <View style={[{flex:1}]}>
+                                    <TouchableOpacity style={[{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center'}]} activeOpacity = {0.9}>
+                                        <Text style={[styles.titleBold,styles.inputLabelFontSize,{flex:0.3}]}>Ethnicity</Text>
+                                        {this.generatePicker(Helper._isAndroid()?[{id:'0',display_name:''},...ethnicities]:ethnicities, 'ethnicity')}
+                                    </TouchableOpacity>
+                                    <View style={[{marginVertical:15,borderColor: Colors.componentBackgroundColor, borderWidth: 1}]} />
+                                </View> 
+
+                                <View style={[{flex:1}]}>
+                                    <TouchableOpacity style={[{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center'}]} activeOpacity = {0.9} onPress={() => this.setModalVisible(true, 'language')}>
+                                        <Text style={[styles.titleBold,styles.inputLabelFontSize,{flex:0.3}]}>Language</Text>
+                                        <View style = {[styles.itemPicker,{flex:0.7}]}>
+                                            <Text style={[ styles.flatInputBoxFont,styles.inputValueFontSize, {color:this.state.displayLanguages? 'black':'#9B9B9B',textAlign:'right'}]}>{ this.state.displayLanguages || 'Select languages' }</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                    {this.generateLanguageList()}
+                                    <View style={[{marginVertical:15,borderColor: Colors.componentBackgroundColor, borderWidth: 1}]} />
+                                </View>  
+
+                                <View style={[{flex:1}]}>
+                                    <TouchableOpacity style={[{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center'}]} activeOpacity = {0.9} onPress={(event) => { }}>
+                                        <Text style={[styles.titleBold,styles.inputLabelFontSize,{flex:0.3}]}>Height cm</Text>
+                                        <MinMaxPicker onPickerChangeValue={this.onPickerChangeValue} myData={heights} type="height" default={this.state.myheight.val}/>
+                                        {/*<Text style={{fontSize:16}}> cm</Text>*/}
+                                    </TouchableOpacity>
+                                    <View style={[{marginVertical:15,borderColor: Colors.componentBackgroundColor, borderWidth: 1}]} />
+                                </View>
+
+                                <View style={[{flex:1}]}>
+                                    <TouchableOpacity style={[{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center'}]} activeOpacity = {0.9} onPress={(event) => { }}>
+                                        <Text style={[styles.titleBold,styles.inputLabelFontSize,{flex:0.3}]}>Weight kg</Text>
+                                        <MinMaxPicker onPickerChangeValue={this.onPickerChangeValue} myData={weights} type="weight" default={this.state.myweight.val}/>
+                                        {/*<Text style={{fontSize:16}}> kg</Text>*/}
+                                    </TouchableOpacity>
+                                    <View style={[{marginVertical:15,borderColor: Colors.componentBackgroundColor, borderWidth: 1}]} />
+                                </View>  
+
+                                <View style={[{flex:1}]}>
+                                    <TouchableOpacity style={[{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center'}]} activeOpacity = {0.9} onPress={() => this.setModalVisible(true, 'hair')}>
+                                        <Text style={[styles.titleBold,styles.inputLabelFontSize,{flex:0.3}]}>Hair color</Text>
+                                        {this.generatePicker(Helper._isAndroid()?[{id:'0',display_name:''},...hair_colors]:hair_colors, 'hair')}
+                                    </TouchableOpacity>
+                                    <View style={[{marginVertical:15,borderColor: Colors.componentBackgroundColor, borderWidth: 1}]} />
+                                </View>   
+
+                                <View style={[{flex:1}]}>
+                                    <TouchableOpacity style={[{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center'}]} activeOpacity = {0.9} onPress={() => this.setModalVisible(true, 'eye')}>
+                                        <Text style={[styles.titleBold,styles.inputLabelFontSize,{flex:0.3}]}>Eyes color</Text>
+                                        {this.generatePicker(Helper._isAndroid()?[{id:'0',display_name:''},...eye_colors]:eye_colors, 'eye')}
+                                    </TouchableOpacity>
+                                    <View style={[{marginVertical:15,borderColor: Colors.componentBackgroundColor, borderWidth: 1}]} />
+                                </View>   
+                            </View> }
+
                         </View>
                         <View style={[styles.absoluteBox,{marginBottom:20, position: 'relative', backgroundColor: 'transparent',paddingVertical:0}]}>
                             <View style={[styles.txtContainer,styles.mainHorizontalPadding]}>
@@ -671,7 +1007,7 @@ function mapStateToProps(state) {
     }
 }
 
-const styles = StyleSheet.create({ ...Styles, ...Utilities, ...Tabs, ...FlatForm, ...TagsSelect, ...BoxWrap,
+const styles = StyleSheet.create({ ...Styles, ...Utilities, ...FlatForm, ...TagsSelect, ...BoxWrap,
     txtContainer: {
         flex:1,
         flexDirection: 'column',
@@ -726,13 +1062,14 @@ const styles = StyleSheet.create({ ...Styles, ...Utilities, ...Tabs, ...FlatForm
             height: 5
         },
         shadowRadius: 3,
-        shadowOpacity: 0.2
+        shadowOpacity: 0.2,
+        paddingHorizontal:15
     },
     languageNavIcon:{
          color:'black',
          fontSize: 20,
          backgroundColor: 'transparent',
-         left: 17
+         textAlign:'left'
     },
     languageNavTitle:{
         flex: 1,

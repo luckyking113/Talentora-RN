@@ -63,7 +63,7 @@ class TermOfUse extends Component {
     render() {        
          return (
              <ScrollView style={[ styles.wrapper,styles.mainVerticalPadding, styles.mainHorizontalPadding]}>
-                <Text style={{marginBottom:50}}>{this.state.termOfUse.detail}</Text>
+                <Text style={{marginBottom:50, textAlign: 'justify'}}>{this.state.termOfUse.detail}</Text>
             </ScrollView>
          );
     }

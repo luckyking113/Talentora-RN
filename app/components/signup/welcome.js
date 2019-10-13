@@ -8,21 +8,22 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, StatusBar, 
 
 import ButtonBack from '@components/header/button-back'
 
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Colors } from '@themes/index';
 import FlatForm from '@styles/components/flat-form.style';
 import Utilities from '@styles/extends/ultilities.style';
 import { transparentHeaderStyle, titleStyle } from '@styles/components/transparentHeader.style';
-
+import { genders } from '@api/response'
 import _ from 'lodash'
 
 import { postApi, putApi } from '@api/request';
-import { UserHelper, StorageData, Helper } from '@helper/helper';
+import { UserHelper, StorageData, Helper, GoogleAnalyticsHelper } from '@helper/helper';
 
 var func = require('@helper/validate');
 const Item = Picker.Item;
 
 const dismissKeyboard = require('dismissKeyboard');
-
+let originalGender=_.cloneDeep(genders);
 function mapStateToProps(state) {
     // console.log(state)
     return {
@@ -92,7 +93,9 @@ class TalentSeekerWelcome extends Component{
             mode: Picker.MODE_DIALOG,
             modalVisible: false,    
             prevoius_gender:'',
-            isActionButton: true,        
+            isActionButton: true,      
+            Genders:originalGender
+
         };
         // console.log('Who Are You (DATA) : ', this.props.navigation);
     }
@@ -147,7 +150,7 @@ class TalentSeekerWelcome extends Component{
             return !this.state.firstname.isErrRequired && !this.state.lastname.isErrRequired && !this.state.age.isErrRequired && !this.state.gender.isErrRequired;
         }
     }
-
+ 
     joinUsNow() {
         // Alert.alert('login now');
         // dismissKeyboard();  
@@ -224,7 +227,20 @@ class TalentSeekerWelcome extends Component{
 
                     }, state.params.sign_up_info);
 
-                    console.log('Welcome Data To Save : ',signUpInfo);
+                    // console.log('User Info from beg: ' , state.params.sign_up_info);
+                    let country = {
+                        'country_name': '',
+                        'country_code': '',
+                    }
+                    country.country_name = state.params.sign_up_info.profile ? 
+                        (state.params.sign_up_info.profile.country ? state.params.sign_up_info.profile.country : '') : '';
+                    
+                    country.country_code = state.params.sign_up_info.profile ? 
+                        (state.params.sign_up_info.profile.country_code ? state.params.sign_up_info.profile.country_code : '') : '';
+                    
+                    console.log('Country to save: ' , country);
+                    console.log('Welcome Data To Save : ', signUpInfo);
+
                     // return;
                     that.setState({
                         joining: true
@@ -297,6 +313,14 @@ class TalentSeekerWelcome extends Component{
                                 "eye_color": {
                                     "value": "",
                                     "privacy_type": "only-me"
+                                },
+                                "country": {
+                                    "value": country.country_name,
+                                    "privacy_type": "only-me"
+                                },
+                                "country_code": {
+                                    "value": country.country_code,
+                                    "privacy_type": "only-me"
                                 }
                             })
                         ).then((response) => {
@@ -338,10 +362,10 @@ class TalentSeekerWelcome extends Component{
         const { navigate, goBack, state } = this.props.navigation;
 
         if(state.params || !_.isEmpty(UserHelper.UserInfo)){
-            console.log(state.params, ' == ',UserHelper._getFirstRole());
+            // console.log(state.params, ' == ',UserHelper._getFirstRole());
 
             let _talentType = UserHelper._getFirstRole().role.name;
-            console.log('check employer : ',_talentType, _type);
+            // console.log('check employer : ',_talentType, _type);
             if(_talentType){
                 return _talentType == _type;
             }
@@ -366,7 +390,6 @@ class TalentSeekerWelcome extends Component{
         }else{
             this.setState(newState); 
         }
-        
     };
 
     // state = {
@@ -379,6 +402,9 @@ class TalentSeekerWelcome extends Component{
         this.setState({modalVisible: visible});
     }
 
+    componentDidMount() {
+        GoogleAnalyticsHelper._trackScreenView('Sign Up - Welcome');                         
+    }
 
     // start keyboard handle
     componentWillMount () {
@@ -424,6 +450,24 @@ class TalentSeekerWelcome extends Component{
         }
     }
 
+    genderSelect=(item,index)=>{
+        console.log("my item in gender select",item);
+        console.log("state Genders",this.state.Genders);
+        let temp=this.state.Genders;
+        let selectedvalue;
+        _.map(temp,function(v,k){
+            if(v.id==item.id){
+                selectedvalue=v.display_name;
+            }
+        });
+        let _tmpStateObject=this.state.gender;
+        _tmpStateObject.val=selectedvalue;
+        _tmpStateObject.isErrRequired=false;
+        this.setState({selectedGender:selectedvalue=='Male'? 'M':'F',gender:_tmpStateObject},function(){
+            console.log("after setstate",this.state.gender,this.state.selectedGender);
+        });
+        this.setModalVisible(false);
+    }
 
     render() {
         const { navigate, goBack, state } = this.props.navigation;
@@ -468,7 +512,7 @@ class TalentSeekerWelcome extends Component{
                                     autoCorrect={false}
                                     onFocus = { ()=> this.keyboardDidShow(null) }
                                     onSubmitEditing={() => this.lastname.focus()}
-                                    style={styles.flatInputBox}
+                                    style={[styles.flatInputBox,styles.inputValueFontSize,{color:'black'}]}
                                     underlineColorAndroid = 'transparent'
                                     textAlignVertical = 'bottom'
                                 />
@@ -483,32 +527,69 @@ class TalentSeekerWelcome extends Component{
                                     placeholder="Last Name *"
                                     placeholderTextColor={ this.state.lastname.isErrRequired ? 'red' :"#B9B9B9"}
                                     returnKeyType="go"
-                                    style={styles.flatInputBox}
+                                    style={[styles.flatInputBox,styles.inputValueFontSize,{color:'black'}]}
                                     ref={(input) => this.lastname =  input}
-                                    onFocus = { ()=> this.keyboardDidShow(null) }
+                                    onFocus = {() => {
+                                        this.keyboardDidShow(null)  
+                                    }}
+                                    onSubmitEditing={() => this.setState({
+                                            modalVisible: true
+                                        })}                                    
                                     underlineColorAndroid = 'transparent'
                                     textAlignVertical = 'bottom'
                                 />
 
                                 { Helper._isAndroid()  && 
-                                    <View style = {styles.genderPicker}>
-                                        <Picker
-                                            selectedValue={this.state.selectedGender}
-                                            /*style={[ { fontSize: 10, color: this.state.gender.isErrRequired ? 'red' :"#9B9B9B", } ]} */
-                                            onValueChange={this.onValueChange.bind(this, 'selectedGender')}>
-                                            <Item label="Please Select Gender" value="" color={ this.state.gender.isErrRequired ? 'red' :"#9B9B9B" } />
-                                            <Item label="Male" value="M" color={ this.state.selectedGender == 'M' ? '#4a4a4a':'#9B9B9B'} />
-                                            <Item label="Female" value="F" color={ this.state.selectedGender == 'F' ? '#4a4a4a':'#9B9B9B'} />
-                                        </Picker>
-                                        {/*<TouchableOpacity
-                                            onPress={() => {
-                                                this.setModalVisible(true)
-                                            }}>
-                                            <View style = {styles.genderPicker}>
-                                                <Text placeholder='Gender *' placeholderTextColor={ this.state.gender.isErrRequired ? 'red' :"#B9B9B9"} style={ [{fontSize: 12, color: "#B9B9B9"}] }>{this.state.selectedGender}</Text>
+
+                                    <View>
+                                        <View style = {[ {flex: 1} ]}>
+                                            <Modal
+                                                transparent={true}
+                                                onRequestClose={() => {}}
+                                                visible = {this.state.modalVisible}>
+                                                <TouchableOpacity style={[ styles.justFlexContainer, styles.mainVerticalPadding, {flex:1,flexDirection:'column',paddingBottom:0,justifyContent:'center',alignItems:'center',backgroundColor:'rgba(0,0,0,0.8)'}]} onPressOut={() => {this.setModalVisible(false)}}>
+                                                    <View style={{width:300,height:160,backgroundColor:'white'}}>
+                                                        <View style={[styles.languageNav ]} >
+                                                            <Text style={[ styles.languageNavTitle,styles.inputLabelFontSize,{textAlign:'left'} ]} >Please select gender</Text>
+                                                        </View>
+                                                        <ScrollView contentContainerStyle={[styles.mainVerticalPadding, styles.mainHorizontalPadding ]}>
+                                                            {this.state.Genders.map((item, idx) => {
+                                                                return (
+                                                                    <View key={idx} >
+                                                                        {/*{console.log('Item ZIN: ', lang, idx)}*/}
+                                                                        {/* {when search first time click on the row is not work cus not yet lost focus from text input */}
+                                                                        <TouchableOpacity onPress={() => this.genderSelect(item, idx) } activeOpacity={.8}
+                                                                            style={[ styles.flexVer, styles.rowNormal, {justifyContent:'space-between'}]}>
+                                                                            <Text style={[ styles.itemText,styles.inputValueFontSize, {paddingTop: 7, paddingBottom:7, 
+                                                                                color: item.selected ? 'red' : 'black'} ]}>   
+                                                                                { item.display_name }
+                                                                            </Text>
+                                                                            {item.selected && <Icon name={"done"} style={[ styles.itemIcon, 3, {color:'red' }]} /> }
+                                                                        </TouchableOpacity>
+                                                                        <View style={[{borderWidth:1,borderColor:Colors.componentBackgroundColor}]}></View>
+                                                                    </View>
+                                                                )
+                                                            })}
+                                                        </ScrollView>
+                                                    </View>
+                                                </TouchableOpacity>
+                                            </Modal>
+                                            {/*Old Picker*/}
+                                            {/*<Picker
+                                                ref = 'genderPicker'
+                                                selectedValue={this.state.selectedGender}
+                                                onValueChange={this.onValueChange.bind(this, 'selectedGender')}>
+                                                <Item label="Please select gender" value=""/>  
+                                                <Item label="Male" value="M" /> 
+                                                <Item label="Female" value="F" />
+                                            </Picker>*/}
+                                        </View>
+                                        <TouchableOpacity onPress={() => this.setModalVisible(true)} style={{backgroundColor: Colors.componentBackgroundColor, marginBottom: 10,borderRadius: 5}}>
+                                            <View style = {[styles.itemPicker,{flex:0.7,paddingHorizontal:12}]}>
+                                                <Text style={[ styles.flatInputBoxFont,styles.inputValueFontSize, {opacity:this.state.selectedGender? 1:(this.state.gender.isErrRequired? 1:0.8),color:this.state.selectedGender? 'black':(this.state.gender.isErrRequired? 'red':'#B9B9B9'),textAlign:'left',paddingVertical:12,backgroundColor: Colors.componentBackgroundColor}]}>{ Helper._getGenderLabel(this.state.selectedGender) || 'Please select gender *' }</Text>
                                             </View>
-                                        </TouchableOpacity>*/}
-                                    </View>
+                                        </TouchableOpacity>
+                                    </View> 
                                 } 
 
                                 { Helper._isIOS()  && 
@@ -516,16 +597,20 @@ class TalentSeekerWelcome extends Component{
                                         <Modal
                                             animationType={"slide"}
                                             transparent={true}
-                                            visible={this.state.modalVisible}
-                                            onRequestClose={() => {alert("Modal has been closed.")}} >
+                                            onRequestClose={() => {}}
+                                            visible={this.state.modalVisible}>
 
                                             <View onPress = {()=>{ }} style={{flex: 1, justifyContent: 'flex-end',marginTop: 22}}>
                                                 <TouchableOpacity
                                                     style={[ {backgroundColor: Colors.componentDarkBackgroundColor, padding: 15} ]}
-                                                    onPress={() => {
-                                                        this.setModalVisible(!this.state.modalVisible)
+                                                    onPress={() => { 
+                                                        this.setModalVisible(!this.state.modalVisible);
+                                                        let _SELF = this;
+                                                        setTimeout(function(){
+                                                            _SELF.ageInput.focus();
+                                                        },200)
                                                     }}>
-                                                    <Text style={[styles.fontBold, {textAlign: 'right', color: '#3b5998'} ]} >Done</Text>
+                                                    <Text style={[styles.fontBold, styles.inputLabelFontSize,{textAlign: 'right', color: '#3b5998'} ]} >Done</Text>
                                                 </TouchableOpacity>
                                                 <View style={[ {backgroundColor: 'white'} ]}>
                                                     <Picker
@@ -544,7 +629,7 @@ class TalentSeekerWelcome extends Component{
                                                 this.setModalVisible(true)
                                             }}>
                                             <View style = {styles.genderPicker}>
-                                                <Text style={[ styles.flatInputBoxFont, {color: this.state.gender.isErrRequired ? 'red': '#B9B9B9'} , !_.isEmpty(this.state.selectedGender) && {color: Colors.textBlack}  ]}>{ Helper._getGenderLabel(this.state.selectedGender) || 'Please select gender *' }</Text>
+                                                <Text style={[ styles.flatInputBoxFont, styles.inputValueFontSize,{color: this.state.gender.isErrRequired ? 'red': '#B9B9B9'} , !_.isEmpty(this.state.selectedGender) && {color: Colors.textBlack}  ]}>{ Helper._getGenderLabel(this.state.selectedGender) || 'Please select gender *' }</Text>
                                             </View>
                                         </TouchableOpacity>
                                     </View>
@@ -556,7 +641,7 @@ class TalentSeekerWelcome extends Component{
                                     placeholder="Age *"
                                     placeholderTextColor={ this.state.age.isErrRequired ? 'red' :"#B9B9B9"}
                                     returnKeyType="go"
-                                    style={[styles.flatInputBox]}
+                                    style={[styles.flatInputBox,styles.inputValueFontSize,{color:'black'}]}
                                     ref={(input) => this.ageInput =  input}
                                     onFocus = { ()=> this.keyboardDidShow(null) }
                                     onSubmitEditing={()=>this.joinUsNow()}
@@ -574,7 +659,7 @@ class TalentSeekerWelcome extends Component{
                                     placeholder="Company *"
                                     placeholderTextColor={ this.state.company.isErrRequired ? 'red' :"#B9B9B9"}
                                     returnKeyType="go"
-                                    style={[styles.flatInputBox, styles.marginTopBig]}
+                                    style={[styles.flatInputBox, styles.marginTopBig,styles.inputValueFontSize,{color:'black'}]}
                                     ref={(input) => this.ageInput =  input}
                                     onFocus = { ()=> this.keyboardDidShow(null) }
                                     onSubmitEditing={()=>this.joinUsNow()}
@@ -676,7 +761,41 @@ var styles = StyleSheet.create({ ...FlatForm, ...Utilities,
         alignItems: 'stretch',
         paddingLeft: 10,
     },
-
+    languageNav:{
+        flexDirection : 'row', 
+        height : 50, 
+        paddingBottom: 15, 
+        paddingTop: 15, 
+        shadowColor: '#000000',
+        shadowOffset: {
+            width: 0,
+            height: 5
+        },
+        shadowRadius: 3,
+        shadowOpacity: 0.2,
+        paddingHorizontal:15
+    },
+    languageNavIcon:{
+         color:'black',
+         fontSize: 20,
+         backgroundColor: 'transparent',
+         left: 17
+    },
+    languageNavTitle:{
+        flex: 1,
+        // backgroundColor: 'yellow',
+        textAlign: 'center',
+        fontWeight: 'bold',
+        fontSize: 16
+    },
+    languageNavStatus:{
+        flex: 1,
+        // backgroundColor: 'red',
+        textAlign: 'right',
+        right: 17,
+        fontSize: 15,
+        color: 'red'
+    }
 });
 
 export default connect(mapStateToProps, AuthActions)(TalentSeekerWelcome) 

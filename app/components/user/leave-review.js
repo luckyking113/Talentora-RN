@@ -1,12 +1,42 @@
-import React, {Component} from 'react';
-import {View, Text, Image, TouchableOpacity, TextInput, StyleSheet} from 'react-native';
+import React, { Component } from 'react';
+import { ScrollView, View, Text, Image, TouchableOpacity, TextInput, StyleSheet, ActivityIndicator, DeviceEventEmitter } from 'react-native';
 import ButtonBack from '@components/header/button-back';
 import ButtonTextRight from '@components/header/button-text-right';
-import { talent_category } from '@api/response';
 import TagsSelect from '@styles/components/tags-select.style';
+import { postApi } from '@api/request';
+import { Helper, UserHelper, GoogleAnalyticsHelper } from '@helper/helper';
+import _ from 'lodash';
+import { Colors } from '@themes/index';
+
+let _SELF = null;
+
+const EMPLOYER_TYPE = 'employer';
+const USER_TYPE = 'user';
 
 export default class LeaveReview extends Component{
-    
+    constructor(props){
+        super(props);
+        let userInfo = this.props.navigation.state.params.user;
+        let kinds = userInfo.attributes.kind.value.split(',');
+        let talents = [];
+        for(let i = 0; i<kinds.length; i++){
+            talents.push({
+                talentType:kinds[i],
+                selected:false
+            });
+        }
+        this.state={
+            textExperience:{
+                isRequired:false,
+                val:''
+            },
+            goodAt:talents,
+            userImage:userInfo.photo.preview_url_link,
+            userName:Helper._getUserFullName(userInfo.attributes)
+        }
+        console.log('userInfo :', userInfo);
+    }
+
     static navigationOptions = ({ navigation }) => ({ 
         headerTitle: 'Leave Review',
         headerLeft: (
@@ -14,68 +44,28 @@ export default class LeaveReview extends Component{
                 isGoBack={ navigation }
                 btnLabel= ""
             />),
- 
         headerRight: (
-            <TouchableOpacity style={{paddingRight:10}}>
-                <Text>Submit</Text>
+            <TouchableOpacity style = {{paddingRight:10}}
+                activeOpacity = {.8}
+                onPress = { () => _SELF.submitReview() }>
+                {(navigation.state.params && navigation.state.params.reviewing)?
+                <ActivityIndicator size="small"
+                    color="gray"/>
+                :
+                <Text>Submit</Text>}
             </TouchableOpacity>)
     });
 
-    constructor(props){
-        super(props);
-        this.state={
-            textExperience:'',
-            goodAt:talent_category,
-            isEndorse:true
-        }
+    componentWillMount(){
+        _SELF = this;
     }
 
-    render(){
-        return(
-            <View style={styles.container}>
-                <View style={styles.topSection}>
-                    <Text style={styles.textCenter}>You are leaving a review for</Text>
-                    <View style={styles.centerInRow}>
-                        <Image style={styles.roundImage}
-                            source={require('@assets/icon_profile.png')}/>
-                        <Text>Applicant Name</Text>
-                    </View>
-                </View>
-                <View style={styles.subContainer}>
-                    <Text>Applicant Name is good as...</Text>
-                    <View style={styles.wrapRow}>
-                        {this.state.goodAt.map((item,index) => {return(
-                            <TouchableOpacity key={index}
-                                activeOpacity={.9}
-                                style={[styles.tagsSelectNormal, this.checkActiveTag(item) && styles.tagsSelected]} 
-                                onPress={ () => this.selectedTag(item, index)} >
-                                <Text style={[styles.tagTitle, styles.btFontSize, this.checkActiveTag(item) && styles.tagTitleSelected]}>
-                                    {item.display_name}
-                                </Text>
-                            </TouchableOpacity>
-                        );})}
-                    </View>
-                    <TouchableOpacity activeOpacity={.9}
-                        style={[styles.tagsSelectNormal, {width:200}, !this.state.isEndorse && styles.tagsSelected]}
-                        onPress={ 
-                            () => this.setState((previousState) => {
-                                return {isEndorse:!previousState.isEndorse};
-                            })
-                        }>
-                        <Text style={[styles.tagTitle, styles.btFontSize, !this.state.isEndorse && styles.tagTitleSelected]}>
-                            Choose not to endorse
-                        </Text>
-                    </TouchableOpacity>
-                    <View style={styles.line}/>
-                    <Text style={{color:'rgb(193,193,193)'}}>How was your experience?</Text>
-                    <TextInput placeholder='Great talent to work with, was professional and able to perform as needed!'
-                        onChangeText={(textExperience) => {this.setState({textExperience})}}
-                        value={this.state.textExperience}
-                        multiline={true}
-                        style={styles.inputContainer}/>
-                </View>
-            </View>
-        );
+    componentWillUnmount(){
+        _SELF = null;
+    }
+
+    componentDidMount(){
+        GoogleAnalyticsHelper._trackScreenView('Review');         
     }
 
     checkActiveTag = (item) => {
@@ -89,6 +79,105 @@ export default class LeaveReview extends Component{
             goodAt: _tmp
         });
     }
+
+    submitReview = () => {
+        const { goBack } = this.props.navigation;
+        if(this.state.textExperience.val.trim() === ''){
+            this.setState({
+                textExperience:{
+                    val:'',
+                    isRequired:true
+                }
+            })
+            return;
+        }
+        if(this.props.navigation.state.params.reviewing){
+            return;
+        }else{
+            this.props.navigation.setParams({
+                reviewing: true
+            })
+        }
+        let type ='';
+        for(let i = 0; i < this.state.goodAt.length; i++){
+            if(this.state.goodAt[i].selected){
+                type = type + this.state.goodAt[i].talentType + (i === this.state.goodAt.length - 1?'':',');
+            }
+        }
+        let url = '/api/ratings/profiles';
+        let data = {
+            'review':this.state.textExperience.val,
+            'target_user':this.props.navigation.state.params.user.user._id,
+            'types':type,
+            'is_endorsed':false
+        };
+        postApi(url, JSON.stringify(data)).then((response) => {
+            if(response.code == 200){
+                DeviceEventEmitter.emit('reloadReview',{isReload: true});
+                goBack();
+            }
+            _SELF.props.navigation.setParams({
+                reviewing: false
+            })
+        });
+    }
+
+    _checkIsEmployer = () => {
+        try{
+            return _.head(this.props.navigation.state.params.user.user.activeUserRoles).role.name == EMPLOYER_TYPE;
+        }
+        catch(e){
+            return false;
+        }
+    }
+
+    render(){
+
+        let _placeHolder = 'Great talent to work with, was professional and able to perform as needed!';
+
+        if(this._checkIsEmployer()){
+            _placeHolder = 'Pleasure to work with';
+        }
+        console.log('_placeHolder == ',_placeHolder);
+        return(
+            <ScrollView style={styles.container}>
+                <View style={styles.topSection}>
+                    <Text style={styles.textCenter}>You are leaving a review for</Text>
+                    <View style={styles.centerInRow}>
+                        <Image style={styles.roundImage}
+                            source={this.state.userImage?{uri:this.state.userImage}:require('@assets/icon_profile.png')}/>
+                        <Text>{this.state.userName}</Text>
+                    </View>
+                </View>
+                <View style={styles.subContainer}>
+                    <Text>{this.state.userName} is good as...</Text>
+                    <View style={styles.wrapRow}>
+                        {this.state.goodAt.map((item,index) => {return(
+                            <TouchableOpacity key={index}
+                                activeOpacity={1}
+                                onPress={() => this.selectedTag(item, index)}
+                                style={[styles.tagsSelectNormal, this.checkActiveTag(item) && styles.tagsSelected]} >
+                                <Text style={[styles.tagTitle, styles.btFontSize, this.checkActiveTag(item) && styles.tagTitleSelected]}>
+                                    {Helper._capitalizeText(item.talentType)}
+                                </Text>
+                            </TouchableOpacity>
+                        );})}
+                    </View>
+                    <View style={styles.line}/>
+                    <Text style={{color: Colors.textBlack}}>How was your experience?</Text>
+                    <TextInput placeholder={_placeHolder}
+                        placeholderTextColor = { this.state.textExperience.isRequired ? 'red':'#B9B9B9' }
+                        onChangeText={ (text) => { this.setState({textExperience:{
+                            val:text
+                        }}) } }
+                        value = { this.state.textExperience.val }
+                        multiline = { true }
+                        style = { styles.inputContainer }
+                        textAlignVertical={'top'} />
+                </View>
+            </ScrollView>
+        );
+    }
 }
 
 
@@ -96,7 +185,8 @@ export default class LeaveReview extends Component{
 const styles = StyleSheet.create({
     ...TagsSelect,
     container:{
-        flex:1
+        flex:1,
+        backgroundColor:'rgb(255,255,255)'
     },
     subContainer:{
         flex:1, 
@@ -139,8 +229,10 @@ const styles = StyleSheet.create({
         borderRadius:5,
         padding:10,
         marginTop:10,
-        color:'rgb(193,193,193)',
+        // color:'rgb(193,193,193)',
+        color: Colors.textBlack,
         height:100,
-        backgroundColor:'rgb(246,246,2467)'
+        backgroundColor:'rgb(246,246,2467)',
+        fontSize:14
     },
 });

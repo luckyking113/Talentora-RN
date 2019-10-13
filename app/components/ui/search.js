@@ -4,13 +4,16 @@ import {
     TextInput,
     View,
     TouchableOpacity,
-    ActivityIndicator
+    ActivityIndicator,
+    Dimensions
 } from 'react-native'
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import Utilities from '@styles/extends/ultilities.style';
 import { Colors } from '@themes/index'
+
+const { width, height } = Dimensions.get('window') 
 
 
 class SearchBox extends React.Component {
@@ -19,13 +22,14 @@ class SearchBox extends React.Component {
         super(props);
 
         this.state = {
-            searchText: '',
+            searchText: this.props.prevText,
             // isLoading: false,
         }
+        // console.log('State:', this.props)
     }
 
     _clearSearch = () => {
-
+        // console.log('clear search');
         let alreadyEmpty = false;
 
         if(this.state.searchText==''){
@@ -47,13 +51,14 @@ class SearchBox extends React.Component {
         return (
 
             <View style={[styles.justFlexContainer, styles.marginTopSM, styles.mainHorizontalPaddingMD, styles.searchBoxContainer, this.props.margBot && styles.marginBotSM ]}>
-                <View style={[styles.justFlexContainer]}>
+                <View style={[styles.justFlexContainer, {width: width-30}]}>
                     <TextInput
                         value={this.state.searchText}
                         autoCapitalize="none"
                         placeholder={this.props.placeholder}
                         autoCorrect={false}
                         returnKeyType={'search'}
+                        underlineColorAndroid = 'transparent' 
                         //onFocus={() => this.updateText('onFocus')}
                         //onBlur={() => this.updateText('onBlur')}
                         onChangeText={(text) => this.setState({ searchText: text })}

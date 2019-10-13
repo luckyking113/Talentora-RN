@@ -3,47 +3,84 @@ import {
     StyleSheet,
     TouchableOpacity,
     PixelRatio,
-    Text
+    Text,
+    View,
+    DeviceEventEmitter
 } from 'react-native'
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import IconAwesome from 'react-native-vector-icons/FontAwesome';
+import { IconCustom } from '@components/ui/icon-custom';
 import { Colors } from '@themes/index';
 import { Helper, ChatHelper } from '@helper/helper';
-import SendBird from 'sendbird';
+// import SendBird from 'sendbird';
 import _ from 'lodash';
-const sb = null;
+// const sb = null;
 
 // const ICON_SIZE_ANDROID = __DEV__ ? 24 : PixelRatio.getPixelSizeForLayoutSize(24);
-const ICON_SIZE_ANDROID = 24;
+const ICON_SIZE_ANDROID = 22;
 
 class ButtonRight extends Component {
 
+    _goToScreen = () => {
+        const { icon, onPress, navigate, to, style , btnLabel, nav, chat_info, navigation, isFilter, filterType} = this.props;
+        if(!this.props.isReview){
+            if(isFilter){
+                // console.log("Filter: ", this.props.navigation);
+                if(filterType == 'discover'){
+                    navigate(to, {'filterType': filterType, 'tabType': this.props.navigation.state.params.tabType});                               
+                }
+                else{
+                    navigate(to, {'filterType': filterType});               
+                }
+            }
+            else{
+                let JobInfo;
+                if(nav)
+                    JobInfo = nav.state.params.job;
+                navigate(to, {'Job_Info': JobInfo});   
+            }
+
+
+        }else{
+            navigate(to, { 'user':this.props.user })
+        }
+    }
+
     render() {
         const { icon, onPress, navigate, to, style , btnLabel, nav, chat_info, navigation} = this.props
-        // console.log("navigation.state.params: ", nav)
-        let JobInfo;
-        if(nav)
-            JobInfo = nav.state.params.job;
+        // console.log("btn right navigation: ", navigation)
 
         let isChat = false;
         if(chat_info){
             // For Direct Message
-            sb = SendBird.getInstance();
+            // sb = SendBird.getInstance();
             isChat = true;
         }
 
         // For Edit Job Posted
-        return (<TouchableOpacity
-            style={[{ marginRight: 15 , flex: 1, flexDirection: 'row', alignItems: 'center'}, style]}
-            onPress={ () => isChat ? this.directToMessage() : navigate(to, {'Job_Info': JobInfo} )}
-        >
-            { icon ? <Icon
-                name={icon}
-                style={[ styles.icon ]}
-            /> : null }
-            
-            <Text style={[styles.btnLabel]}>{btnLabel}</Text> 
-        </TouchableOpacity>)
+        return (
+            <View style={{ flex: 1, flexDirection: 'row'}}>
+                <TouchableOpacity
+                    style={[{ marginRight: 15 , flex: 1, flexDirection: 'row', alignItems: 'center'}, style]}
+                    onPress={ () => isChat ? this.directToMessage() : this._goToScreen() }>
+                    { icon ? <IconCustom
+                        name={icon}
+                        style={[ styles.icon ]}
+                    /> : null }
+                    
+                    <Text style={[styles.btnLabel]}>{btnLabel}</Text> 
+            </TouchableOpacity>
+            {/* {icon == 'message-icon' &&
+                <TouchableOpacity
+                    style={[{ marginRight: 15 , flex: 1, flexDirection: 'row', alignItems: 'center'}, style]}
+                    onPress={ () => this.directToSpam() }>
+                        <IconAwesome name={'flag-o'}
+                            style={[ styles.icon, { marginLeft: 5 } ]} />
+                </TouchableOpacity>
+            } */}
+        </View>
+        )
     }
 
     directToMessage = () => {
@@ -51,43 +88,36 @@ class ButtonRight extends Component {
         // console.log('USER INFORMATION FOR CHAT : ', this.props); 
         // return;
 
+        const { chat_info} = this.props;
+        
+        // console.log("chat_info: ", chat_info)
+
         let userObj = {
-            id : this.props.chat_info.user._id,
-            cover : Helper._getCover(this.props.chat_info), 
-            full_name :  Helper._getUserFullName(this.props.chat_info.attributes), 
+            id : chat_info.user._id || chat_info.user,
+            cover : Helper._getCover(chat_info), 
+            full_name :  Helper._getUserFullName(chat_info.attributes), 
         }
         let _SELF = this;
-        ChatHelper._sendBirdLogin(function(sb){ 
-            ChatHelper._createChannel(sb, userObj, null, function(_channel){
-                // console.log('This is props: ', _SELF.props);
-                const { navigate, goBack, state } = _SELF.props.navigation;
 
-                let _tmpChatData = {
-                    name: userObj.full_name,
-                    channelUrl: _channel.url,
-                    chat_id: userObj.id,
-                }
-
-                let  _chkExistInChannel = _.head(ChatHelper._checkExistUserInChennel(userObj.id));
-
-                // console.log('_chkExistInChannel: ', _chkExistInChannel);
-                
-                let _paramObj = {
-                    message_data: _tmpChatData
-                };
-
-                // if(_.isEmpty(_chkExistInChannel)){
-                //     // navigate('Message',{message_data: _tmpChatData, resetScreen : 'RootScreen'}); 
-                //     _paramObj = _.extend({
-                //         routeIndex : 0,
-                //         resetScreen : 'MessageList',
-                //         routeKey : 'MessageList'
-                //     },_paramObj);
-                // }
-                navigate('Message',_paramObj); 
-            })
-        })
+        
+        const { navigate, goBack, state } = _SELF.props.navigation;
+        let _paramObj = {
+            message_data: {
+                name: userObj.full_name,
+                // channelUrl: _channel.url,
+                chat_id: userObj.id,
+            },
+            // direct_chat: true,
+            // user_info: userProfile,
+            userObj: userObj,
+        };
+        navigate('Message',_paramObj); 
     }
+
+    directToSpam = () => {
+        DeviceEventEmitter.emit('SpamReport');
+    }
+
 }
 
 const styles = StyleSheet.create({

@@ -11,11 +11,15 @@ import TagsSelect from '@styles/components/tags-select.style';
 
 import BoxWrap from '@styles/components/box-wrap.style';
 
-import { ChatHelper, Helper } from '@helper/helper';
+import { ChatHelper, Helper, GoogleAnalyticsHelper } from '@helper/helper';
 
 import _ from 'lodash'
 
-import CacheableImage from 'react-native-cacheable-image';
+import { CachedImage, ImageCache, CustomCachedImage } from "react-native-img-cache";
+import ImageProgress from 'react-native-image-progress';
+import {ProgressBar, ProgressCircle} from 'react-native-progress';
+
+// import CacheableImage from 'react-native-cacheable-image';
 
 // console.log(this);  
 
@@ -28,9 +32,13 @@ export default class MatchJobRow extends React.PureComponent {
 
     }
 
-    _getCover = (item) => {
+    _getCover = (item, isFirstError = false) => {
         const _objDetail = _.head(item.job_detail);
-        return _.head(_objDetail.reference_detail) ? {uri: _.head(_objDetail.reference_detail).thumbnail_url_link} : require('@assets/job-banner.jpg');
+
+        if(isFirstError)
+            return _.head(_objDetail.reference_detail) ? {uri: _.head(_objDetail.reference_detail).thumbnail_url_link+'.error.mp4'} : require('@assets/job-banner.jpg');
+        else
+            return _.head(_objDetail.reference_detail) ? {uri: _.head(_objDetail.reference_detail).thumbnail_url_link} : require('@assets/job-banner.jpg');
     }
 
     _getKinds = (item) => {
@@ -41,8 +49,9 @@ export default class MatchJobRow extends React.PureComponent {
     }
 
     _checkKindsMoreThenFour = (item) => {
+        // console.log(item.criteria.type);
         if(item.criteria)
-            return item.criteria.type>4;
+            return item.criteria.type.length > 3;
         else
             return false;
     }
@@ -72,10 +81,32 @@ export default class MatchJobRow extends React.PureComponent {
                                         style={[styles.bgCover, styles.resizeMode]}  
                                         source={ this._getCover(item) }
                                     />*/}
-                                    <CacheableImage 
+                                    <CustomCachedImage
+                                        style={[styles.bgCover, styles.resizeMode]} 
+                                        defaultSource={ require('@assets/job-banner.jpg') }
+                                        component={ImageProgress}
+                                        source={ this._getCover(item) } 
+                                        indicator={ProgressCircle} 
+                                        onError={(e) => {
+
+                                            {/* console.log('error image view post : ', e); */}
+                                            GoogleAnalyticsHelper._trackException('Job Listing - Talent == '); 
+
+                                            const _thumn = this._getCover(item).uri;
+
+                                            ImageCache.get().clear(_thumn).then(function(e){
+                                                console.log('clear thum ', e)
+                                                ImageCache.get().bust(_thumn, function(e){
+                                                    console.log('bust', e);
+                                                });
+                                            });
+
+                                        }}
+                                    />
+                                    {/*<CacheableImage 
                                         resizeMode="cover"
                                         style={[styles.bgCover, styles.resizeMode]}
-                                        source={ this._getCover(item) } />
+                                        source={ this._getCover(item) } />*/}
                                 </View>
 
                                 <View style={[ styles.fullWidthHeightAbsolute, styles.defaultContainer, styles.infoBottom, styles.mainVerticalPaddingSM, styles.mainHorizontalPaddingMD ]}>
@@ -85,7 +116,7 @@ export default class MatchJobRow extends React.PureComponent {
                                     <View style={[styles.tagContainerNormal,styles.paddingBotNavXS]}> 
 
                                         { this._getKinds(item).map((item_sub, index_sub) => {
-                                            if(index_sub<4){
+                                            if(index_sub<3){
                                                 return (
                                                     <TouchableOpacity
                                                         activeOpacity = {1}
@@ -108,7 +139,7 @@ export default class MatchJobRow extends React.PureComponent {
                                                 style={[styles.tagsSelectNormal, styles.tagsSelected, styles.noBorder, styles.noMargin, styles.marginTopXXS, {paddingHorizontal: 5,}]} 
                                             >
                                                 <Text style={[styles.tagTitle, styles.btFontSize, styles.tagTitleSizeSM, styles.tagTitleSelected]}>
-                                                    { this._getKinds(item).length - 4}+
+                                                    { this._getKinds(item).length - 3}+
                                                 </Text>
                                                 
                                             </TouchableOpacity>   

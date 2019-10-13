@@ -26,9 +26,13 @@ import ButtonRight from '@components/header/button-right'
 import ButtonLeft from '@components/header/button-left'
 
 import _ from 'lodash'
-import { UserHelper, StorageData, Helper } from '@helper/helper';
+import { UserHelper, StorageData, Helper, GoogleAnalyticsHelper } from '@helper/helper';
 
-import CacheableImage from 'react-native-cacheable-image';
+import { CachedImage, ImageCache, CustomCachedImage } from "react-native-img-cache";
+import ImageProgress from 'react-native-image-progress';
+import {ProgressBar, ProgressCircle} from 'react-native-progress';
+
+// import CacheableImage from 'react-native-cacheable-image';
 
 
 function mapStateToProps(state) {
@@ -75,20 +79,6 @@ class PeopleList extends React.PureComponent {
         super(props)
 
         this.state = {
-            allJobList1 : [{
-                id: 1,
-                title: 'Tara Jacobs',
-                cover: 'https://randomuser.me/api/portraits/women/15.jpg',
-                apply_count: 0,
-                // talent_type: _talentType,
-            },{
-                id: 2,
-                title: 'Bradley Garza',
-                cover: 'https://randomuser.me/api/portraits/men/83.jpg',
-                apply_count: 4,
-                // talent_type: _talentType,
-            }],
-
             allJobList: this.props.allData,
         }
         //console.log('all job list: ', this.state.allJobList);
@@ -124,35 +114,42 @@ class PeopleList extends React.PureComponent {
                                     {/*console.log('item : ',this.state.allJobList.length, " and " ,  index);*/}
                                     return (
                                         <TouchableOpacity
-                                            activeOpacity = {0.9} 
-                                            key={index}  
-                                            onPress={() => this.props.onPressItem(item)}
-                                            style={[ styles.boxWrapItem, styles.boxWrapItemTwoCol, index==0 && {  marginRight: 10 }]}   
-                                        >
-
-                                            <Image 
-                                                style={[styles.userAvatarFull, {height: 200, flex: 1 }]} 
-                                                source={{ uri: item.photo.thumbnail_url_link }}
-                                            />
-{/*
-                                            <CacheableImage 
-                                                //style={[styles.avatar, styles.mybgcover, styles.fullWidthHeightAbsolute]}
-                                                style={[styles.userAvatarFull, {height: 200, flex: 1 }]} 
-                                                //source={_cover}
-                                                source={{ uri: item.photo.thumbnail_url_link }}
+                                                activeOpacity = {0.9} 
+                                                key={index}  
+                                                onPress={() => this.props.onPressItem(item)}
+                                                style={[ styles.boxWrapItem, styles.boxWrapItemTwoCol, index==0 && {  marginRight: 10 }, {height: 200}]}   
                                             >
 
-                                                <CacheableImage
-                                                    style={styles.nestedImage}
-                                                    source={require('@assets/job-banner.jpg')}
-                                                >
-                                                </CacheableImage>
+                                            {/*<Image 
+                                                style={[styles.userAvatarFull, {height: 200, flex: 1 }]} 
+                                                source={{ uri: item.photo.thumbnail_url_link }}
+                                            />*/}
 
+                                            <CustomCachedImage
+                                                style={[styles.userAvatarFull, {height: 200, flex: 1 }]} 
+                                                defaultSource={ require('@assets/job-banner.jpg') }
+                                                component={ImageProgress}
+                                                source={ item.photo ? { uri: item.photo.thumbnail_url_link } : require('@assets/job-banner.jpg') } 
+                                                indicator={ProgressCircle}
+                                                onError={(e) => {
+        
+                                                    {/* console.log('error image view post : ', e); */}
+        
+                                                    GoogleAnalyticsHelper._trackException('People Listing == '); 
+        
+                                                    const _thumn = item.photo.thumbnail_url_link;
+                                                    
+                                                    ImageCache.get().clear(_thumn).then(function(e){
+                                                        console.log('clear thum ', e)
+                                                        ImageCache.get().bust(_thumn, function(e){
+                                                            console.log('bust', e);
+                                                        });
+                                                    });
+        
+                                                }}
+                                            />
 
-                                            </CacheableImage>*/}
-                    
-
-                                            <View style={[ styles.fullWidthHeightAbsolute, styles.defaultContainer, styles.infoBottom, styles.mainVerticalPaddingSM, styles.mainHorizontalPaddingMD ]}>
+                                            <View style={[ styles.fullWidthHeightAbsolute, styles.defaultContainer, styles.infoBottom, styles.mainVerticalPaddingSM, styles.mainHorizontalPaddingMD, {height: 200} ]}>
 
                                                 <Text style={[ {color: 'white', textAlign: 'left'}, styles.fontBold, styles.marginBotXXS ]}>{ Helper._getUserFullName(item.attributes) }</Text> 
 
@@ -163,11 +160,11 @@ class PeopleList extends React.PureComponent {
                                                     {UserHelper._getKind(item.attributes.kind.value).map((item_sub, index_sub) => {
                                                         {/*console.log('Index sub: ', index_sub);*/}
                                                         if(index_sub < 2){
-                                                            return (
+                                                            return ( 
                                                                 <TouchableOpacity
                                                                     activeOpacity = {1}
                                                                     key={ index_sub } 
-                                                                    style={[styles.tagsSelectNormal, styles.tagsSelected, styles.noBorder, styles.noMargin, styles.marginTopXXS, {paddingHorizontal: 5,}]} 
+                                                                    style={[styles.tagsSelectNormal, styles.tagsSelected, styles.noBorder, styles.noMargin, styles.marginTopXXS, {paddingHorizontal: 5}]} 
                                                                 >
                                                                     <Text style={[styles.tagTitle, styles.btFontSize, styles.tagTitleSizeSM, styles.tagTitleSelected, {fontSize:11}]}>   
                                                                         {Helper._capitalizeText(item_sub.display_name)}

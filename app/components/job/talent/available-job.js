@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import * as AuthActions from '@actions/authentication'
+
 import {
     View,
     Text,
@@ -33,14 +35,17 @@ import ButtonLeft from '@components/header/button-left'
 import SearchBox from '@components/ui/search'
 
 import _ from 'lodash'
-import { UserHelper, StorageData, Helper } from '@helper/helper';
+import { UserHelper, StorageData, Helper, GoogleAnalyticsHelper } from '@helper/helper';
 
 import ViewPostJob from '@components/job/talent-seeker/view-post-job'     
 
+import { CachedImage, ImageCache, CustomCachedImage } from "react-native-img-cache";
 
 import { getApi } from '@api/request';
 
 import MatchJobRow from '@components/job/comp/match-job-list'  
+
+import JobDataMockUpLoading from '@components/other/job-data-mock-up-loading'  
 
 
 function mapStateToProps(state) {
@@ -93,11 +98,16 @@ class AvailableJob extends Component {
         super(props)
 
         this.state = {
+            options:{
+                total: 0
+            },
+            filterData: null,
             offset: 0,
             page: 1,
-            limit: 4,
+            limit: 10,
             searchText: '',
             loading: false,
+            isFirstLoad: false,
             refreshing: false,
             extraData: [{_id : 1}],
             selected: (new Map(): Map<string, boolean>),
@@ -105,33 +115,7 @@ class AvailableJob extends Component {
             isPullRefresh: false,
             allJobList: [],
             allJobListOrigin: [],
-            allJobList1 : [{
-                id: 1,
-                title: 'Stunt Team For Doctor Strange',
-                cover: 'http://www.cheatsheet.com/wp-content/uploads/2016/04/doctor-strange-pic-full.jpg',
-                apply_count: 0,
-                talent_type: _talentType,
-            },{
-                id: 2,
-                title: 'Spider Man Home Coming Stunt',
-                cover: 'https://resizing.flixster.com/U-9mhXMwtyMI-TWXDCuLLAeENLs=/206x305/v1.bTsxMjM1MTUxMztqOzE3MzMyOzEyMDA7NzExOzEwODA',
-                apply_count: 4,
-                talent_type: _talentType,
-            },{
-                id: 3,
-                title: 'Thor Ragnarok Actor',
-                cover: 'http://media.comicbook.com/2017/03/thor-ragnarok-chris-hemsworth-237057.jpg',  
-                apply_count: 0,
-                talent_type: _talentType,
-            },{
-                id: 4,
-                title: 'Hollywood Movie Actor',
-                cover: 'http://static.metacritic.com/images/products/movies/6/77471222784c9946afc3c57c642024a3.jpg',
-                apply_count: 4,
-                talent_type: _talentType,
-            }]
         }
-
 
         // console.log('chunk: ', _.chunk(_test, 2));
 
@@ -139,7 +123,6 @@ class AvailableJob extends Component {
         // console.log('Check Employer: ',UserHelper._isEmployer());
 
     }
-
 
     static navigationOptions = ({ navigation }) => ({
             // title: '', 
@@ -164,24 +147,39 @@ class AvailableJob extends Component {
 
                 </View>
             ),
-        });
+    });
 
     componentWillMount(){
         let _SELF = this;
-        DeviceEventEmitter.addListener('refreshApplyList', (data) => {
+        DeviceEventEmitter.addListener('refreshJopListList', (data) => {
             _SELF._getVailableJob('', true);
         });
+
+        DeviceEventEmitter.addListener('FilterJob', (data) => {
+            // _SELF.jobFilter(data);
+            this.setState({
+                filterData: data.dataFilter,
+            }, function(){
+                _SELF._getVailableJob('', true);
+            })
+        })
+
     }
 
     // Fetch detail items
     // Example only options defined
     componentDidMount() {
-        this._getVailableJob()
+        this._getVailableJob();
 
+        // ImageCache.get().clear();
+        
+        // show filter
+        // this.props.navigation.setParams({})
     }
 
     componentWillUnmount(){
-        DeviceEventEmitter.removeListener('refreshApplyList');
+        DeviceEventEmitter.removeListener('refreshJopListList');
+        DeviceEventEmitter.removeListener('FilterJob');
     }
 
     PostAJob = () => {
@@ -197,10 +195,11 @@ class AvailableJob extends Component {
     }
 
     // get vailable job (all match job)
-    _getVailableJob = (_search = '', isLoading) => {
+    _getVailableJob = (_search = '', isLoading, isRefreshing=false) => {
+        // return;
         // /api/users/me/jobs
         let _SELF = this;
-        let _offset
+        let _offset;
         // console.log('Paging : ', this.state.page);
         if(this.state.refreshing || isLoading){
             _offset = 0;
@@ -211,44 +210,62 @@ class AvailableJob extends Component {
         else
             _offset = (this.state.page - 1) * this.state.limit;
 
-        let API_URL = '/api/users/me/jobs?offset='+ _offset +'&limit='+this.state.limit;
+        // let API_URL = '/api/users/me/jobs?offset='+ _offset +'&limit='+this.state.limit+'&sort=-created_at';
+        let API_URL = this._getURLJob(_offset);
 
         if(isLoading || this.state.searchText != ''){
             this.setState({ 
                 isLoading: true,
             })
-            API_URL += '&search=' + this.state.searchText || _search;
+            API_URL += '&search=' + encodeURI(this.state.searchText || _search);
         }
         
         // console.log('API_URL : ',API_URL);
 
-        getApi(API_URL).then((_response) => {
-            // console.log('All Available Job : ', _response);
+
+        getApi(API_URL, this).then((_response) => {
+            console.log('All Available Job : ', _response);
+
+            if(_response.code == 401)
+                return;
+
             if(_response.code == 200){
                 let _allAvailableJob = _response.result;
 
                 if(_allAvailableJob.length>0){
-
+                    console.log('have data');
+                    
                     // console.log('All Vailable Job : ', _SELF); 
-
+                    // console.log('refreshing :',_SELF.state.refreshing);
                     // let _offset = (this.state.page - 1) * this.state.limit
-                    if(_SELF.state.refreshing || isLoading || _SELF.state.allJobList.length == 0){
+                    if(isRefreshing || isLoading || _SELF.state.allJobList.length == 0){
                         _SELF.setState({
                             // allJobList: 
                             // allJobList: _.chunk(_allAvailableJob, 2)
                             allJobList: _allAvailableJob,
+                            options: _response.options,
                             page: _SELF.state.page+1,
-                            extraData: [{_id : _SELF.state.extraData++}],
+                            extraData: [{_id : _SELF.state.extraData++}], 
                         })
                     }
+                    // else if(this.options && this.options.total>10){
                     else{
-
                         _SELF.setState({
                             allJobList: [..._SELF.state.allJobList, ..._allAvailableJob],
                             page: _SELF.state.page+1
                         })
                     }
 
+                }
+                else{
+                    console.log('empty data');
+                    if((this.state.filterData || this.state.searchText) && !this.state.loading ){
+                        console.log('set to zero data');
+                        _SELF.setState({
+                            allJobList: [],
+                            page: 1 
+                        })
+                    }
                 }
 
                 // ($scope.cur_page - 1) * $scope.num_per_page
@@ -265,6 +282,7 @@ class AvailableJob extends Component {
             }
 
             _SELF.setState({
+                isFirstLoad: true,
                 isPullRefresh: false,
                 refreshing: false,
             })
@@ -273,11 +291,59 @@ class AvailableJob extends Component {
                 _SELF.setState({
                     loading: false
                 })
-            },1500)
+            },1000)
 
         });
+
+
+        // clear red dot when pull to refresh
+        if(isRefreshing){
+            DeviceEventEmitter.emit('clearBadgeNumber', {
+                tabType: 'JobList'
+            }); 
+        }
+
     }
 
+    _getURLJob = (_offset) =>{
+        if(this.state.filterData){
+            console.log('Data: ', this.state.filterData);
+            let _SELF = this;
+            let _dataFilter = this.state.filterData;
+
+            let _age = _dataFilter.age.val ? _dataFilter.age.val.split(' to ') : [];
+            let ageMinMax = {
+                    min_age: '',
+                    max_age: ''
+            }
+            if(_age.length == 2){
+                ageMinMax = {
+                    min_age: _age[0],
+                    max_age: _age[1],
+                }
+            }
+
+            let _country = _dataFilter.country.val.toLowerCase();
+            let _gender = _dataFilter.selectedGender.toLowerCase();
+            if(_gender == 'b')
+                _gender = '';
+            
+
+            let _talentCateSelected = _.filter(_.cloneDeep(_dataFilter.talent_cate), function(v,k){
+                return v.selected;
+            })
+            talentCateStringArray = _.map(_talentCateSelected, function(v, k) {
+                return v.category;
+            });
+
+            console.log('Age: ',_age, 'talenCate: ', talentCateStringArray);
+
+            return  '/api/jobs/filter?offset='+ _offset +'&limit='+ this.state.limit + '&type='+ talentCateStringArray +'&min_age='+ ageMinMax.min_age +'&max_age='+ ageMinMax.max_age +'&country='+ _country +'&gender='+_gender;
+        }
+        else{
+            return '/api/users/me/jobs?offset='+ _offset +'&limit='+this.state.limit+'&sort=-created_at';
+        }
+    }
 
     searchNow = (txtSearch, isEmpty=false) => {
         // console.log('Search Text: ', txtSearch);
@@ -285,6 +351,8 @@ class AvailableJob extends Component {
             this.setState({
                 searchText: txtSearch
             }, function(){
+
+                GoogleAnalyticsHelper._trackEvent('Search', 'Job', {text_search: txtSearch});                         
 
                 this._getVailableJob(txtSearch, true);
                 if(txtSearch == ''){
@@ -335,27 +403,34 @@ class AvailableJob extends Component {
     };
 
     testRefresh = () => {
-        // console.log('testRefresh');
+        console.log('testRefresh');
     }
 
     handleRefresh = () => { 
         // return;
         let that = this;
-        // console.log('handleRefresh');
+        console.log('handleRefresh');
         
         this.setState({
             refreshing: true,
             isPullRefresh: true,
         }, function(){
-            that._getVailableJob();
+
+            // setTimeout(function() {
+            that._getVailableJob('',false,true);
+            // }, 250);
+        
         })
         
     }
 
     handleLoadMore = () => {
-        // return;
+
+        if(this.state.options.total <= this.state.limit)
+            return;
+
         // console.log('handleLoadMore', this.state.loading);
-        // return;
+
         let that = this;
 
         if(!this.state.loading){
@@ -370,32 +445,68 @@ class AvailableJob extends Component {
 
     }
 
+    emptyComponent = () => {
+        return (
+            <View style={[ styles.defaultContainer, styles.mainScreenBg ]}>
+
+                <Text style={[styles.blackText, styles.btFontSize]}>
+                    No job has been found. 
+                </Text>
+
+            </View>
+        )
+    }
 
     render() {
+        if( !this.state.isFirstLoad && this.state.allJobList.length<=0)
+            return (
+                <View style={[ {flex: 1, paddingTop: 55} ]}>
+                    <JobDataMockUpLoading />
+                </View>
+            )
+        else{
+            if(_.isEmpty(this.state.allJobList) && this.state.page == 1)
+                return (
+                    <View  style={[ styles.justFlexContainer, {paddingTop: 50} ]}>
+                        <View style={[ styles.marginBotSM, {height: 50} ]}>
+                            <SearchBox placeholder={'Search'} prevText={this.state.searchText} onSubmit={this.searchNow} isLoading={this.state.isLoading} />
+                        </View>
+                        <View style={[ styles.defaultContainer, styles.mainScreenBg ]}>
 
-        return (
-            // <View style={[ styles.justFlexContainer, styles.mainScreenBg]}>  
+                            <Text style={[styles.blackText, styles.btFontSize]}>
+                                No job has been found. 
+                            </Text>
 
-                <FlatList
-                    data={_.chunk(this.state.allJobList, 2)}
-                    extraData={this.state.extraData}
-                    keyExtractor={this._keyExtractor}
-                    ListHeaderComponent={this.renderHeader}
-                    ListFooterComponent={this.renderFooter}
-                    renderItem={this._renderItem}
-                    removeClippedSubviews={false}
-                    viewabilityConfig={VIEWABILITY_CONFIG}
-                    onEndReachedThreshold={0.5}
-                    onEndReached={this.handleLoadMore}
+                        </View>
+                    </View>
+                )
+            else
+                return (
+                    <View style={[ styles.justFlexContainer, styles.mainScreenBg, {paddingTop: 50}]}>  
 
-                    refreshing={this.state.refreshing}
-                    onRefresh={this.handleRefresh}
-                />
+                        <FlatList
+                            
+                            data={_.chunk(this.state.allJobList, 2)}
+                            extraData={this.state.extraData}
+                            keyExtractor={this._keyExtractor}
+                            ListHeaderComponent={this.renderHeader}
+                            ListFooterComponent={this.renderFooter}
+                            ListEmptyComponent={this.emptyComponent}
+                            renderItem={this._renderItem}
+                            removeClippedSubviews={false}
+                            viewabilityConfig={VIEWABILITY_CONFIG}
+                            onEndReachedThreshold={5}
+                            onEndReached={this.handleLoadMore}
 
-            // </View>
-        );
-        
+                            refreshing={this.state.refreshing}
+                            onRefresh={this.handleRefresh}
+                        />
+
+                    </View>
+                );
+        }
     }
+
 }
 
 const styles = StyleSheet.create({ ...Styles, ...Utilities, ...FlatForm, ...BoxWrap, ...TagsSelect,
@@ -404,4 +515,4 @@ const styles = StyleSheet.create({ ...Styles, ...Utilities, ...FlatForm, ...BoxW
 
 // Smart Component
 // Fetches detail items and maps to component props
-export default connect(mapStateToProps)(AvailableJob)
+export default connect(mapStateToProps, AuthActions)(AvailableJob)

@@ -3,6 +3,12 @@ package com.talentora;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.inprogress.reactnativeyoutube.ReactNativeYouTube;
+import com.shahenlibrary.RNVideoProcessingPackage;
+import cl.json.RNSharePackage;
+import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
+import com.reactnative.ivpusic.imagepicker.PickerPackage;
+import com.idehub.GoogleAnalyticsBridge.GoogleAnalyticsBridgePackage;
 import com.rnfs.RNFSPackage;
 import com.brentvatne.react.ReactVideoPackage;
 import com.geektime.rnonesignalandroid.ReactNativeOneSignalPackage;
@@ -33,6 +39,12 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new ReactNativeYouTube(),
+            new RNVideoProcessingPackage(),
+            new RNSharePackage(),
+            new ReactNativePushNotificationPackage(),
+            new PickerPackage(),
+            new GoogleAnalyticsBridgePackage(),
             new RNFSPackage(),
             new ReactVideoPackage(),
             new ReactNativeOneSignalPackage(),

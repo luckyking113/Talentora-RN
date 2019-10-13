@@ -15,12 +15,12 @@ class ButtonTextRight extends Component {
     render() {
 
         const { icon, onPress, navigate, callBack, style, btnLabel } = this.props
-        console.log('callBack : ',callBack);
+        // console.log('callBack : ',callBack);
         return (<TouchableOpacity
             style={[{ marginRight: 15 }, style]}
             onPress={ () => {
-                    console.log('_SELF', callBack);
-                    {/*callBack.handleFunc() */}
+                    // console.log('callBack _SELF', callBack);
+                    callBack.handleFunc()
                 }}
         >
             <Text style={[styles.txt]}>{btnLabel}</Text>
@@ -38,8 +38,9 @@ const styles = StyleSheet.create({
     },
 
     txt: {
-        fontSize: 16,
-        fontWeight: 'bold',
+        fontSize: 14,
+        // fontWeight: 'bold',
+        color: 'red'
     }
 
 })

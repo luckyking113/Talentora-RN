@@ -3,6 +3,5 @@ export const PUSH_DETAIL = 'PUSH_DETAIL'
 export const SET_DETAIL_STATE = 'SET_DETAIL_STATE'
 export const SET_USER = 'SET_USER'
 export const MESSAGE = 'MESSAGE'
-
-export const SEND_BRID_APP_ID = '1F0C6607-2BD0-45BE-90AC-8602AEB39A46';
-// export const PULLDOWN_DISTANCE = 40;
+export const NOTIFICATION = 'NOTIFICATION'
+export const APP_OPTION = 'APP_OPTION'

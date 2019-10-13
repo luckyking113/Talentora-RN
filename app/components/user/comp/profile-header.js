@@ -1,29 +1,30 @@
 import React, {Component} from 'react'
-// import {connect} from 'react-redux'
-// import * as DetailActions from '@actions/detail'
+import {connect} from 'react-redux'
+import * as DetailActions from '@actions/detail'
 import {
     View,
     Text,
-    // TextInput,
+    TextInput,
     StyleSheet,
-    // Button,
+    Button,
     ScrollView,
     TouchableOpacity,
-    // TouchableWithoutFeedback,
+    TouchableWithoutFeedback,
     Image,
-    // StatusBar,
-    // Alert,
-    // Picker,
-    // Platform,
+    StatusBar,
+    Alert,
+    Picker,
+    Platform,
     Dimensions,
-    // InteractionManager,
-    // FlatList,
+    InteractionManager,
+    FlatList,
     Modal,
-    // ActivityIndicator
+    ActivityIndicator
 } from 'react-native'
 
-// import {view_profile_category} from '@api/response'
+import {view_profile_category} from '@api/response'
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import IconAwesome from 'react-native-vector-icons/FontAwesome';
 import Styles from '@styles/card.style'
 import {Colors} from '@themes/index';
 import FlatForm from '@styles/components/flat-form.style';
@@ -31,20 +32,24 @@ import TagsSelect from '@styles/components/tags-select.style';
 import BoxWrap from '@styles/components/box-wrap.style';
 import Utilities from '@styles/extends/ultilities.style';
 
-// import ButtonRight from '@components/header/button-right'
-// import ButtonTextRight from '@components/header/button-text-right'
-// import ButtonLeft from '@components/header/button-left'
-// import ButtonBack from '@components/header/button-back'
+import ButtonRight from '@components/header/button-right'
+import ButtonTextRight from '@components/header/button-text-right'
+import ButtonLeft from '@components/header/button-left'
+import ButtonBack from '@components/header/button-back'
 
-import {UserHelper, StorageData, Helper, ChatHelper} from '@helper/helper';
+import {UserHelper, StorageData, Helper, ChatHelper, GoogleAnalyticsHelper} from '@helper/helper';
 import SendBird from 'sendbird';
 import _ from 'lodash'
 
 import Carousel from 'react-native-looped-carousel';
 
 import moment from 'moment'
+import { getApi, postApi } from '@api/request'
 
-import CacheableImage from 'react-native-cacheable-image';
+// import CacheableImage from 'react-native-cacheable-image';
+import { CachedImage, ImageCache, CustomCachedImage } from "react-native-img-cache";
+import ImageProgress from 'react-native-image-progress';
+import {ProgressBar, ProgressCircle} from 'react-native-progress';
 
 const {width, height} = Dimensions.get('window')
 
@@ -55,7 +60,7 @@ export default class ProfileHeader extends Component {
     constructor(props) {
         super(props);
 
-        sb = SendBird.getInstance();
+        // sb = SendBird.getInstance();
         var a = moment([moment().year(), 0]);
         var b = moment([UserHelper.UserInfo.profile.attributes.date_of_birth.value, 0]);
         // console.log('Years Old ',a.diff(b, 'years')); 
@@ -63,22 +68,32 @@ export default class ProfileHeader extends Component {
 
         let _profileAttr = UserHelper.UserInfo.profile;
         // console.log('testindsfkjsdlf : ',UserHelper.UserInfo.profile);
-        if(!UserHelper._isMe(this.props.userInfo._id)){
+        let is_Employer = UserHelper._isEmployer();
+        if(!UserHelper._isMe(this.props.userInfo.user)){
             _profileAttr = this.props.userInfo;
+            b = moment([_profileAttr.attributes.date_of_birth.value, 0]);
+            if(_profileAttr.user.activeUserRoles)
+                is_Employer = _profileAttr.user.activeUserRoles[0].role.name === 'employer';
         }
-
-        // console.log('_Profile Attr:', _profileAttr);
-
+        console.log("Check Empty Value",this._chkEmptyVal(_profileAttr.attributes.language.value));
+        // console.log('Profile Attribute: ', _profileAttr);
         this.state = {
             modalPhotoGallery: false,
             moreInfo: [
                 {
                     label: 'Country',
-                    value: _profileAttr.country || 'N/A',
+                    value: _profileAttr.attributes ? (_profileAttr.attributes.country ? (_profileAttr.attributes.country.value ? _profileAttr.attributes.country.value : 'N/A'): 'N/A'): 'N/A',
+                    // value: _profileAttr.country || 'N/A',
+                },
+                {
+                    label: 'Company',
+                    value: _profileAttr.attributes.company ? this._chkEmptyVal(_profileAttr.attributes.company.value) : 'N/A',
+                    isEmployer: !is_Employer,
                 },
                 {
                     label: 'Language',
-                    value: _profileAttr.attributes.language ? this._chkEmptyVal(_profileAttr.attributes.language.value) : 'N/A',
+                    value: _profileAttr.attributes.language ? this._chkEmptyVal(_profileAttr.attributes.language.value).replace(/,/g, ', ') : 'N/A',
+                    isEmployer: is_Employer,
                 },
                 {
                     label: 'Gender',
@@ -87,113 +102,142 @@ export default class ProfileHeader extends Component {
                 {
                     label: 'Age',
                     // value: moment("01/01/"+_profileAttr.attributes.date_of_birth.value, "MM/DD/YYYY").month(0).from(moment().month(0),true),
-                    value: a.diff(b, 'years'),
+                    value: a.diff(b, 'years').toString(),
                 },
                 {
                     label: 'Ethnicity',
                     value: _profileAttr.attributes.ethnicity ? this._chkEmptyVal(_profileAttr.attributes.ethnicity.value) : 'N/A',
+                    isEmployer: is_Employer,
                 },
                 {
                     label: 'Height',
                     value: _profileAttr.attributes.height ? this._chkEmptyVal(_profileAttr.attributes.height.value) : 'N/A',
+                    isEmployer: is_Employer,
                 },
                 {
                     label: 'Weight',
                     value: _profileAttr.attributes.weight ? this._chkEmptyVal(_profileAttr.attributes.weight.value) : 'N/A',
+                    isEmployer: is_Employer,
                 },
                 {
                     label: 'Hair color',
                     value: _profileAttr.attributes.hair_color ? this._chkEmptyVal(_profileAttr.attributes.hair_color.value) : 'N/A',
+                    isEmployer: is_Employer,
                 },
                 {
                     label: 'Eye color',
                     value: _profileAttr.attributes.eye_color ? this._chkEmptyVal(_profileAttr.attributes.eye_color.value) : 'N/A',
+                    isEmployer: is_Employer,
                 },
             ],
             // isHasPhotos: (UserHelper._isMe(this.props.userInfo.user) ? UserHelper.UserInfo.photos>0 : this.props.userInfo.photos),
             isHasPhotos: true,
+            reviewCount: 0,
+            showFavIcon: !UserHelper._isMe(this.props.userInfo.user),
+            isFavorite: false,
+            isRequestingFavorite: false
         }
 
         // console.log('Sort by featured photo : ',_.sortBy(this.props.userInfo.photos, function(v){ return !v.is_featured; }));
 
-        // console.log('Profile Header : ', this.props.userInfo);
+        // console.log('Profile Header : ', this.props);
 
     }
-
 
     _chkEmptyVal = (_val) => {
         return !_.isEmpty(_val) ? _val : 'N/A';
     }
 
-    _createChannel(_item) {
+    // _createChannel(_item) {
 
-        const {navigate, goBack, state} = this.props.navigation;
+    //     const {navigate, goBack, state} = this.props.navigation;
 
-        let name = '';
-        let _channelURL = '';
-        let userIds = [this.props.id];
-        let coverFile = this.props.cover;
-        let data = '{}';
-        let customType = '';
+    //     let name = '';
+    //     let _channelURL = '';
+    //     let userIds = [this.props.id];
+    //     let coverFile = this.props.cover;
+    //     let data = '{}';
+    //     let customType = '';
 
-        sb
-            .GroupChannel
-            .createChannelWithUserIds(userIds, true, name, coverFile, data, customType, function (createdChannel, error) {
+    //     sb
+    //         .GroupChannel
+    //         .createChannelWithUserIds(userIds, true, name, coverFile, data, customType, function (createdChannel, error) {
 
-                console.log('Create Channed 1-to-1 : ', channel);
+    //             console.log('Create Channed 1-to-1 : ', channel);
 
-                if (error) {
-                    console.error(error);
-                    return;
-                }
-            });
-    }
+    //             if (error) {
+    //                 console.error(error);
+    //                 return;
+    //             }
+    //         });
+    // }
 
     directToMessage = () => {
         // Alert.alert('Bring me to message page'); console.log('Talent Feed List : ',
         // this.props);
+
+        GoogleAnalyticsHelper._trackEvent('Chat', 'Chat Button Click From Profile', {
+            user_id: this.props.userInfo.user._id,
+            full_name: Helper._getUserFullName(this.props.userInfo.attributes)
+        });                                                 
+
         let userObj = {
             id: this.props.userInfo.user._id,
             cover: Helper._getCover(this.props.userInfo),
             full_name: Helper._getUserFullName(this.props.userInfo.attributes)
         }
         let _SELF = this;
-         
-        // let sb = SendBird.getInstance();
-        ChatHelper._sendBirdLogin(function(sb){ 
-            // console.log('.... sb : ', sb);
-            ChatHelper._createChannel(sb, userObj, null, function (_channel) {
-                // console.log('This is props: ', _SELF.props);
 
-                const {navigate, goBack, state} = _SELF.props.navigation;
+        const {navigate, goBack, state} = _SELF.props.navigation;
+        console.log('This is state: ', state);
 
-                let _tmpChatData = {
+        if(state.params.is_direct_chat){
+            goBack();
+            
+        }else{
+
+
+            const { navigate, goBack, state } = _SELF.props.navigation;
+            let _paramObj = {
+                message_data: {
                     name: userObj.full_name,
-                    channelUrl: _channel.url,
-                    chat_id: userObj.id
-                }
-
-                let _chkExistInChannel = _.head(ChatHelper._checkExistUserInChennel(userObj.id));
-
-                // console.log('_chkExistInChannel: ', _chkExistInChannel);
-
-                let _paramObj = {
-                    message_data: _tmpChatData
-                };
-
-                // if(_.isEmpty(_chkExistInChannel)){     // navigate('Message',{message_data:
-                // _tmpChatData, resetScreen : 'RootScreen'});     // _paramObj = _.extend({
-                // //     routeIndex : 0,     //     resetScreen : 'MessageList',     //
-                // routeKey : 'MessageList'     // },_paramObj); }
-                navigate('Message', _paramObj);
-            })
-        })
-
+                    // channelUrl: _channel.url,
+                    chat_id: userObj.id,
+                },
+                // direct_chat: true,
+                // user_info: userProfile,
+                userObj: userObj,
+            };
+            navigate('Message',_paramObj); 
+            
+        }
     }
 
     directToEdit = () => {
         const { navigate, goBack, state } = this.props.navigation;
         navigate('EditProfile');
+    }
+
+    directToReview = () => {
+        const { navigate, goBack, state } = this.props.navigation;
+        navigate('Review',{'user':this.props.userInfo});
+    }
+
+    requestFavorite = () => {
+        let _SELF = this;        
+        if(this.state.isRequestingFavorite) return;
+        this.setState({
+            isFavorite: !this.state.isFavorite,
+            isRequestingFavorite: true
+        }, () => {
+            let url = '/api/favorites/' + this.props.userInfo.user._id;
+            postApi(url).then((response) => {
+                console.log('request', url, response);
+                _SELF.setState({
+                    isRequestingFavorite: false
+                });            
+            });
+        });
     }
 
     // filter for carousel to show featured photo first
@@ -206,13 +250,39 @@ export default class ProfileHeader extends Component {
         return _tmp;
     }
 
+    componentWillMount(){
+        // https://github.com/wcandillon/react-native-img-cache
+        // Remove cache entries and all physical files.
+        // ImageCache.get().clear();
+    }
+
+    componentDidMount(){
+        this.getReviewCount();
+    }
+
+    getReviewCount = () => {
+        let _SELF = this;
+        let url = '/api/ratings/profiles/?limit=1&target_user=';
+        if(this.props.userInfo.user._id){
+            url = url + this.props.userInfo.user._id;
+        }else{
+            url = url + this.props.userInfo.user;
+        }
+        getApi(url).then((response) => {
+            if(response.options.total && this.refs.review_button)
+                _SELF.setState({
+                    reviewCount:response.options.total
+                });
+        });
+    };
+
     render() {
 
         // {console.log("This is the information of the user: ", this.props.userInfo)}
 
         let _cover = '';
 
-        // if me get my cover
+        // if me get my cover 
         if(UserHelper._isMe(this.props.userInfo.user)){
             _cover = UserHelper._getCover('preview_url_link') ? { uri: UserHelper._getCover('preview_url_link') } : require('@assets/img-default.jpg');
             // _cover = require('@assets/img-default.jpg');
@@ -229,20 +299,28 @@ export default class ProfileHeader extends Component {
         return (
 
                 <View style={[styles.topSection]}>
-
+                    
                     <Modal
                     animationType={"fade"}
                     //animationType={"slide"}
                     transparent={false}
                     visible={this.state.modalPhotoGallery}
-                    onRequestClose={() => {alert("Modal has been closed.")}}
+                    onRequestClose={() => {}}
                     >
 
                         <TouchableOpacity   
                             style={[ {zIndex: 99,position: 'absolute', top: 0, right:0, backgroundColor: 'transparent'} ]}
-                            onPress={()=> { this.setState({
-                                modalPhotoGallery: false 
-                            }) }}
+                            onPress={()=> { 
+                                
+                                GoogleAnalyticsHelper._trackEvent('Profile', 'View Gallery Image');                                         
+
+                                if(this.getPhotosSortByFeature().length > 0){
+                                    this.setState({
+                                        modalPhotoGallery: false 
+                                    });
+                                }
+                                 
+                            }}
                             activeOpacity={.8} >
                             <Icon name={'close'} style={styles.closeButton} />
                         </TouchableOpacity>
@@ -259,16 +337,20 @@ export default class ProfileHeader extends Component {
                             {this.state.isHasPhotos ? this.getPhotosSortByFeature()
                                 .map((item, index) => {
                                     return (
-                                        <CacheableImage 
-                                            key={index}
-                                            style={{
-                                                flex: 1,
-                                                height: height,
-                                                width: width,
-                                                resizeMode: 'contain',
-                                                alignSelf: 'center'
-                                            }}
-                                            source={{ uri: item.preview_url_link }}
+
+                                        <CustomCachedImage
+                                        key={index}
+                                        style={{
+                                            flex: 1,
+                                            height: height,
+                                            width: width,
+                                            resizeMode: 'contain',
+                                            alignSelf: 'center'
+                                        }}
+                                        defaultSource={ require('@assets/img-default.jpg') }
+                                        component={ImageProgress}
+                                        source={{ uri: item.preview_url_link }} 
+                                        indicator={ProgressCircle} 
                                         />
                                     );
                                 })
@@ -283,13 +365,37 @@ export default class ProfileHeader extends Component {
                             }
                         </Carousel>
                     </Modal>
-
-                    <CacheableImage 
+                        {/*
+                    <Image 
                         //checkNetwork={false} 
                         //networkAvailable={true}
                         resizeMode="cover"
                         style={[styles.avatar, styles.mybgcover, styles.fullWidthHeightAbsolute]}
                         source={_cover}
+                        />*/}
+
+                        <CustomCachedImage
+                            style={[styles.avatar, styles.mybgcover]}
+                            defaultSource={ require('@assets/img-default.jpg') }
+                            component={ImageProgress}
+                            source={ _cover } 
+                            indicator={ProgressCircle} 
+                            onError={(e) => {
+            
+                                {/* console.log('error image view post : ', e); */}
+
+                                GoogleAnalyticsHelper._trackException('People Listing == '); 
+
+                                const _thumn = _cover.uri;
+                                
+                                ImageCache.get().clear(_thumn).then(function(e){
+                                    console.log('clear thum ', e)
+                                    ImageCache.get().bust(_thumn, function(e){
+                                        console.log('bust', e);
+                                    });
+                                });
+
+                            }}
                         />
                     
 
@@ -312,7 +418,7 @@ export default class ProfileHeader extends Component {
                                 modalPhotoGallery: true 
                             }) }}
                             style={{
-                            width: 35,
+                            minWidth: 35,
                             padding: 5,
                             margin: 15,
                             backgroundColor: 'rgb(215, 188, 177)',
@@ -325,6 +431,7 @@ export default class ProfileHeader extends Component {
                         }}>
                             <Text
                                 style={{
+                                margin:5,
                                 color: 'rgb(74, 74, 74)',
                                 textAlign: 'center',
                                 fontWeight: 'bold'
@@ -389,12 +496,15 @@ export default class ProfileHeader extends Component {
 
                                     { this.state.moreInfo.map((item, index) =>{
                                         {/*console.log(item);*/}
-                                        return(
-                                            <View key={index} style={[ styles.boxWrapItem, styles.boxWrapItemNoWrap, styles.moreInfoBox, {height: null} ]}>
-                                                <Text style={[ styles.moreInfoBoxLabel ]}>{item.label}</Text>
-                                                <Text style={[ styles.moreInfoBoxValue,  ]}>{item.value}</Text>
-                                            </View>
-                                        )
+                                        if(!item.isEmployer)
+                                            return(
+                                                <View key={index} style={[ styles.boxWrapItem, styles.boxWrapItemNoWrap, styles.moreInfoBox, {height: null} ]}>
+                                                    <Text style={[ styles.moreInfoBoxLabel ]}>{item.label}</Text>
+                                                    <Text style={[ styles.moreInfoBoxValue,  ]}>{item.value}</Text>
+                                                </View>
+                                            )
+                                        else
+                                            return null;
 
                                     })}
                                 </View>
@@ -427,6 +537,18 @@ export default class ProfileHeader extends Component {
                                     <Text style={[styles.flatBtnText, styles.btFontSize]}>8 Reviews</Text>
                                 </TouchableOpacity>*/}
 
+                                <TouchableOpacity
+                                        activeOpacity={.8}
+                                        style={[styles.btnMessage, styles.marginTopMD,  {width: 130, padding: 0}]}
+                                        onPress=
+                                        {() => this.directToReview() }>
+                                        <Text
+                                            ref={'review_button'}
+                                            style={[styles.flatBtnText, styles.btFontSiz]}>{
+                                                this.state.reviewCount === 0?'':this.state.reviewCount + ' '}Review
+                                        </Text>
+                                </TouchableOpacity>
+
                                 {/*{console.log('User Id: ', this.props.userInfo._id , ', and ', UserHelper.UserInfo.profile._id)}*/}
 
                                 {!Helper._isOtherUser(this.props.userInfo._id)
@@ -440,7 +562,7 @@ export default class ProfileHeader extends Component {
                                                 styles.btFontSize, {
                                                     color: Colors.buttonColor
                                                 }
-                                            ]}>Message</Text>
+                                            ]}>Chat</Text>
                                         </TouchableOpacity>
 
                                     : <TouchableOpacity
@@ -457,6 +579,14 @@ export default class ProfileHeader extends Component {
                                         ]}>Edit Profile</Text>
                                     </TouchableOpacity>
                                 }
+                                {/* {this.state.showFavIcon &&
+                                    <TouchableOpacity   
+                                        style={{ alignItems:'center', justifyContent:'center', marginTop: 20, marginLeft: 20 }}
+                                        onPress={ () => this.requestFavorite() }
+                                        activeOpacity={.8} >
+                                        <IconAwesome name={this.state.isFavorite?'heart':'heart-o'} style={[styles.heartIcon, {color:this.state.isFavorite?Colors.buttonColor:'white'}]} />
+                                    </TouchableOpacity>
+                                } */}
                             </View>
 
                         </View>
@@ -468,6 +598,7 @@ export default class ProfileHeader extends Component {
 
     }
 }
+
 var styles = StyleSheet.create({
     ...Styles,
     ...Utilities,
@@ -484,7 +615,7 @@ var styles = StyleSheet.create({
     },
 
     topSection: {
-        height: height - 113,
+        height: height - (Helper._isIOS() ? 113 : 125),
         flex: 1,
         justifyContent: 'flex-end'
     },
@@ -581,6 +712,10 @@ var styles = StyleSheet.create({
         marginTop: 30,
         alignSelf: 'flex-end',
         fontSize:20
+    },
+    heartIcon: {
+        textAlign: 'center',
+        fontSize: 30,
     },
     modal: {
         justifyContent: 'center',

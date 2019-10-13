@@ -1,27 +1,29 @@
 import React from 'react'
 import {
-    TabNavigator,
+    NavigationActions,
     createStackNavigator
 } from 'react-navigation';
 
 import { Colors } from '@themes/index';
 
-// import ButtonRight from '@components/header/button-right'
-// import ButtonLeft from '@components/header/button-left'
+import ButtonRight from '@components/header/button-right'
+import ButtonLeft from '@components/header/button-left'
 
 // tabel (user)
-// import Videos from '@components/discovery/video'
-// import People from '@components/discovery/people'
+import Videos from '@components/discovery/video'
+import People from '@components/discovery/people'
 import Discovery from '@components/discovery/discovery'
 
-// import ProfileUser from '@components/user/profile'
-// import MessageDetail from '@components/message/message'
-
+import ProfileUser from '@components/user/profile'
+import MessageDetail from '@components/message/message'
+import Review from '@components/user/review';
+import LeaveReview from '@components/user/leave-review';
+import VideoScreen from '@components/discovery/video-view';
 
 
 // Tabs
-// import Tab from '@components/tabs/tab' 
-// import TabItem from '@components/tabs/tab-item'
+import Tab from '@components/tabs/tab' 
+import TabItem from '@components/tabs/tab-item'
 
 import { transparentHeaderStyle, defaultHeaderStyle, titleStyle } from '@styles/components/transparentHeader.style';
 
@@ -99,7 +101,8 @@ const navOptions =  {
 
 // }, options);
 
-export default createStackNavigator({
+// export default StackNavigator({
+const discoveryStack = createStackNavigator({
 
     Discovery:   { 
         screen: Discovery,
@@ -107,19 +110,56 @@ export default createStackNavigator({
             ...navOptions,
         })
      },
-    // Profile:   { 
-    //     screen: ProfileUser,
+    Profile:   { 
+        screen: ProfileUser,
+        navigationOptions: ({ navigation }) => ({ 
+            ...navOptions,
+        })
+    },
+    Review:{
+        screen:Review,
+        navigationOptions: ({ navigation }) => ({ 
+            ...navOptions,
+        })
+    },
+    LeaveReview:{
+        screen:LeaveReview,
+        navigationOptions: ({ navigation }) =>  ({  
+            ...navOptions,
+        })
+    },
+    Message:   { 
+        screen: MessageDetail,
+        navigationOptions: ({ navigation }) => ({ 
+            ...navOptions,
+        })
+    },
+    // VideoScreen:   { 
+    //     screen: VideoScreen,
     //     navigationOptions: ({ navigation }) => ({ 
     //         ...navOptions,
+    //         headerVisible: false, 
     //     })
     // },
-    //  Message:   { 
-    //     screen: MessageDetail,
-    //     navigationOptions: ({ navigation }) => ({ 
-    //         ...navOptions,
-    //     })
-    //  },
     // Videos:   { screen: Videos },
     // People:   { screen: People },
 
 }, optionsStack);
+
+
+
+const navigateOnce = (getStateForAction) => (action, state) => {
+  const {type, routeName} = action;
+  return (
+    state &&
+    type === NavigationActions.NAVIGATE &&
+    routeName === state.routes[state.routes.length - 1].routeName
+  ) ? null : getStateForAction(action, state);
+  // you might want to replace 'null' with 'state' if you're using redux (see comments below)
+};
+
+// console.log('discoveryStack :',discoveryStack);
+
+discoveryStack.router.getStateForAction = navigateOnce(discoveryStack.router.getStateForAction);
+
+export default discoveryStack;

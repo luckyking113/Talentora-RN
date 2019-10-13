@@ -13,11 +13,13 @@ import {
 } from 'react-native'
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import Styles from '../../styles/card.style'
-import { headerStyle, titleStyle } from '../../styles/header.style'
+import Styles from '@styles/card.style'
+import Utilities from '@styles/extends/ultilities.style';
+
+import { headerStyle, titleStyle } from '@styles/header.style'
 import ButtonRight from '../header/button-right'
 import ButtonLeft from '../header/button-left'
-import * as DetailActions from '../../actions/detail'
+import * as DetailActions from '@actions/detail'
 
 function mapStateToProps(state) {
     return {
@@ -27,23 +29,35 @@ function mapStateToProps(state) {
 
 class Home extends Component {
 
-    static navigationOptions = {
-        title: 'Talentora',
-        headerStyle:headerStyle,
-        headerTitleStyle:titleStyle,        
-        headerRight: ({ state, setParams, navigate }) => (
-            <ButtonRight
-                icon="add"
-                navigate={navigate}
+    static navigationOptions = ({ navigation }) => ({
+            // title: '', 
+            // headerVisible: true,
+            headerTitle: 'Talentora',
+            headerLeft: (<ButtonLeft
+                icon="person-add"
+                navigate={navigation.navigate}
                 to="Settings"
-            />
-            /*left: (<ButtonLeft
-                icon="menu"
-                navigate={navigate}
-                to="DrawerOpen"
-            />)*/
-        )
-    }
+            />),
+            headerRight: (
+                
+                <View style={[styles.flexVerMenu, styles.flexCenter]}>
+
+                    <ButtonRight
+                        icon="add"
+                        style={{marginRight: 10}}   
+                        navigate={navigation.navigate}
+                        to="Settings"
+                    />
+
+                    <ButtonRight
+                        icon="menu"
+                        navigate={navigation.navigate}
+                        to="Settings"
+                    />
+
+                </View>
+            ),
+        });
 
     // Fetch detail items
     // Example only options defined
@@ -56,7 +70,7 @@ class Home extends Component {
         // StatusBar.setBarStyle('default',true);
         const { detail } = this.props
         const { navigate, goBack } = this.props.navigation
-
+        console.log(this.props)
         if (!detail.length)
             return (<View><Text>Loading...</Text></View>)
 
@@ -84,7 +98,7 @@ class Home extends Component {
                                                 style={styles.userAvatar}
                                                 source={{uri: item.url}}
                                             />
-                                        </View>
+                                        </View>  
                                         <Text style={[styles.userName]}>{ item.title }</Text>
                                     </View>
                                     <View style={[styles.userAction]}>
@@ -106,7 +120,7 @@ class Home extends Component {
     }
 }
 
-const styles = StyleSheet.create({ ...Styles,
+const styles = StyleSheet.create({ ...Styles, ...Utilities,
 
 })
 

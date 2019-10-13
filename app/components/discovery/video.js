@@ -1,33 +1,35 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 // import * as DetailActions from '@actions/detail'
+import * as BadgeNotification from '@actions/notification'
+
 import {
     View,
-    // Text,
-    // TextInput,
+    Text,
+    TextInput,
     StyleSheet,
-    // Button,
-    // ScrollView,
-    // TouchableOpacity,
-    // TouchableWithoutFeedback,
-    // Image,
-    // StatusBar,
-    // Alert,
-    // Picker,
-    // Platform,
-    // Modal,
+    Button,
+    ScrollView,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    Image,
+    StatusBar,
+    Alert,
+    Picker,
+    Platform,
     Dimensions,
-    // InteractionManager,
+    InteractionManager,
     FlatList,
-    ActivityIndicator
+    ActivityIndicator,
+    DeviceEventEmitter
 } from 'react-native'
 
-// import { view_profile_category } from '@api/response'
+import { view_profile_category } from '@api/response' 
 
-// import Video from 'react-native-video';
+import Video from 'react-native-video';
 
 
-// import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import Styles from '@styles/card.style'
 import { Colors } from '@themes/index';
 import FlatForm from '@styles/components/flat-form.style';
@@ -35,30 +37,35 @@ import TagsSelect from '@styles/components/tags-select.style';
 import BoxWrap from '@styles/components/box-wrap.style';
 import Utilities from '@styles/extends/ultilities.style'; 
 
-// import ButtonRight from '@components/header/button-right'
-// import ButtonTextRight from '@components/header/button-text-right'
+import ButtonRight from '@components/header/button-right'
+import ButtonTextRight from '@components/header/button-text-right'
 import ButtonLeft from '@components/header/button-left'
-// import ButtonBack from '@components/header/button-back'
+import ButtonBack from '@components/header/button-back'
 
-// import uuid from 'react-native-uuid';
+import uuid from 'react-native-uuid';
 
 import TalentFeedItem from '@components/lists/feed/talent-feed-list'
 import ProfileHeader from '@components/user/comp/profile-header'
 
-import { UserHelper, StorageData, Helper } from '@helper/helper';
+import { UserHelper, StorageData, Helper, ChatHelper, GoogleAnalyticsHelper } from '@helper/helper';
 import _ from 'lodash'
 
-import { getApi } from '@api/request';
+import { getApi, postApi } from '@api/request';
 
 import SearchBox from '@components/ui/search'
 
+import VideoDataMockUpLoading from '@components/other/video-data-mock-up-loading'  
+import SpamReport from '@components/other/spam-report';
+
 
 function mapStateToProps(state) {
-    // console.log('wow',state)
+    // console.log('main state',state);
     return {
+        notification: state.notification,
         user: state.user,
     }
 }
+
 const { width, height } = Dimensions.get('window')
 
 
@@ -77,6 +84,9 @@ class Videos extends React.PureComponent {
         super(props);
 
         this.state={
+            // allowViewVideo: true,
+            isFirstLoad: false,
+            filterData: null,
             offset: 0,
             page: 1,
             limit: 4,
@@ -86,16 +96,18 @@ class Videos extends React.PureComponent {
             selected: (new Map(): Map<string, boolean>),
             data: [],
             extraData: [{_id : 1}],
+            options: {
+                total: 0
+            },
+            modalVisible: false,
+            reportVideoId: '',
         }
 
         _SELF = this;
 
     }
     
-    
     static navigationOptions = ({ navigation }) => ({
-        // title: '', 
-        headerVisible: false, 
         headerTitle: 'Discovery',
         headerLeft: (<ButtonLeft
             icon="person-add"
@@ -110,6 +122,36 @@ class Videos extends React.PureComponent {
         navigate('Setting'); 
     }
 
+    _openMessage = (userObj, userProfile) => {
+        // console.log('Talent Feed List : ', this.props);
+        
+        // let userObj = {
+        //     id : this.props.userId,
+        //     cover : this.props.cover, 
+        //     full_name : this.props.title, 
+        // }
+        let _SELF = this;
+
+        const { navigate, goBack, state } = _SELF.props.navigation;
+
+        GoogleAnalyticsHelper._trackEvent('Chat', 'Chat Button Click From Discover - Video', {
+            user_id: userObj.id,
+            full_name: userObj.full_name
+        });     
+
+        let _paramObj = {
+            message_data: {
+                name: userObj.full_name,
+                // channelUrl: _channel.url,
+                chat_id: userObj.id,
+            },
+            direct_chat: true,
+            user_info: userProfile,
+            userObj: userObj,
+        };
+        navigate('Message',_paramObj); 
+    }
+
     componentDidMount() {
         let _SELF = this;
 
@@ -117,7 +159,58 @@ class Videos extends React.PureComponent {
 
     }
 
+    componentWillMount(){
+
+        // DeviceEventEmitter.addListener('AllowViewVideo', (data) => {
+        //     _SELF.setState({
+        //         allowViewVideo: !this.state.allowViewVideo
+        //     });
+        // })
+
+        DeviceEventEmitter.addListener('FilterVideos', (data) => {
+            // _SELF.jobFilter(data);
+            console.log('Filter People Emitted')
+            _SELF.setState({
+                filterData: data.dataFilter,
+                data: null,
+            }, function(){
+                _SELF._getVideoList(); 
+            })
+        })
+
+        DeviceEventEmitter.addListener('PausedAllVideos', (data) => {
+            // console.log('WOW Paused All Videos : ', data);
+
+            let _tmpData = _.cloneDeep(_SELF.state.data);  
+
+            _.each(_tmpData, function(v,k){
+                v.paused = true;
+            });
+            // console.log('_tmpData : ',_tmpData);
+            this.setState({
+                data: _tmpData
+            }, () => {
+
+            });
+        })
+
+        DeviceEventEmitter.addListener('Refresh_Discovery_Video', (data) => {
+            if(this.props.notification.discover>0)
+                this._getVideoList(false, '', true);
+        })
+
+    }
+
+    componentWillUnmount(){
+        // DeviceEventEmitter.removeListener('AllowViewVideo');
+        DeviceEventEmitter.removeListener('Refresh_Discovery_Video');
+        DeviceEventEmitter.removeListener('FilterVideos');
+        DeviceEventEmitter.removeListener('PausedAllVideos');
+    }
+
+    
     _getVideoList = (_isLoadMore = false, txtSearch='', isSearchLoading=false) => {
+        // return;
         // 
         let _SELF = this; 
 
@@ -132,19 +225,20 @@ class Videos extends React.PureComponent {
 
 
         // let API_URL = '/api/contacts/search/people?limit=20&sort=-created_at?v2'; 
-        let API_URL = '/api/media/public?type=video&is_featured=true&offset='+ _offset +'&limit='+ this.state.limit +'&sort=-created_at'; 
+        // let API_URL = '/api/media/public?type=video&is_featured=true&offset='+ _offset +'&limit='+ this.state.limit +'&sort=-created_at'; 
+        let API_URL = this._getURLVideo(_offset); 
 
 
-        if(isSearchLoading && this.state.searchText != ''){
+        if(isSearchLoading || this.state.searchText != ''){
             this.setState({ 
                 isLoading: true,
                 extraData: [{_id : this.state.extraData[0]._id++}] // change this value to re-render header or footer 
-            })
-            API_URL += '&search=' + this.state.searchText || txtSearch;
+            }) 
+            API_URL += '&search=' + encodeURI(this.state.searchText || txtSearch);
         }
 
         // GET /api/media/public?type=video|photo 
-        console.log(API_URL);
+        console.log('Video Search : ',API_URL);
         getApi(API_URL).then((_response) => {
 
             console.log('All Video : ', _response);
@@ -194,11 +288,24 @@ class Videos extends React.PureComponent {
                             data: _goodData,
                             extraData: [{_id : this.state.extraData[0]._id++}],
                             page: _SELF.state.page+1,
+                            options: _response.options
                         }, () => {
 
                         })
                     }
 
+                }
+                else{
+                    
+                    if((this.state.filterData || this.state.searchText) && !this.state.loading){
+                        _SELF.setState({
+                            data: [],
+                            extraData: [{_id : this.state.extraData[0]._id++}],
+                            page: 1,
+                        }, () => {
+
+                        })
+                    }
                 }
                 // console.log('this ', _SELF.state);
 
@@ -220,17 +327,112 @@ class Videos extends React.PureComponent {
                 refreshing: false,
                 loading: false,
                 extraData: [{_id : _SELF.state.extraData[0]._id++}] // change this value to re-render header or footer 
+            }, function(){
+                setTimeout(function() {
+                    _SELF.setState({
+                        isFirstLoad: true
+                    })
+                }, 1000);
             })
-            console.log('_SELF', _SELF.state);
+
+            // console.log('_SELF', _SELF.state);
 
             // _SELF.listRef.scrollToOffset({offset: 50})
             
         });
     }
 
-    // test = () => {
-    //     this.props.navigation.setParams({ handleFunc: this.goToSetting });
-    // }
+    // http://localhost:3000/api/users/filter?type=singer,actor&min_weight=50&max_weight=60&gender=M,F&search=sreng gueckly&mode=video
+
+    _getURLVideo = (_offset) =>{
+        if(this.state.filterData){
+            console.log('Data: ', this.state.filterData);
+            let _SELF = this;
+            let _dataFilter = this.state.filterData;
+
+            let _query = '';
+
+            let _age = _dataFilter.age.val ? _dataFilter.age.val.split(' to ') : [];
+            let ageMinMax = {
+                    min_age: '',
+                    max_age: ''
+            }
+            if(_age.length == 2){
+                ageMinMax = {
+                    min_age: _age[0],
+                    max_age: _age[1],
+                }
+            }
+
+            let _country = _dataFilter.country.val.toLowerCase();
+            let _gender = _dataFilter.selectedGender.toLowerCase();
+            if(_gender == 'b')
+                _gender = '';
+            
+
+            let _talentCateSelected = _.filter(_.cloneDeep(_dataFilter.talent_cate), function(v,k){
+                return v.selected;
+            })
+            talentCateStringArray = _.map(_talentCateSelected, function(v, k) {
+                return v.category;
+            });
+            if(talentCateStringArray){
+                _query += '&type='+ encodeURI(talentCateStringArray);
+            }
+
+            _query += '&ethnicity=' + _dataFilter.selectedEthnicity.toLowerCase();
+
+            _query += '&language=' + encodeURI(_dataFilter.selectedLanguages.toLowerCase());
+            
+            _query += '&eye_color=' + encodeURI(_dataFilter.myeyecolor.val.toLowerCase());
+
+            _query += '&hair_color=' + encodeURI(_dataFilter.myhaircolor.val.toLowerCase());
+
+            let _weight = _dataFilter.age.val ? _dataFilter.myweight.val.split(' to ') : [];
+            let _weightMinMax = {
+                    min_weight: '',
+                    max_weight: ''
+            }
+            if(_weight.length == 2){
+                _weightMinMax = {
+                    min_weight: _weight[0],
+                    max_weight: _weight[1],
+                }
+            }
+            _query += '&min_weight='+ _weightMinMax.min_weight +'&max_weight='+ _weightMinMax.max_weight;
+            
+
+            let _height = _dataFilter.age.val ? _dataFilter.myweight.val.split(' to ') : [];
+            let _heightMinMax = {
+                    min_height: '',
+                    max_height: ''
+            }
+            if(_height.length == 2){
+                _heightMinMax = {
+                    min_height: _height[0],
+                    max_height: _height[1],
+                }
+            }
+            _query += '&min_height='+ _heightMinMax.min_height +'&max_height='+ _heightMinMax.max_height;
+            
+
+            // console.log('Age: ',_age, 'talenCate: ', talentCateStringArray);
+    
+            return  '/api/users/filter?mode=video&offset='+ _offset +'&limit='+ this.state.limit +'&min_age='+ ageMinMax.min_age +'&max_age='+ ageMinMax.max_age +'&country='+ _country +'&gender='+_gender + _query + '&sort=-created_at';
+            
+        }
+        else{
+
+            return  '/api/users/filter?mode=video&is_feature=true&offset='+ _offset +'&limit='+ this.state.limit + '&sort=-created_at';
+            // return '/api/media/public?type=video&is_featured=true&offset='+ _offset +'&limit='+ this.state.limit +'&sort=-created_at';
+
+        }
+    }
+
+
+    test = () => {
+        this.props.navigation.setParams({ handleFunc: this.goToSetting });
+    }
 
     // test flatlist
     _keyExtractor = (item, index) => index;
@@ -252,7 +454,36 @@ class Videos extends React.PureComponent {
         // }));
     };
 
+
+    _togglePlayVideoPopup = (_id, _isMuted = false) => {
+        // this.setState({
+        //     paused : !this.state.paused,
+        // })
+        console.log('allowViewVideo :', this.state.allowViewVideo);
+
+        // if(!this.state.allowViewVideo)
+        //     return;
+
+        let _tmpData = _.cloneDeep(this.state.data);
+        let _videoData = {};
+        _.each(_tmpData, function(v,k){
+            if(v._id == _id){
+                _videoData = v;
+            }
+        })
+
+
+        const { navigate, goBack, state } = this.props.navigation;
+        navigate('VideoScreen',{video_data: _videoData}); 
+
+
+    }
+
+
     _togglePlayVideo = (_id, _isMuted = false) => {
+
+        this._togglePlayVideoPopup(_id, _isMuted);
+        return;
         // this.setState({
         //     paused : !this.state.paused,
         // })
@@ -286,11 +517,18 @@ class Videos extends React.PureComponent {
     }
 
     _getVideoCover = (item) => {
-        return item.s3_url + item.formatted_video_thumbnail_url.replace('{{FILE_KEY}}',item.file_key)
+
+        if(item.media_type == 'youtube')
+            return item.thumbnail_url_link;
+
+        const _videoURL = item.s3_url + item.formatted_video_thumbnail_url.replace('{{FILE_KEY}}',item.file_key);
+        // console.log('video cover: ', _videoURL);
+        return _videoURL;
+        
     }
 
     _updateVideoStatus = (_id, isLoaded = false) => {
-        console.log('_updateVideoStatus : ', _id);
+        // console.log('_updateVideoStatus : ', _id);
         
          let _tmpData = _.cloneDeep(this.state.data);
         _.each(_tmpData, function(v,k){
@@ -299,7 +537,7 @@ class Videos extends React.PureComponent {
             }
 
         });
-        console.log('_tmpData : ',_tmpData);
+        // console.log('_tmpData : ',_tmpData);
         this.setState({
             data: _tmpData
         }, () => {
@@ -307,34 +545,50 @@ class Videos extends React.PureComponent {
         });
     }
 
-    _renderItem = ({item}) => ( 
-        <TalentFeedItem
-            id={ item._id }  
-            userId={ item.user._id }  
-            videoId={ item._id }   
-            onPressItem={ this._onPressItem } 
-            togglePlayVideo={ this._togglePlayVideo }
-            selected={ !!this.state.selected.get(item._id) }
-            title={ Helper._getUserFullName(item.user) } 
-            caption={ item.caption || '' } 
-            cover={ Helper._getCover(item.user) } 
-            media_type={ 'video' } 
-            createdAt={item._created_at} 
-            videoUrl={item.s3_url + item.formatted_sd_video_url} 
-            paused={item.paused} 
-            loaded={item.loaded} 
-            alreadyLoaded={item.alreadyLoaded} 
-            updateVideoStatus = {this._updateVideoStatus}
-            videoThum={this._getVideoCover(item)}  
-            userObj={item.user}   
-            muted={item.muted}   
-            profile_cover={ Helper._getCover(item.user) } 
-            profile_id={ item.user._id } 
-            navigation={ this.props.navigation }
-            paddFirstItem={ true }
-        />
+    showReportVideoView = (videoId) => {
+        this.setModalVisible(true);
+        this.setState({
+            reportVideoId: videoId
+        });
+    }
+
+    setModalVisible = (visible) => {
+        this.setState({
+            modalVisible: visible,
+        });
+    }
+
+    _renderItem = ({item}) => {
+        return ( 
+            <TalentFeedItem
+                _openMessage={this._openMessage}
+                id={ item._id }  
+                userId={ item.user._id }  
+                videoId={ item._id }   
+                onPressItem={ this._onPressItem } 
+                togglePlayVideo={ this._togglePlayVideo }
+                selected={ !!this.state.selected.get(item._id) }
+                title={ Helper._getUserFullName(item.user) } 
+                caption={ item.caption || '' } 
+                cover={ Helper._getCover(item.user) } 
+                media_type={ 'video' } 
+                createdAt={item._created_at} 
+                videoUrl={ item.media_type == 'video' ? item.s3_url + item.formatted_sd_video_url : item.thumbnail_url_link } 
+                paused={item.paused} 
+                loaded={item.loaded} 
+                alreadyLoaded={item.alreadyLoaded} 
+                updateVideoStatus = {this._updateVideoStatus}
+                videoThum={this._getVideoCover(item)}  
+                userObj={item.user}   
+                muted={item.muted}   
+                profile_cover={ Helper._getCover(item.user, 'small_url_link') } 
+                profile_id={ item.user._id } 
+                navigation={ this.props.navigation }
+                paddFirstItem={ true }
+                reportVideo = { ()=> this.showReportVideoView(item._id) }
+            />
         /* <Text>Check for android</Text> */
-    );
+    )};
 
     _renderHeader = ({item}) => (
         // console.log('item : ', item)
@@ -363,16 +617,21 @@ class Videos extends React.PureComponent {
         this.setState({
             refreshing: true,
         })
+
+        // clear red dot when pull to refresh
+        DeviceEventEmitter.emit('clearBadgeNumber', {
+            tabType: 'Discovery'
+        });
+        
         this._getVideoList(false, '', true);
     }
 
     handleLoadMore = () => {
 
-        // return;
-        
         let that = this;
 
-        if(this.state.loading) return;
+        if(this.state.options.total <= this.state.limit || this.state.loading) 
+            return;
 
         this.setState({
             loading: true,
@@ -413,6 +672,8 @@ class Videos extends React.PureComponent {
                 searchText: txtSearch
             }, function(){
 
+                GoogleAnalyticsHelper._trackEvent('Search', 'Video', {text_search: txtSearch});                         
+                
                 this._getVideoList(false, txtSearch, true);
                 if(txtSearch == ''){
                     this.setState({
@@ -425,25 +686,43 @@ class Videos extends React.PureComponent {
     }
 
     onViewableItemsChanged = (e) => {
+        return;
         console.log('onViewableItemsChanged :', e);
 
-        let _tmpData = _.cloneDeep(this.state.data);
+        clearTimeout();
 
-        _.each(e.viewableItems,function(v,k){
-            if(v.isViewable && !v.item.loaded){
-                _.each(_tmpData, function(v_sub,k_sub){
-                    if(v_sub._id == v._id){
-                        v_sub.loaded = true;
-                    }
-                })
-            }
-        })
+        setTimeout(() => {
+            console.log('TIMEOUT : onViewableItemsChanged :', e);
+            let _tmpData = _.cloneDeep(this.state.data);
 
-        this.setState({
-            data: _tmpData
-        }, () => {
+            _.each(e.viewableItems,function(v,k){
+                if(v.isViewable && !v.item.loaded){
+                    _.each(_tmpData, function(v_sub,k_sub){
+                        if(v_sub._id == v._id){
+                            v_sub.loaded = true;
+                        }
+                    })
+                }
+            })
 
-        });
+            _.each(e.changed,function(v,k){
+                if(!v.isViewable && v.item.loaded){
+                    _.each(_tmpData, function(v_sub,k_sub){
+                        if(v_sub._id == v._id){
+                            v_sub.loaded = false;
+                        }
+                    })
+                }
+            })
+
+            this.setState({
+                data: _tmpData
+            }, () => {
+
+            });
+            
+        }, 2000);
+
     }
 
     renderHeader = () => {
@@ -457,30 +736,64 @@ class Videos extends React.PureComponent {
     // end testing flatlist
 
     render() {
+        if(this.state.data && this.state.data.length<=0  && !this.state.isFirstLoad)
+            return (
+                <View style={[ {flex: 1, paddingTop: 50} ]}>
+                    <VideoDataMockUpLoading />
+                </View>
+            )
+        else{
 
-        return (
+            if(_.isEmpty(this.state.data))
+                return(
+                    <View  style={[ styles.justFlexContainer, {paddingTop: 50} ]}>
+                        <View style={[ styles.marginBotSM, {height: 50} ]}>
+                            <SearchBox placeholder={'Search'} prevText={this.state.searchText} onSubmit={this.searchNow} isLoading={this.state.isLoading} />
+                        </View>
+                        <View style={[ styles.defaultContainer, styles.mainScreenBg ]}>
 
-                <FlatList
-                    extraData={this.state.extraData}
-                    data={this.state.data}
-                    keyExtractor={this._keyExtractor}
-                    ref={ref => this.listRef = ref}
-                    ListHeaderComponent={this.renderHeader}
+                            <Text style={[styles.blackText, styles.btFontSize]}>
+                                No video has been found. 
+                            </Text>
 
-                    ListFooterComponent={this.renderFooter}
-                    renderItem={this._renderItem}
-                    removeClippedSubviews={false}
-                    viewabilityConfig={VIEWABILITY_CONFIG}
+                        </View>
+                    </View>
+                )
+            else
+                return (
+                    <View style={[ styles.justFlexContainer, styles.mainScreenBg, {paddingTop: 50}]}>  
 
-                    onViewableItemsChanged = {this.onViewableItemsChanged}
+                        <FlatList
+                            extraData={this.state.extraData}
+                            data={this.state.data}
+                            keyExtractor={this._keyExtractor}
+                            ref={ref => this.listRef = ref}
+                            ListHeaderComponent={this.renderHeader}
 
-                    refreshing={this.state.refreshing}
-                    onRefresh={this.handleRefresh}
-                    onEndReachedThreshold={0.7}
-                    onEndReached={this.handleLoadMore}
-                />
+                            ListFooterComponent={this.renderFooter}
+                            renderItem={this._renderItem}
+                            removeClippedSubviews={false}
+                            viewabilityConfig={VIEWABILITY_CONFIG}
 
-        )
+                            onViewableItemsChanged = {this.onViewableItemsChanged}
+
+                            refreshing={this.state.refreshing}
+                            onRefresh={this.handleRefresh}
+                            initialNumToRender={4}
+                            maxToRenderPerBatch={4}
+                            onEndReachedThreshold={2}
+                            onEndReached={this.handleLoadMore}
+                        />
+                        
+                        <SpamReport type = { 'video' }
+                            reportId = { this.state.reportVideoId }
+                            visible = { this.state.modalVisible }
+                            setModalVisible = { () => this.setModalVisible(false) }/>
+                        
+                    </View>
+
+                )
+        }
     }
 }
 var styles = StyleSheet.create({ ...Styles, ...Utilities, ...FlatForm, ...TagsSelect, ...BoxWrap,
@@ -579,6 +892,29 @@ var styles = StyleSheet.create({ ...Styles, ...Utilities, ...FlatForm, ...TagsSe
         left: 0,
         bottom: 0,
         right: 0,
-    },
+    },modalProp:{
+        width:300,
+        height:350,
+        backgroundColor:'white',
+        borderRadius:8,
+        overflow:'hidden'
+    },btnContainer: {
+        backgroundColor: Colors.buttonColor,
+        paddingVertical: 10,
+        paddingHorizontal: 10,
+        marginTop: 10,
+        borderRadius: 5,
+        borderWidth: 1,
+        borderColor: Colors.buttonColor
+    },textInputMultiLine:{
+        width: 240,
+        height:100,
+        borderRadius:4,
+        backgroundColor:Colors.componentBackgroundColor,
+        textAlign:'auto',
+        padding:10,
+        fontSize:15,
+        marginTop: 10
+    }
 });
-export default connect(mapStateToProps)(Videos)
+export default connect(mapStateToProps, BadgeNotification)(Videos)

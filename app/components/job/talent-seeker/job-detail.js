@@ -21,6 +21,7 @@ import {
     DeviceEventEmitter
 } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import IconAwesome from 'react-native-vector-icons/FontAwesome';
 import Styles from '@styles/card.style'
 import { Colors } from '@themes/index';
 import FlatForm from '@styles/components/flat-form.style';
@@ -34,14 +35,19 @@ import ButtonLeft from '@components/header/button-left'
 import ButtonBack from '@components/header/button-back'
 
 import _ from 'lodash'
-import { UserHelper, StorageData, Helper } from '@helper/helper';
+import { UserHelper, StorageData, Helper, GoogleAnalyticsHelper } from '@helper/helper';
 
 import { postApi } from '@api/request';
 
 import { NavigationActions } from 'react-navigation';
 
+import { CachedImage, ImageCache, CustomCachedImage } from "react-native-img-cache";
+import ImageProgress from 'react-native-image-progress';
+import {ProgressBar, ProgressCircle} from 'react-native-progress';
+
 import { transparentHeaderStyle, defaultHeaderStyle, defaultHeaderWithShadowStyle } from '@styles/components/transparentHeader.style';
-import CacheableImage from 'react-native-cacheable-image';
+// import CacheableImage from 'react-native-cacheable-image';
+import SpamReport from '@components/other/spam-report';
 
 const { width, height } = Dimensions.get('window')
 function mapStateToProps(state) {
@@ -56,6 +62,7 @@ function mapStateToProps(state) {
 const _SELF = null;
 
 class JobDetail extends Component {
+
     constructor(props){
         super(props);
 
@@ -80,15 +87,16 @@ class JobDetail extends Component {
                     name: 'Singer',
                     value: 'singer',
                 },
-            ]
+            ],
+            showModal: false,
+            jobId: state.params.job._id
         }
 
-        console.log('Apply Constructor', this.state.jobInfo.post);
-
+        // console.log('Apply Constructor', this.state.jobInfo.post);
         // const { navigate, goBack, state } = this.props.navigation;
-        // console.log('Job Detail Obj : ', state.params);
-
+        console.log('Job Detail Obj : ', state.params);
     }
+
     static navigationOptions = ({ navigation }) => ({
         // title: '', 
         headerVisible: false,
@@ -102,61 +110,74 @@ class JobDetail extends Component {
                 callBack={ navigation.state.params }
                 btnLabel= "Apply"
             />),
-        headerRight: !navigation.state.params.view_only  ? (
+        headerRight: !navigation.state.params.view_only ? (
+            !navigation.state.params.can_remove ? 
+                <View style={[styles.flexVerMenu, styles.flexCenter]}>
+                    {/*<Text style={[styles.txt]}>Save</Text>*/}
+                    {/*{ console.log('_SELF dddd :', UserHelper.UserInfo) }*/}
+                    
+                    <TouchableOpacity 
+                        style={[{ marginRight: 10 }]}
+                        onPress={ () => {
+                            console.log('_SELF', _SELF);
+                            _SELF._applyJob();
+                        }}>
+                    
+                        {/*{ navigation.state.params && navigation.state.params.isLoadingOnHeader ?*/}
 
-             <View style={[styles.flexVerMenu, styles.flexCenter]}>
-                {/*<Text style={[styles.txt]}>Save</Text>*/}
-                 {/*{ console.log('_SELF dddd :', UserHelper.UserInfo) }*/}
-                
-                <TouchableOpacity 
-                    style={[{ marginRight: 15 }]}
-                    onPress={ () => {
-                        console.log('_SELF', _SELF);
-                        _SELF._applyJob();
-                    }}>
-                
-                    {/*{ navigation.state.params && navigation.state.params.isLoadingOnHeader ?*/}
+                        { navigation.state.params && navigation.state.params.isLoadingOnHeader ?
+                            <ActivityIndicator
+                                animating={true}
+                                style={[  ]}
+                                size="small"
+                                color="gray"
+                            />
+                            :
 
-                    { navigation.state.params && navigation.state.params.isLoadingOnHeader ?
-                        <ActivityIndicator
-                            animating={true}
-                            style={[  ]}
-                            size="small"
-                            color="gray"
-                        />
-                        :
+                            <View>
+                                { navigation.state.params && navigation.state.params.applied ? <Icon name="done" style={[ styles.doneIcon ]} /> : <Text style={[styles.txtRightHeader]}> Apply </Text> }
+                            </View>
+                        }
+                    </TouchableOpacity>
 
-                        <View>
-                            { navigation.state.params && navigation.state.params.applied ? <Icon name="done" style={[ styles.doneIcon ]} /> : <Text style={[styles.txtRightHeader]}> Apply </Text> }
-                        </View>
-                    }
-                </TouchableOpacity>
-                {/*<Text style={[styles.txt]}>{ navigation.state.params && navigation.state.params.applied ? 'Edit' : 'Save' }</Text>*/}
-            </View>
-
-
-        ) : navigation.state.params && navigation.state.params.can_remove?<View style={[styles.flexVerMenu, styles.flexCenter]}>
-                <TouchableOpacity 
-                    style={[ {marginRight: 5} , navigation.state.params && navigation.state.params.applied && { marginRight: 15 }]}
-                    onPress={ () => {
-                        console.log('_SELF', _SELF);
-                        _SELF._prepareRemoveJob();
-                    }}>
-                    { navigation.state.params && navigation.state.params.isLoadingOnHeader ?
-                        <ActivityIndicator
-                            animating={true}
-                            style={[  ]}
-                            size="small"
-                            color="gray"
-                        />
-                        :
-                        <View>
-                            { navigation.state.params && navigation.state.params.applied ? <Icon name="done" style={[ styles.doneIcon ]} /> : <Text style={[styles.txtRightHeader]}> <Icon name="delete" style={[ styles.doneIcon, {color: 'gray', fontSize: 24} ]} /> </Text> }
-                        </View>
-                    }
-                </TouchableOpacity>
-                {/*<Text style={[styles.txt]}>{ navigation.state.params && navigation.state.params.applied ? 'Edit' : 'Save' }</Text>*/}
-            </View>:null
+                    {/* <TouchableOpacity
+                        style={{ marginRight: 10 , flex: 1, flexDirection: 'row', alignItems: 'center'}}
+                        onPress={ () => { DeviceEventEmitter.emit('SpamReport'); } }>
+                            <IconAwesome name={'flag-o'}
+                                style={[ styles.icon ]} />
+                    </TouchableOpacity> */}
+                    {/*<Text style={[styles.txt]}>{ navigation.state.params && navigation.state.params.applied ? 'Edit' : 'Save' }</Text>*/}
+                </View>
+            :
+                <View style={[styles.flexVerMenu, styles.flexCenter]}>
+                    <TouchableOpacity 
+                        style={[ {marginRight: 5} , navigation.state.params && navigation.state.params.applied && { marginRight: 15 }]}
+                        onPress={ () => {
+                            console.log('_SELF', _SELF);
+                            _SELF._prepareRemoveJob();
+                        }}>
+                        { navigation.state.params && navigation.state.params.isLoadingOnHeader ?
+                            <ActivityIndicator
+                                animating={true}
+                                style={[  ]}
+                                size="small"
+                                color="gray"
+                            />
+                            :
+                            <View>
+                                { navigation.state.params && navigation.state.params.applied ? <Icon name="done" style={[ styles.doneIcon ]} /> : <Text style={[styles.txtRightHeader]}> <Icon name="delete" style={[ styles.doneIcon, {color: 'gray', fontSize: 24} ]} /> </Text> }
+                            </View>
+                        }
+                    </TouchableOpacity>
+                    {/* <TouchableOpacity
+                        style={{ marginRight: 10 , flex: 1, flexDirection: 'row', alignItems: 'center'}}
+                        onPress={ () => { DeviceEventEmitter.emit('SpamReport'); } }>
+                            <IconAwesome name={'flag-o'}
+                                style={[ styles.icon ]} />
+                    </TouchableOpacity> */}
+                    {/*<Text style={[styles.txt]}>{ navigation.state.params && navigation.state.params.applied ? 'Edit' : 'Save' }</Text>*/}
+                </View>
+        ) : null
     });
 
     _applyJob = () => {
@@ -175,20 +196,39 @@ class JobDetail extends Component {
     
         let API_URL = '/api/jobs/'+ this.state.jobInfo.post +'/apply';
         postApi(API_URL).then((response) => {
-            // console.log('Apply Job: ', response);
+            console.log('Apply Job: ', response);
             if(response.code == 200){
-                // console.log('Applied Completed: ', response);
-                setParams({ applied: true, isLoadingOnHeader: false });
-                const resetAction = NavigationActions.reset({ index: 0, actions: [{type: NavigationActions.NAVIGATE, routeName: 'JobList'}], key: 'JobList' })
-                dispatch(resetAction);
 
+                try{
+                    GoogleAnalyticsHelper._trackEvent('Job', 'Apply', {
+                        title: this.state.jobInfo.title || _.head(this.state.jobInfo.job_detail).sub_reference_detail.title,
+                        desc: this.state.jobInfo.description ? this.state.jobInfo.description:"",
+                        gender: Helper._getGenderJob(this.state.jobInfo.criteria.gender),
+                        age: this.state.jobInfo.criteria.min_age + '-' + this.state.jobInfo.criteria.max_age,
+                        location: this.state.jobInfo.criteria.country
+                    }); 
+                }catch(e){
+                    console.log('data problem');
+                }
+
+                console.log('Applied Completed: ', response);
+                DeviceEventEmitter.emit('refreshJopListList', {});
+                DeviceEventEmitter.emit('refreshApplyList', {});
+                goBack();
+                // setParams({ applied: true, isLoadingOnHeader: false });
+                // const resetAction = NavigationActions.reset({ index: 0, actions: [{type: NavigationActions.NAVIGATE, routeName: 'JobList'}], key: 'JobList' })
+                // dispatch(resetAction);
+            }else{
+                alert('The job has been closed. Please find another job.');
+                DeviceEventEmitter.emit('refreshJopListList');
+                goBack();
             }
         });
     }
 
     _prepareRemoveJob = () => [
         Alert.alert(
-            'Are you sure you want to remove this applied job?',
+            'This job application will be removed.',
             '',
             [
                 {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
@@ -203,8 +243,24 @@ class JobDetail extends Component {
         setParams({ isLoadingOnHeader: true });    
         let API_URL = '/api/jobs/'+ this.state.jobInfo.job_detail[0]._id +'/withdraw';
         postApi(API_URL).then((response) => {
+            console.log('This response for remove applied job: ', response);
             if(response.code == 200){
+
+
+                try{
+                    GoogleAnalyticsHelper._trackEvent('Job', 'Delete Apply Job', {
+                        title: this.state.jobInfo.title || _.head(this.state.jobInfo.job_detail).sub_reference_detail.title,
+                        desc: this.state.jobInfo.description ? this.state.jobInfo.description:"",
+                        gender: Helper._getGenderJob(this.state.jobInfo.criteria.gender),
+                        age: this.state.jobInfo.criteria.min_age + '-' + this.state.jobInfo.criteria.max_age,
+                        location: this.state.jobInfo.criteria.country
+                    }); 
+                }catch(e){
+                    console.log('data problem');
+                }
+
                 DeviceEventEmitter.emit('refreshApplyList');
+                DeviceEventEmitter.emit('refreshJopListList');
                 setParams({ applied: false, isLoadingOnHeader: false });
                 goBack();
             }
@@ -226,24 +282,49 @@ class JobDetail extends Component {
     }
 
     componentDidMount() {
+
+        GoogleAnalyticsHelper._trackScreenView('Job Detail - Talent'); 
+        
         _SELF = this; 
+    }
+
+    componentWillMount(){
+        DeviceEventEmitter.addListener('SpamReport', () => {
+            _SELF.setState({
+                showModal: true
+            })
+        });
+    }
+
+    componentWillUnmount(){
+        DeviceEventEmitter.removeListener('SpamReport');
     }
 
     viewProfile = (_item) => {
         // candidate
         // console.log('This is user info: ', _item); return;
+
+        GoogleAnalyticsHelper._trackEvent('View Profile', 'Job Detail', {user_id: _item._id, user_name: Helper._getUserFullName(this.state.jobInfo)});                                 
+        
         const { navigate, goBack } = this.props.navigation;
         navigate('Profile', { 'user_info': _item });
     }
 
     render(){
         const { navigate, goBack, state } = this.props.navigation;
+
+        const _sendJobInfo = {
+            cover: this._getCover().uri,
+            title: this.state.jobInfo.title || _.head(this.state.jobInfo.job_detail).sub_reference_detail.title,
+            id: this.state.jobInfo.post,
+        }
+
         return(
             <ScrollView  removeClippedSubviews={false} style={[ styles.wrapper ]}>
 
                 <View style={[styles.topSection]}>
 
-                    <CacheableImage 
+                    {/*<CacheableImage 
 
                         onLoadEnd={(e) => { console.log('OnLoadEnd.',e); }}
                         onLoadStart={(e) => { console.log('OnLoadStart.',e); }}
@@ -254,18 +335,43 @@ class JobDetail extends Component {
                         
                         source={ this._getCover() } >
   
-                            {/*<Image
-                                style={[styles.avatar, styles.mybgcover]} 
-                                source={ this._getCover() }  
-                            />*/}
 
-                    </CacheableImage>
+                    </CacheableImage>*/}
+
+                    {/*<Image
+                        style={[styles.avatar, styles.mybgcover]} 
+                        source={ this._getCover() }  
+                    />*/}
+
+                    <CustomCachedImage
+                        style={[styles.avatar, styles.mybgcover]} 
+                        defaultSource={ require('@assets/job-banner.jpg') }
+                        component={ImageProgress}
+                        source={ this._getCover() } 
+                        indicator={ProgressCircle} 
+                    />
+                    {   (false && this.props.navigation.state.params.job.status != 'cancel') && 
+                        <TouchableOpacity onPress={() => navigate('SendJobByChat',{shareJob: true, shareJobInfo : _sendJobInfo})} style={[ styles.btnShare ]} activeOpacity={.8}>
+                            <Icon style={[ styles.btnShareIcon ]} name="send" />
+                            <Text style={[ styles.btnShareText ]}>Share</Text>
+                        </TouchableOpacity>
+                    }
+                    
+
                 </View>
                 <View style={[styles.middleSection,{padding:20}]}>
                     <View style={[styles.titleContainer,{paddingBottom:20}]}>
                         <Text>Title of job</Text>
-                        <Text style={[{fontSize:18,fontWeight:'bold'}]}>{ this.state.jobInfo.title || _.head(this.state.jobInfo.job_detail).sub_reference_detail.title }</Text>
+                        <Text style={[{fontSize:18,fontWeight:'bold'}]}>{ _sendJobInfo.title }</Text>
                     </View>
+                    {
+                        this.state.jobInfo.description ? (
+                            <View style={[styles.titleContainer,{paddingBottom:20}]}>
+                                <Text>Description</Text>
+                                <Text style={[{fontSize:18,fontWeight:'bold'}]}>{ this.state.jobInfo.description ? this.state.jobInfo.description:""}</Text>
+                            </View>
+                        ): null
+                    }
                     <View style={[{paddingBottom:20}]}>
                         <Text>Talent type</Text>
                         <View style={[ styles.tagContainerNormal, styles.paddingBotNavXS ]}>   
@@ -298,7 +404,7 @@ class JobDetail extends Component {
                         </View>
                         <View style={[{flex:2}]}>
                             <Text>Location</Text>
-                            <Text style={[{fontSize:18,fontWeight:'bold'}]}>Singapore</Text> 
+                            <Text style={[{fontSize:18,fontWeight:'bold'}]}>{ this.state.jobInfo.criteria.country }</Text> 
                         </View>                                                
                     </View>
                     <View style={[{paddingVertical:30}]}>
@@ -307,9 +413,16 @@ class JobDetail extends Component {
                         <TouchableOpacity activeOpacity = {0.8} onPress={() => this.viewProfile(this.state.jobInfo.owner_profile) }>
                             <View style={[styles.userInfo, {marginTop: 15}]}>
                                 <View style={[ styles.avatarContainer ]}>
-                                    <Image
+                                    {/*<Image
                                         style={[ styles.userAvatar ]}
                                         source={{ uri: Helper._getCover(this.state.jobInfo.owner_profile) }} 
+                                    />*/}
+                                    <CustomCachedImage
+                                        style={[ styles.userAvatar ]}
+                                        defaultSource={ require('@assets/job-banner.jpg') }
+                                        component={ImageProgress}
+                                        source={{ uri: Helper._getCover(this.state.jobInfo.owner_profile) }} 
+                                        indicator={ProgressCircle} 
                                     />
                                 </View>  
                                 {/*<View style={[{flex:1,justifyContent:'center',alignItems:'center',backgroundColor:'red'}]}>*/}
@@ -320,10 +433,15 @@ class JobDetail extends Component {
                         </TouchableOpacity>
                     </View>
                 </View>
+                <SpamReport type = { 'post' }
+                    reportId = { this.state.jobId }
+                    visible = { this.state.showModal }
+                    setModalVisible = { () => { this.setState({showModal: false})} }/>
             </ScrollView>
         );
     }
 }
+
 var styles = StyleSheet.create({  ...Styles, ...Utilities, ...FlatForm, ...TagsSelect, ...BoxWrap,
      topSection:{
         height:250,
@@ -342,6 +460,28 @@ var styles = StyleSheet.create({  ...Styles, ...Utilities, ...FlatForm, ...TagsS
     doneIcon:{
         color: Colors.secondaryCol,
         fontSize: 30,
+    },
+    btnShare: {
+        flex: 1,
+        flexDirection: 'row',
+        position: 'absolute',
+        right: 10,
+        bottom: 10,
+        paddingVertical: 5,
+        paddingHorizontal: 10,
+        alignItems: 'center',
+        backgroundColor: 'rgba(0,0,0,.6)'
+    },
+    btnShareIcon: {
+        color: 'white',
+        marginRight: 5
+    },
+    btnShareText:{
+        color: 'white',
+    },icon: { 
+        // width: 30,
+        fontSize: 20,
+        color: Colors.tabBarActiveTintColor 
     }
 });    
 export default connect(mapStateToProps, DetailActions)(JobDetail)

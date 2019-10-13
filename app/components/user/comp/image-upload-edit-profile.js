@@ -17,11 +17,15 @@ import {
     Platform,
     Dimensions,
     ActionSheetIOS,
-    DeviceEventEmitter 
+    DeviceEventEmitter,
+    ActivityIndicator,
+    FlatList
 } from 'react-native'
 
 import {view_profile_category} from '@api/response'
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { IconCustom } from '@components/ui/icon-custom';
+
 import Styles from '@styles/card.style'
 import {Colors} from '@themes/index';
 import FlatForm from '@styles/components/flat-form.style';
@@ -35,20 +39,36 @@ import ButtonLeft from '@components/header/button-left'
 import ButtonBack from '@components/header/button-back'
 
 import { transparentHeaderStyle, titleStyle } from '@styles/components/transparentHeader.style';
-import ImagePicker from 'react-native-image-picker';
+// import ImagePicker from 'react-native-image-picker';
+
+import ImagePickerCrop from 'react-native-image-crop-picker';
+
+
 import uuid from 'react-native-uuid';
 import { postMedia, postApi, putApi, getApi, deleteApi } from '@api/request';
 import RNFetchBlob from 'react-native-fetch-blob';
 import Video from 'react-native-video';
 
-import { UserHelper, StorageData, Helper } from '@helper/helper';
+import { CachedImage, ImageCache, CustomCachedImage } from "react-native-img-cache";
+import ImageProgress from 'react-native-image-progress';
+import {ProgressBar, ProgressCircle} from 'react-native-progress';
+
+import PhotoBoxItem from '@components/user/comp/photo-box-item';
+
+import { UserHelper, StorageData, Helper, GoogleAnalyticsHelper } from '@helper/helper';
 
 import _ from 'lodash'
 
 import moment from 'moment'
 
-const {width, height} = Dimensions.get('window')
+const {width, height} = Dimensions.get('window');
 
+const VIEWABILITY_CONFIG = {
+    minimumViewTime: 3000,
+    viewAreaCoveragePercentThreshold: 100,
+    waitForInteraction: false,
+  };
+  
 
 const options = {
     title: 'Image Picker',
@@ -75,40 +95,128 @@ export default class ImageUploadEditProfile extends Component {
             photoUploaded: [],
             idx: 0,
             isFirstPhoto: false,
+            selected: (new Map(): Map<string, boolean>),
+            data: [],
+            extraData: [{_id : 1}],
         }
 
         that = this;
 
     }
 
- 
+    _generateBox = (_boxs) => {
+        
+        _boxs = _.filter(_boxs,function(v,k){
+            return v.boxType == 'photo';
+        })
 
-    _getPhoto = () => {
-        let that=this;
-        let _allImg = UserHelper.UserInfo.photos;
+        let _missingBox = 5 - _boxs.length
 
-            // console.log('Total image', _allImg);
-            let _tmp = [];
-            _.each(_allImg,function(v,k){
-                // _tmp.push({'id': k, 'uri':v.preview_url_link, 'uuid':v.upload_session_key});
-                _tmp.push({'id': k,'type':'image', 'uri':v.thumbnail_url_link, 'uuid':v.upload_session_key, is_featured:v.is_featured});
+        // if(_boxs.length>=3)
+
+        if(_missingBox>=0){
+            _boxs.push({
+                boxType: 'add_more',
+                is_featured: false,                
+                created_date: new Date('01/01/1970').getTime()
             })
-                let mainTmp=_.chunk(_.cloneDeep(_tmp),3);
+        }
+
+        for(let _i =0; _i<=_missingBox; _i++){
+            _boxs.push({
+                boxType: null,
+                is_featured: false,
+                created_date: new Date('01/01/1969').getTime()
+            })
+        }
+
+        // _boxs = _.sortBy(_boxs, [function(v,k) {
+
+        //         return v.created_date; 
+
+        // }]);
+
+        return _boxs;
+
+    }
+
+    _getPhoto = () => {   
+        let that = this;
+        // let _allImg = UserHelper.UserInfo.photos;
+
+        let API_URL = '/api/media?type=photo';
+        getApi(API_URL).then((_response) => {
+            console.log('Get All Photo : ', _response);
+
+            if(_response.code == 200){
+                let _allImg = _response.result;
+
+                // console.log('Total image', _allImg);  
+                let _tmp = [];
+                _.each(_allImg,function(v,k){
+                    // _tmp.push({'id': k, 'uri':v.preview_url_link, 'uuid':v.upload_session_key});
+                    _tmp.push({
+                        'id': k,
+                        'type':'image', 
+                        'boxType': 'photo', 
+                        'uri':v.thumbnail_url_link,
+                        created_date: new Date().getTime(),                                            
+                        'uuid':v.upload_session_key, 
+                        is_featured:v.is_featured
+                    });
+                })
+                // let mainTmp=_.chunk(_.cloneDeep(_tmp),3);
                 // console.log("main tmp ", mainTmp);
 
-            that.setState({ 
-                img: mainTmp,
-                allImg: _allImg,
-                idx: _tmp.length
-            })
-            // console.log("final testing photo",that.state);
+
+                that.setState({ 
+                    // img: mainTmp,
+                    allImg: _allImg,
+                    idx: _tmp.length,
+                    data: that._generateBox(_tmp),
+                })  
+                // console.log("final testing photo",that.state);
+            }
+        });
     } 
+
     _removePhoto = (_media, _mediaIndex) => {
 
         let that = this;
-        let _mediaInfo = this.state.allImg[_mediaIndex] ? this.state.allImg[_mediaIndex] : null;
+        // let _mediaInfo = null;
+
+        // _mediaInfo = this.state.allImg[_media.id] ? this.state.allImg[_media.id] : null;
+
+        if(this.state.allImg.length == 1){
+            alert('You cannot delete featured image. Please upload another image as feature first.');
+            return;
+        }
+
+        console.log('_media : ', _media);
+        
+        let _mediaInfo = null;
+        // _mediaInfo = this.state.img[_mediaIndex] ? this.state.img[_mediaIndex] : null;
+        _mediaInfo = _.filter(this.state.allImg,function(v,k){
+            if(v.uuid)
+                return v.uuid == _media.uuid;
+            else
+                return v.upload_session_key == _media.uuid
+        });
+
+        if(_mediaInfo.length>0){
+            _mediaInfo = _.head(_mediaInfo);
+        }
+
 
         console.log('_mediaInfo : ', _mediaInfo);
+        // return;
+        // if(_mediaInfo.is_featured && this.state.allImg.length > 1){
+        //     alert('You cannot delete featured image. Please select another image as feature first.');
+        //     return;
+        // }else if(_mediaInfo.is_featured){
+        //     alert('You cannot delete featured image. Please upload another image as feature first.')
+        //     return;
+        // }
         console.log('this.state.videoFromApi : ', this.state.allImg);
         
         if(_mediaInfo && _mediaInfo._id){
@@ -125,7 +233,11 @@ export default class ImageUploadEditProfile extends Component {
                 if(_response.code == 200){
 
                     var _imageTmp = _.filter(_.cloneDeep(that.state.allImg), function(v,k) {
-                        return k != _mediaIndex;
+  
+                        if(v.uuid)
+                            return v.uuid != _media.uuid;
+                        else
+                            return v.upload_session_key != _media.uuid
                     });
 
                     let tmpChunk =[];
@@ -136,6 +248,7 @@ export default class ImageUploadEditProfile extends Component {
                             'type':'image', 
                             'uri':v.thumbnail_url_link, 
                             'uuid':v.upload_session_key,
+                            'boxType': 'photo',
                             is_featured:v.is_featured
                         })
                     })
@@ -145,8 +258,8 @@ export default class ImageUploadEditProfile extends Component {
 
                     // that._updateCoverPhotoProfile(img);
 
-                    let mainTmp=_.chunk(_.cloneDeep(tmpChunk),3);
-                    console.log("main tmp ", mainTmp);
+                    // let mainTmp=_.chunk(_.cloneDeep(tmpChunk),3);
+                    // console.log("main tmp ", mainTmp);
 
                     UserHelper.UserInfo.photos = _imageTmp;
                     // save to final strorage key
@@ -157,9 +270,27 @@ export default class ImageUploadEditProfile extends Component {
                     });
 
                     that.setState({ 
-                        img: mainTmp,
+                        //img: mainTmp,
                         allImg: _imageTmp,
-                        idx: _imageTmp.length
+                        idx: _imageTmp.length,
+                        data: [],                    
+                        extraData: [{_id : that.state.extraData[0]._id++}]                        
+                    }, function(){
+
+
+                        that.setState({
+                            data: that._generateBox(tmpChunk),                    
+                            extraData: [{_id : that.state.extraData[0]._id++}]  
+                        }, function(){
+                            if(_mediaInfo.is_featured){
+                                if(that.state.data.length>0){
+    
+                                    that._setPhotoFeature(that.state.data[0].uuid || that.state.data[0].upload_session_key);
+    
+                                }
+                            }
+                        });
+                        
                     })
                     
                 }
@@ -170,21 +301,24 @@ export default class ImageUploadEditProfile extends Component {
             alert('Can not delete this video. Please try again.');
         }
     }
+
     checkActiveTag = (item) => {
         // console.log("Active Tag",item);
         // return this.state.item_selected == item.id;
         return item.is_featured || false;
     }
+    
     selectedTag = (item) => {
 
         // console.log('item selected : ', this.state.img)
-        if(this.state.allImg.length>1){
+        if(this.state.allImg.length>0){
             this._setPhotoFeature(item.uuid);
         }
 
     }    
 
     _setPhotoFeature = (_id) => {
+        console.log('_id :', _id);
         let that = this;
         // let API_URL = '/api/users/me/picture';
         let API_URL = '/api/users/me/feature/photo';
@@ -200,6 +334,12 @@ export default class ImageUploadEditProfile extends Component {
             
             _.each(_tmpImg, function(v,k){
                 // console.log(v.upload_session_key,' == ', _id)
+                v.type = 'image';
+                v.boxType = 'photo';
+                v.id = k;
+                v.uri = v.thumbnail_url_link;
+                v.uuid = v.upload_session_key;
+
                 if(v.upload_session_key == _id){
                     v.is_featured = true;
                     UserHelper.UserInfo.cover = v;
@@ -211,7 +351,6 @@ export default class ImageUploadEditProfile extends Component {
 
             UserHelper.UserInfo.photos = _tmpImg || [];
             
-
             // console.log("final state _tmpImg",_tmpImg);
 
             let _userData =  StorageData._saveUserData('TolenUserData',JSON.stringify(UserHelper.UserInfo)); 
@@ -233,11 +372,20 @@ export default class ImageUploadEditProfile extends Component {
                 })
                 // console.log(v.upload_session_key,' == ', _id)
             })            
-            // console.log("final state _tmpCloneImg",_tmpCloneImg);
+            console.log("final state _tmpCloneImg",_tmpImg);
             that.setState({ 
                 img: _tmpCloneImg,
                 allImg: _tmpImg,
-                idx: _tmpImg.length
+                idx: _tmpImg.length,
+                data: [],
+                extraData: [{_id : that.state.extraData[0]._id++}]
+            }, function(){
+
+                that.setState({
+                    data: that._generateBox(_tmpImg),                    
+                    extraData: [{_id : that.state.extraData[0]._id++}]  
+                });
+
             })            
 
 
@@ -269,56 +417,32 @@ export default class ImageUploadEditProfile extends Component {
         // console.log('_getFeaturePhotoLink : ', this.state);
     }
 
-    chooseImage () {
+    imageCropUpload = (imgData = null, _UUID = '') => {
         let that = this;
+        if(imgData){
 
-        // console.log('check is first photo : ', that.state.isFirstPhoto);
+            this.setState({
+                uploading: true
+            })
 
-        ImagePicker.launchImageLibrary(options, (response) => {
-            if (response.didCancel) {
-                console.log('User cancelled image picker');
-            }
-            else if (response.error) {
-                console.log('ImagePicker Error: ', response.error);
-            }
-            else if (response.customButton) {
-                console.log('User tapped custom button: ', response.customButton);
-            }
-            else {
-                let tmpSource = response.uri;
-                let source = { uri: response.uri };
-                // console.log('The state: ', this.state);
-                // let arrImg = this.state.allImg.slice();
-                // let arrImg = this.state.img;
-                // let _id =0;
-                // if(arrImg.length > 0)
-                //     _id = arrImg.length;
+            let tmpSource = ( Helper._isIOS() ? 'file://' : '' ) + imgData.path;
+            let source = { uri: tmpSource };
 
-                let _photoUUID = uuid.v4();
+            let _photoUUID = _UUID;
+            let data = imgData.data;
+             
+            let url = '/api/media/photos/'+ _photoUUID +'/save';
+            // return;
+            console.log('tmpSource: ', tmpSource);
+            // console.log('Image data: ', data);
 
-                // arrImg.push({'id': _id,'type':'image', 'uri':source.uri, 'uuid':_photoUUID,is_featured:false});
-                // // console.log('chuck : ', _.chunk(arrImg,3));
-
-                // let mainTmp=_.chunk(_.cloneDeep(arrImg),3);
-                // console.log("main tmp ", mainTmp);
-
-                // this.setState({
-                //     img: mainTmp,
-                //     idx: arrImg.length
-                // })
-                // console.log('state tmp',this.state);
-                
-                
-                let data = response.data;
-                 
-                let url = '/api/media/photos/'+ _photoUUID +'/save';
-                // return;
-                // console.log('Response: ', response);
-                postMedia(url, [
-                    // {name: response.fileName , filename: response.fileName, data: data, type: 'image/jpg'},
-                    {name: 'image' , filename: response.fileName, data: data, type:'image/foo'}
-                ]).then((response) => {
-                    console.log('success response: ', response);  
+            postMedia(url, [
+                // {name: response.fileName , filename: response.fileName, data: data, type: 'image/jpg'},
+                {name: 'image' , filename: imgData.filename, data: data, type:'image/jpg'}
+            ]).then((response) => {
+                console.log('success response: ', response);
+                if(response.code == 200){
+                    const _photoId = response.result.upload_session_key;
                     UserHelper.UserInfo.photos.push(response.result);
                     // let _tmp = _.cloneDeep(this.state.allImg);
 
@@ -332,84 +456,123 @@ export default class ImageUploadEditProfile extends Component {
                             'type':'image', 
                             'uri':v.thumbnail_url_link, 
                             'uuid':v.upload_session_key,
+                            'boxType': 'photo',
+                            created_date: new Date().getTime(),                                                
+                            tmpSource: _photoId == v.upload_session_key ? tmpSource :  null,
                             is_featured:v.is_featured
                         }
-                        if(k == allImgClone.length-1){
-                            _tmp = _.extend({
-                                tmpSource: tmpSource,
-                            }, _tmp)
-                        }
+                        // if(k == allImgClone.length-1){
+                        //     _tmp = _.extend({
+                        //         tmpSource: tmpSource,
+                        //     }, _tmp)
+                        // }
                         tmpAllImg.push(_tmp);
                     })
 
-                    // console.log('tmpAllImg: ', tmpAllImg);
+                    console.log('tmpAllImg: ', tmpAllImg);
 
-                    let _chunkObj=_.chunk(_.cloneDeep(tmpAllImg),3);
+                    // let _chunkObj=_.chunk(_.cloneDeep(tmpAllImg),3);
                     this.setState({
-                        img: _chunkObj,
+                        //img: _chunkObj,
                         allImg: UserHelper.UserInfo.photos,                        
-                        idx: tmpAllImg.length
+                        idx: tmpAllImg.length,
+                        data: [],
+                        extraData: [{_id : that.state.extraData[0]._id++}]
+                    }, function(){
+
+                        console.log('after upload: ', that.state.data);
+
+                        that.setState({
+                            data: that._generateBox(tmpAllImg),                    
+                            extraData: [{_id : that.state.extraData[0]._id++}]  
+                        });
+
+                        DeviceEventEmitter.emit('UpdateHeader');
+
                     })
 
                     // console.log('Update Photo to user data : ', UserHelper.UserInfo);
-
                     StorageData._saveUserData('TolenUserData',JSON.stringify(UserHelper.UserInfo)); 
-                    // assign for tmp user obj for helper
-                    // console.log("Upload Complete",this.state);
-                    // let _tmpPhotoUpload = this.state.photoUploaded;
-                    // _tmpPhotoUpload.push(response.result);
+                }
 
-                    // // store photo uploaded
-                    // that.setState((previousState) => {
-                    //     // console.log('previousState.messages : ',previousState.messages); 
-                    //     return {
-                    //        photoUploaded: _tmpPhotoUpload
-                    //     };
-                    // });
+                this.setState({
+                    uploading: false
+                }) 
 
-                    // console.log('photo uploaded: ', this.state);
-                    // UserHelper.UserInfo.photos=
-                });
-            }
+            });
+        }
+    }
+    
+    chooseImage = () => {
+        let that = this;
+
+        if(this.state.uploading)
+            return;
+
+        // console.log('check is first photo : ', that.state.isFirstPhoto);
+
+        ImagePickerCrop.openPicker({
+            mediaType: 'photo',
+            // cropping: true,
+            includeBase64: true,
+          }).then(image => {
+            console.log('Image B4 Crop: ', image);
+            const _sizeCrop = Helper._getSizeCrop(image);
+            // console.log('_sizeCrop: ', _sizeCrop);
+            ImagePickerCrop.openCropper({
+                ..._sizeCrop,
+                path: image.path,
+                includeBase64: true,
+            }).then(imageAfterScrop => {
+
+                let _imageData = imageAfterScrop;
+                let defUUID = uuid.v4();
+                _imageData.filename = image.filename || defUUID;
+                console.log('imageAfterScrop : ',imageAfterScrop);
+
+                this.imageCropUpload(_imageData, defUUID);
+                
+            }).catch(e => {
+                // alert(e);
+                console.log('error : ', e);
+            });
+
+            
+        }).catch(e => {
+            // alert(e);
+            console.log('error : ', e);
         });
+
     }
 
-    _mediaOption = (_media, _mediaIndex) => {
+    _mediaOption = (_media) => {
         let _SELF = this;
-
-
-        if(Helper._isIOS){
+        _mediaIndex = _media.id;
+        if(Helper._isIOS()){
             // popup message from bottom with ios native component
             ActionSheetIOS.showActionSheetWithOptions({
-
                 message: 'Are you sure you want to delete this photo?',
                 options: BUTTONS,
                 cancelButtonIndex: CANCEL_INDEX,
                 destructiveButtonIndex: DESTRUCTIVE_INDEX,
-
             },
             (buttonIndex) => {
-
                 // console.log(buttonIndex);
                 //   this.setState({ clicked: BUTTONS[buttonIndex] });
                 if(buttonIndex==0){
                     _SELF._removePhoto(_media, _mediaIndex)
                 }
-
             });
-        }
-        else{
-
+        }else{
             // for android ask with alert message with button
-
             // Works on both iOS and Android
             Alert.alert(
             'Are you sure you want to delete this photo?',
-            // 'My Alert Msg', 
+            '', 
             [
                 // {text: 'Ask me later', onPress: () => console.log('Ask me later pressed')},
                 {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-                {text: 'Delete', onPress: () =>  _SELF._removePhoto(_mediaId, _mediaIndex) },
+                {text: 'Delete', onPress: () =>  _SELF._removePhoto(_media, _mediaIndex) },
             ],
             { cancelable: false }
             )
@@ -417,17 +580,38 @@ export default class ImageUploadEditProfile extends Component {
     }
 
     componentDidMount(){
+        
+    }
+
+    componentWillMount(){
         this._getPhoto();
     }
 
-    render() {
+    componentWillUnmount(){
+        
+        // clear tmp for crop & upload image
+        ImagePickerCrop.clean().then(() => {
+            console.log('removed all tmp images from tmp directory');
+        }).catch(e => {
+            console.log('cannot removed all tmp images from tmp directory');
+        });
+        
+    }
 
-        // {console.log("This is the information of the user: ", this.props.userInfo)}
-        return ( 
-            <View style={[ styles.justFlexContainer ]}>
+    _keyExtractor = (item, index) => index;
+    
+    _renderItem = ({item}) => {
+        return (  
+            <PhotoBoxItem { ...item } uploading={this.state.uploading} chooseImage={ this.chooseImage } rowPress={ this._onRowPress } checkActiveTag={this.checkActiveTag} selectedTag={this.selectedTag} _mediaOption={this._mediaOption} />
+    )};
 
+    render(){
+        return(
+
+            <View style={[ styles.justFlexContainer, styles.mainScreenBg]}>  
+            
                 {/* image upload */}
-                <View style={[styles.marginBotMD]}>
+                <View style={[styles.marginBotMD, {paddingHorizontal: 10}]}>
                     <View style={{flexDirection:'row'}}>
                         <View style={{flex:0.7}}>
                             <Text style={{fontWeight:'bold'}}>
@@ -437,144 +621,39 @@ export default class ImageUploadEditProfile extends Component {
                         
                         <View style={{flex:0.3}}>
                             <Text style={[ {color: Colors.primaryColor, textAlign:'right'} ]}>
-                                {this.state.allImg.length || 0}/10 Photos
+                                {this.state.allImg.length || 0}/6 Photos
                             </Text>
                         </View>
                     </View>
                 </View>
-                
-                <View style={[ {flex:1} ]}> 
-                    {this.state.img.map((itemMain, indexMain) => {
-                        return (
-                            <View key={indexMain} style={[styles.boxWrapContainer,styles.marginTopMD1]}>    
-                                {itemMain.map((item, index) => {
-                                
-                                    {/*console.log("render item value",item);*/}
 
-                                        return (
-                                        <View style={[styles.boxWrapItem, styles.myWrap, this.checkActiveTag(item) && styles.boxWrapSelected]} key={ index } >
-                                                <TouchableOpacity
-                                                    activeOpacity = {0.9}
-                                                    style={[{flex:1}]} 
-                                                    onPress={ () => this.selectedTag(item) }>
+                <FlatList
+                    style={{flex: 1}}
+                    extraData={this.state.extraData}
+                    data={this.state.data}
+                    keyExtractor={this._keyExtractor}
+                    ref={ref => this.listRef = ref}
+                    //ListHeaderComponent={this.renderHeader}
+                    horizontal={false}
+                    numColumns={3}
+                    scrollEnabled={false}
+                    columnWrapperStyle={{ margin: 5 }}
+                    //ListFooterComponent={this.renderFooter}
+                    renderItem={this._renderItem}
+                    removeClippedSubviews={false}
+                    viewabilityConfig={VIEWABILITY_CONFIG}
 
-                                                    <Image
-                                                        style={styles.userAvatarFull}
-                                                        source={{ uri: item.tmpSource || item.uri }}
-                                                    />
+                    //onViewableItemsChanged = {this.onViewableItemsChanged}
 
-                                                    {this.checkActiveTag(item) && (
-                                                    
-                                                        <View style={[styles.absoluteBox,styles.boxFeatured]}> 
-                                                            <View style={[styles.boxWrapStatusContainer,styles.mainHorizontalPaddingSM]}> 
-                                                                <Text style={[styles.boxWrapSelectStatus, styles.fontBold]}>
-                                                                    Featured
-                                                                </Text>
-                                                            </View>
-                                                        </View> 
-
-                                                    )}
-                                            
-                                                </TouchableOpacity>
-                                                <TouchableOpacity 
-                                                    style={[{position:'absolute', right: 5, top: 0}]}
-                                                    onPress={ () => this._mediaOption(item, index)}>
-                                                    <Icon
-                                                        name={"more-horiz"}
-                                                        style={[ styles.iconPlus,{fontSize:24,color:'white', backgroundColor: 'transparent'} ]} 
-                                                    />
-                                                </TouchableOpacity>
-                                            </View>
-                                        )
-                                })}
-
-
-                                { itemMain.length==1 &&  
-                    
-                                        <TouchableOpacity 
-                                            
-                                            activeOpacity = {0.9}
-                                            style={[ styles.boxWrapItem, styles.myWrap, styles.flexCenter ]} 
-                                            onPress={this.chooseImage.bind(this)} >
-
-                                            <Icon
-                                                name="add"
-                                                style={[ styles.iconPlus ]} 
-                                            />
-                                        </TouchableOpacity>
-
-                                }
-                                
-                                { itemMain.length==1 &&  
-                    
-                                            <TouchableOpacity 
-                                            
-                                            activeOpacity = {0}
-                                            style={[ styles.boxWrapItem, styles.myWrap, styles.flexCenter ,{opacity:0}]} 
-                                                >
-
-                                        </TouchableOpacity>
-
-                                }
-                                {
-                                    itemMain.length==2 &&   
-                                
-                                        <TouchableOpacity 
-                                            
-                                            activeOpacity = {0.9}
-                                            style={[ styles.boxWrapItem, styles.myWrap, styles.flexCenter ]} 
-                                            onPress={this.chooseImage.bind(this)} >
-
-                                            <Icon
-                                                name="add"
-                                                style={[ styles.iconPlus ]} 
-                                            />
-                                        </TouchableOpacity>
-                                        
-                                    
-
-                                }
-                                    
-
-                            </View>
-                            )
-                        })}
-
-
-                        {  ((this.state.img.length>0 && this.state.img[this.state.img.length-1].length==3) || this.state.img.length==0) && <View style={[styles.boxWrapContainer,styles.marginTopMD1]}>
-                                        <TouchableOpacity 
-                                            
-                                            activeOpacity = {0.9}
-                                            style={[ styles.boxWrapItem, styles.myWrap, styles.flexCenter ]} 
-                                            onPress={this.chooseImage.bind(this)} >
-
-                                            <Icon
-                                                name="add"
-                                                style={[ styles.iconPlus ]} 
-                                            />
-                                        </TouchableOpacity>
-                                            <TouchableOpacity 
-                                            
-                                            activeOpacity = {0}
-                                            style={[ styles.boxWrapItem, styles.myWrap, styles.flexCenter ,{opacity:0}]} 
-                                                >
-
-                                        </TouchableOpacity>
-                                            <TouchableOpacity 
-                                            
-                                            activeOpacity = {0}
-                                            style={[ styles.boxWrapItem, styles.myWrap, styles.flexCenter ,{opacity:0}]} 
-                                                >
-
-                                        </TouchableOpacity>
-                        </View>}
-
-                </View>
+                    //refreshing={this.state.refreshing}
+                    //onRefresh={this.handleRefresh}
+                    //onEndReachedThreshold={0.5}
+                    //onEndReached={this.handleLoadMore}
+                />
 
             </View>
-     
-        );
 
+        )
     }
 
 }

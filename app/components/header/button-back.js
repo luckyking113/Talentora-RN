@@ -11,21 +11,50 @@ import {
 // import Icon from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/Entypo';
 import { Colors } from '@themes/index';
+import { IconCustom } from '@components/ui/icon-custom';
+import { UserHelper, Helper } from '@helper/helper';
 
 import { NavigationActions } from 'react-navigation';
 import _ from 'lodash'
 
 class ButtonBack extends Component {
 
+    // _updateMetaDataMessage = () => {
+    //     const { icon, isGoBack, btnLabel, colBtn, screen  } = this.props;
+    //     const {state} = isGoBack;
+        
+    //     let _members = _.cloneDeep(state.params.message_members);
+
+    //     _members[UserHelper.UserInfo._id].isOnScreen = false;
+        
+    //     console.log('update my meta data: ',_members);
+
+    //     state.params.message_channel.updateMetaData({ chat_members : JSON.stringify(_members)}, function(response, error){
+    //         if (error) {
+    //             console.log(error);
+    //             return;
+    //         }
+    //         console.log('success update meta data: ', JSON.parse(response.chat_members));					
+    //     });
+
+    // }
 
     _handleClick = () => {
 
-        const { icon, isGoBack, btnLabel, colBtn } = this.props;
+        const { icon, isGoBack, btnLabel, colBtn, screen  } = this.props;
 
         console.log('state : ', isGoBack.state);
 
         const {state} = isGoBack;
         // state.params._callBack();
+
+        // console.log('state param: ', state.params);
+        // if(screen == 'message_detail'){
+        //     if(state.params.message_channel){
+        //         this._updateMetaDataMessage();
+        //         state.params.message_channel.markAsRead();
+        //     }
+        // }
 
         if(state.params){
             if(state.params.updateUserVideoList){
@@ -59,6 +88,7 @@ class ButtonBack extends Component {
             }
         }
         else{
+            // isGoBack.dispatch(NavigationActions.back());
             isGoBack.goBack();
         }
 
@@ -80,9 +110,13 @@ class ButtonBack extends Component {
             onPress={ () => this._handleClick() }
 
         >
-            <Icon
+            {/*<Icon
                 name1="ios-arrow-back"
                 name="chevron-small-left"
+                style={[ styles.icon, colBtn ]}
+            />*/}
+            <IconCustom
+                name="back-gray-icon"
                 style={[ styles.icon, colBtn ]}
             />
             <Text style={[styles.btnLabel, colBtn]}>{btnLabel}</Text> 
@@ -97,19 +131,22 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
+        minWidth: 50,
         // backgroundColor: 'red',
     },
     noTextLabel: {
         paddingRight: 20,
     },
     btnLabel:{
+        marginLeft: 15,
         fontSize: 17,
         // fontWeight: 'bold',
         color: Colors.textColorDark,
     },
     icon: { 
-        fontSize: 30,
-        color: Colors.textColorDark, 
+        left: 5,
+        fontSize: 18,
+        color: Colors.placeHolder, 
     }
 })
 

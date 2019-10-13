@@ -12,7 +12,9 @@ import {
     StatusBar,
     ListView,
     RefreshControl,
-    DeviceEventEmitter
+    DeviceEventEmitter,
+    FlatList,
+    ActivityIndicator
 } from 'react-native'
 
 
@@ -35,6 +37,7 @@ import ApplyRowItem from '@components/job/comp/apply-row-item';
 
 import { getApi } from '@api/request';
 
+import NormalListItemDataMockUpLoading from '@components/other/normal-list-item-data-mock-up-loading'  
 
 function mapStateToProps(state) {
     return {
@@ -42,80 +45,33 @@ function mapStateToProps(state) {
     }
 }
 
-const _talentType = [
-    {
-        id: '1',
-        category: 'actor',
-        display_name: 'Actor'
-    },
-    {
-        id: '3',
-        category: 'musician',
-        display_name: 'Musician'
-    },
-    {
-        id: '2',
-        category: 'singer',
-        display_name: 'Singer'
-    },
-    {
-        id: '4',
-        category: 'dancer',
-        display_name: 'Dancer'
-    },
-    {
-        id: '5',
-        category: 'model',
-        display_name: 'Model'
-    },
-    {
-        id: '6',
-        category: 'host',
-        display_name: 'Host'
-    }
-];
+const VIEWABILITY_CONFIG = {
+  minimumViewTime: 3000,
+  viewAreaCoveragePercentThreshold: 100,
+  waitForInteraction: false,
+};
+
 
 class AppliedJob extends Component {
 
     constructor(props){
         super(props)
 
-        const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-
-        let _tmpData = [{
-                id: 2,
-                title: 'Spider Man Home Coming Stunt',
-                cover: 'https://scontent-sit4-1.xx.fbcdn.net/v/t1.0-1/p160x160/13010906_1094604257262920_5206116280130189740_n.jpg?oh=7696d1cab8ea39104f2d4e14ddf3d2f3&oe=59B68DDC',
-                apply_count: 4,
-                createdAt: 1495470850293,
-                talent_type: _talentType,
-            },{
-                id: 1,
-                title: 'Stunt Team For Doctor Strange',
-                cover: 'https://scontent-sit4-1.xx.fbcdn.net/v/t1.0-1/p160x160/13010906_1094604257262920_5206116280130189740_n.jpg?oh=7696d1cab8ea39104f2d4e14ddf3d2f3&oe=59B68DDC',
-                apply_count: 0,
-                createdAt: 1495470850293,
-                talent_type: _talentType,
-            },{
-                id: 3,
-                title: 'Thor Ragnarok Actor',
-                cover: 'https://scontent-sit4-1.xx.fbcdn.net/v/t1.0-1/p160x160/13010906_1094604257262920_5206116280130189740_n.jpg?oh=7696d1cab8ea39104f2d4e14ddf3d2f3&oe=59B68DDC',  
-                apply_count: 0,
-                createdAt: 1495470850293,
-                talent_type: _talentType,
-            },{
-                id: 4,
-                title: 'Hollywood Movie Actor',
-                cover: 'https://scontent-sit4-1.xx.fbcdn.net/v/t1.0-1/p160x160/13010906_1094604257262920_5206116280130189740_n.jpg?oh=7696d1cab8ea39104f2d4e14ddf3d2f3&oe=59B68DDC',
-                apply_count: 4,
-                createdAt: 1495470850293,
-                talent_type: _talentType,
-            }]
+        // const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 
         this.state = {
+            isFirstLoad: false,
             isPullRefresh: false,
-            dataSource: ds.cloneWithRows([]),
-            applyList: []
+            limit: 10,
+            page: 1,
+            // dataSource: ds.cloneWithRows([]),
+            refreshing: false,
+            isLoadMore: false,
+            data: [],
+            options: {
+                total: 0,
+            },
+            extraData: [{_id : 1}],
         }
 
 
@@ -146,41 +102,53 @@ class AppliedJob extends Component {
     goToJobDetail = (_job) => { 
         // console.log(_jobId, '==', this.props.navigation);
         const { navigate, goBack } = this.props.navigation;
-        navigate('JobDetail', {job: _job, view_only: true, can_remove:true}); 
-
+        navigate('JobDetail', {job: _job, view_only: false, can_remove: true}); 
     }
 
     // get vailable job (all match job)
-    _getAppliedJob = () => {
+    _getAppliedJob = (_isLoadMore=false, isRefreshListAgain=false) => {
         // /api/users/me/jobs
         let _SELF = this;
-        let API_URL = '/api/users/me/jobs/apply';
+        let _offset = (this.state.page - 1) * this.state.limit;
+        let API_URL = '/api/users/me/jobs/apply?sort=-created_at&offset='+_offset+'&limit='+this.state.limit;
         // console.log(API_URL);
         getApi(API_URL).then((_response) => {
             // console.log('User Video Already Uploaded : ', _response);
             if(_response.code == 200){
                 let _allAppliedJob = _response.result;
 
-                console.log('All Applied Job : ', _allAppliedJob); 
-
-                // _SELF.setState({
-                //     allJobList: _allAvailableJob
-                // })
-
-                // console.log('this ', _SELF.state);
-
-                const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-                _SELF.setState({
-                    dataSource: ds.cloneWithRows(_allAppliedJob),
-                    applyList: _allAppliedJob,
-                })
+                console.log('All Applied Job : ', _response, ' refreshing :', _SELF.state.refreshing, ' isRefreshListAgain: ', isRefreshListAgain); 
+                console.log('_isLoadMore: ', _isLoadMore);
+                if((!_isLoadMore && !_.isEmpty(_allAppliedJob)) || _SELF.state.refreshing){
+                    console.log('condition 1');
+                    _SELF.setState({
+                        data: _allAppliedJob,
+                        options: _response.options,
+                        page: _response.options.total <= 1 ? 1 : _SELF.state.page + 1,
+                    })
+                }
+                else{
+                    console.log('condition 2');
+                    if(_isLoadMore){
+                        _SELF.setState({
+                            data: [..._SELF.state.data ,..._allAppliedJob ],
+                            options: _response.options,                        
+                            page: _SELF.state.page + (!_.isEmpty(_allAppliedJob) ? 1 : 0),
+                        })
+                    }
+                }
 
                 // console.log(' Applied Job: ', _SELF);
 
             }
 
             _SELF.setState({
-                isPullRefresh: false,
+                isFirstLoad: true,
+                refreshing: false,
+                isLoadMore: false,
+                extraData: [{_id : _SELF.state.extraData[0]._id++}]
+            }, function(){
+                console.log('This is data lenght', this.state.data , this.state.page);
             })
 
         });
@@ -189,85 +157,133 @@ class AppliedJob extends Component {
     componentWillMount(){
         let _SELF = this;
         DeviceEventEmitter.addListener('refreshApplyList', (data) => {
-            _SELF.onRefresh();
+            _SELF.handleRefresh(true);
         });
     }
 
     componentDidMount() {
-        console.log('hey xxxxxxxx');
+        // console.log('hey xxxxxxxx');
         this._getAppliedJob();
 
+        // hide filter
+        // this.props.navigation.setParams({
+        //     hideFilter: true
+        // })
     }
 
     componentWillUnmount(){
         DeviceEventEmitter.removeListener('refreshApplyList');
     }
 
-    onRefresh = () => {
+
+    _keyExtractor = (item, index) => index;
+
+    _renderItem = ({item}) => {
+        return ( 
+            <ApplyRowItem { ...item } rowPress={ this.goToJobDetail } />
+    )};
+
+    renderFooter = () => {
+        if (!this.state.isLoadMore) return null;
+
+        return (
+        <View
+            style={{
+                paddingVertical: 20,
+                borderColor: "#CED0CE"
+            }}
+        >
+            <ActivityIndicator animating size="small" />
+        </View>
+        );
+    };
+
+    handleRefresh = (isRefreshListAgain=false) => {
+
+        let that = this;
         this.setState({
-            isPullRefresh: true,
+            refreshing: true,
+            page: 1,
+        }, function(){
+            this._getAppliedJob(false, isRefreshListAgain);
         })
-        this._getAppliedJob();
+
     }
+
+    handleLoadMore = () => {
+
+        console.log('isLoadMore: ', this.state.options);
+        // We're already fetching
+        if (this.state.isLoadMore || this.state.options.total<=this.state.limit) {
+            console.log('no need load');
+            return;
+        }
+        console.log('still work')
+        this.setState({
+            isLoadMore: true,
+        }, function(){
+            // console.log('go get noti');
+            this._getAppliedJob(true);
+        });
+
+    }
+
 
     render() {
 
-        if(_.isEmpty(this.state.applyList))
+        if(this.state.data.length<=0 && !this.state.isFirstLoad)
             return (
-                
-                <View style={[ styles.defaultContainer, styles.mainScreenBg ]}>
-
-                    <Text style={[styles.blackText, styles.btFontSize]}>
-                        You’ve not apply for any jobs yet.
-                    </Text>
-
-                    {/*<Text style={[styles.grayLessText, styles.marginTopXS]}>
-                        Post a job in less than 30 seconds.
-                    </Text>*/}
-
-                    <TouchableOpacity style={[styles.flatButton, styles.flatButtonSizeSM, styles.marginTopMDD, styles.mainHorizontalPaddingSM]} onPress={() => this.startApplying() }>
-                        <Text style={[styles.flatBtnText, styles.btFontSize]}>Start applying</Text>
-                    </TouchableOpacity>
-
+                <View style={[ styles.justFlexContainer, styles.mainScreenBg, {paddingTop: 50} ]}>
+                    <NormalListItemDataMockUpLoading />
                 </View>
-            );
+            )
         else{
-            return (
-                <View style={[ styles.justFlexContainer, styles.mainScreenBg]}>  
+            if(this.state.data.length<=0 && this.state.page == 1)
+                return (
+                    
+                    <View style={[ styles.defaultContainer, styles.mainScreenBg ]}>
 
-                    {/*<ScrollView contentContainerStyle={[ styles.defaultScrollContainer ]}>*/}
+                        <Text style={[styles.blackText, styles.btFontSize]}>
+                            You’ve not applied for any jobs yet.
+                        </Text>
 
-                        <View style={[ styles.justFlexContainer]}>
+                        {/*<Text style={[styles.grayLessText, styles.marginTopXS]}>
+                            Post a job in less than 30 seconds.
+                        </Text>*/}
 
-                            <ListView
-                                refreshControl={  
-                                <RefreshControl 
-                                    refreshing={this.state.isPullRefresh}
-                                    onRefresh={ () => this.onRefresh() }
-                                    progressBackgroundColor="#ffff00"
-                                />
-                                }
-                                dataSource={this.state.dataSource} 
-                                renderFooter={this.renderFooter}
-                                onEndReachedThreshold={10}
-                                onEndReached={() => { 
-                                    {/*console.log("fired"); // keeps firing*/}
-                                }}
-                                renderRow={(rowData) => <ApplyRowItem { ...rowData } rowPress={ this.goToJobDetail } /> }
-                                enableEmptySections={true}
-                                automaticallyAdjustContentInsets={false}
-                                keyboardDismissMode="on-drag"
-                                keyboardShouldPersistTaps="always" 
-                                showsVerticalScrollIndicator={false}
-                                removeClippedSubviews={false}
-                            />
+                        <TouchableOpacity style={[styles.flatButton, styles.flatButtonSizeSM, styles.marginTopMDD, styles.mainHorizontalPaddingSM]} onPress={() => this.startApplying() }>
+                            <Text style={[styles.flatBtnText, styles.btFontSize]}>Start applying</Text>
+                        </TouchableOpacity>
 
-                        </View>
-                        
-                    {/*</ScrollView>*/}
+                    </View>
+                );
+            else{
+                return (
+                    <View style={[ styles.justFlexContainer, styles.mainScreenBg, {paddingTop: 50}]}>  
+                        {/* <Text>{this.state.page}</Text> */}
+                        <FlatList
+                            extraData={this.state.extraData}
+                            data={this.state.data}
+                            keyExtractor={this._keyExtractor}
+                            ref={ref => this.listRef = ref}
+                            //ListHeaderComponent={this.renderHeader}
 
-                </View>
-            );
+                            ListFooterComponent={this.renderFooter}
+                            renderItem={this._renderItem}
+                            removeClippedSubviews={false}
+                            viewabilityConfig={VIEWABILITY_CONFIG}
+
+                            //onViewableItemsChanged = {this.onViewableItemsChanged}
+
+                            refreshing={this.state.refreshing}
+                            onRefresh={this.handleRefresh}
+                            onEndReachedThreshold={0.5}
+                            onEndReached={this.handleLoadMore}
+                        />
+
+                    </View>
+                );
+            }
         }
     }
 }

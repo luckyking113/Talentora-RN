@@ -10,6 +10,10 @@ import { ChatHelper, Helper } from '@helper/helper';
 
 import _ from 'lodash'
 
+import { CachedImage, ImageCache, CustomCachedImage } from "react-native-img-cache";
+import ImageProgress from 'react-native-image-progress';
+import {ProgressBar, ProgressCircle} from 'react-native-progress';
+import { Colors } from '@themes/index';
 
 const styles = StyleSheet.create({
     ...Ultilities,
@@ -40,8 +44,14 @@ export default class Row extends React.Component {
 
                 {/* avatar */}
 
-                <Image source={ this._getCover(this.props) } style={styles.itemPhoto} /> 
-                
+                {/*<Image source={ this._getCover(this.props) } style={styles.itemPhoto} /> */}
+                <CustomCachedImage
+                    style={styles.itemPhoto}
+                    defaultSource={ require('@assets/job-banner.jpg') }
+                    component={ImageProgress}
+                    source={ this._getCover(this.props) } 
+                    indicator={ProgressCircle} 
+                />
                 <View style={[ styles.infoContainer ]}>
 
                     <View>
@@ -51,18 +61,15 @@ export default class Row extends React.Component {
                         </Text>
                     </View>
 
-                    <View style={[ styles.marginTopXXS ]}>
-                        <Text style={[ styles.postDate, styles.btFontSizeSM, {textAlign: 'left'} ]}>
+                    <View style={[ styles.marginTopXXS, {flexDirection:'row'} ]}>
+                        <Text style={[ styles.postDate, styles.btFontSizeSM, {textAlign: 'left', flex:1} ]}>
                             Applied { Helper._getTimeFromNow(this.props._created_at) }
                         </Text>
                     </View>
-
-
                 </View>
-
+                {this.props.status === 'cancel' && <Text style={[ styles.postDate, styles.btFontSizeSM, {color: Colors.primaryColor, alignSelf:'flex-end', marginBottom:-10, fontSize: 12}]}>Closed</Text>}
             </TouchableOpacity>
 
-            
 
         </View>
 

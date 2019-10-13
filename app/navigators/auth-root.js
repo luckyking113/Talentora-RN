@@ -53,8 +53,59 @@
 
 // export default RootAutoNav;
 
+import {
+    createStackNavigator,  DrawerNavigator, NavigationActions
+} from 'react-navigation';
+// import React, { Component } from 'react'
+import VideoScreen from '@components/discovery/video-view';
+import VideoTrimScreen from '@components/user/comp/video-trim-view';
+
+// import { StyleSheet, Text, View, TextInput, TouchableOpacity, TouchableWithoutFeedback , Alert, StatusBar, ActivityIndicator } from 'react-native';
 
 import TabNavigator from '@navigators/landing'
+// import GET_HELP from '@navigators/landing/get-help'
+// export default TabNavigator;
 
-export default TabNavigator;
+const options = {
+    initialRouteName: 'RootScreen',
+    lazyLoad: true,
+    navigationOptions: {
+        headerVisible: false,
+        header: null,
+    },
+    mode: 'modal'
+}
 
+// export default StackNavigator({
+const authRootStack = createStackNavigator({
+        
+    RootScreen:   { screen: TabNavigator, navigationOptions: { } },
+    VideoScreen:   { 
+        screen: VideoScreen,
+        navigationOptions: {
+            headerVisible: false,
+            header: null,
+        }},
+    VideoTrimScreen:   { 
+        screen: VideoTrimScreen,
+        navigationOptions: {
+            headerVisible: false,
+            header: null,
+        }},
+}, options);
+
+const navigateOnce = (getStateForAction) => (action, state) => {
+    const {type, routeName} = action;
+    // console.log('action: ', action, ' === ', 'state: ', state);
+    return (
+      state &&
+      type === NavigationActions.NAVIGATE &&
+      routeName === state.routes[state.routes.length - 1].routeName
+    ) ? null : getStateForAction(action, state);
+    // you might want to replace 'null' with 'state' if you're using redux (see comments below)
+  };
+  
+  
+  authRootStack.router.getStateForAction = navigateOnce(authRootStack.router.getStateForAction);
+  
+  export default authRootStack;

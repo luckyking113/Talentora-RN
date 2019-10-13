@@ -211,9 +211,8 @@ class TalentSeekerWelcome extends Component{
                         <Modal
                             animationType={"slide"}
                             transparent={false}
-                            visible={this.state.modalVisible}
-                            
-                            onRequestClose={() => {alert("Modal has been closed.")}} >
+                            onRequestClose={() => {}}
+                            visible={this.state.modalVisible}>
                             
                             <View style={{marginTop: 22}}>
                                 <View>

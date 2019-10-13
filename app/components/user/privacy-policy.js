@@ -62,7 +62,7 @@ class PrivacyPolicy extends Component {
     render() {        
          return (
              <ScrollView style={[ styles.wrapper,styles.mainVerticalPadding, styles.mainHorizontalPadding ]}>
-                <Text style={{marginBottom:50}}>{this.state.privacyPolicy.detail}</Text>                                                                                                                                             
+                <Text style={{marginBottom:50, textAlign: 'justify'}}>{this.state.privacyPolicy.detail}</Text>                                                                                                                                             
             </ScrollView>
          );
     }

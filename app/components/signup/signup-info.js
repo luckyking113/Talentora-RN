@@ -21,7 +21,7 @@ import ALL_COUNTRIES from '@store/data/cca2';
 
 import { postApi } from '@api/request';
 
-import { UserHelper, StorageData, Helper } from '@helper/helper';
+import { UserHelper, StorageData, Helper, GoogleAnalyticsHelper } from '@helper/helper';
 
 import _ from 'lodash'
 
@@ -157,6 +157,10 @@ class SignUpInfo extends Component{
     }
 
     componentDidMount(){
+
+        GoogleAnalyticsHelper._trackScreenView('Sign Up');         
+        
+
         console.log('Test: ',this.props);
         // this.props.authenticate();
         return;
@@ -219,7 +223,6 @@ class SignUpInfo extends Component{
         console.log('after calling');
         // this.phoneResult=func(this.state.phone,'phone');
 
-
         if(!this.state.joining){
 
             if(func(this.state.country,'country')){
@@ -232,7 +235,8 @@ class SignUpInfo extends Component{
             if(func(this.state.email,'email')){
                     this.setState({
                     email: {
-                        isErrRequired:true
+                        isErrRequired:true,
+                        val: this.state.email.val
                     }
                 })
             }
@@ -265,11 +269,14 @@ class SignUpInfo extends Component{
                         lang_code: that.state.country.langCode,
                         phone_num_code: that.state.country.callingCode,
                         phone_number: that.state.phone.val,
-                        email: that.state.email.val,
+                        email: that.state.email.val.trim(),
                         password: that.state.password.val,
                     };
-                    
 
+                    // console.log('This is sing up info: ', signUpInfo);
+                    // console.log('This is code: ', that.state.country.callingCode);
+                    // return;
+                    
                     that.setState({
                         joining: true,
                         errMessage : null
@@ -285,7 +292,7 @@ class SignUpInfo extends Component{
                     // **** pls dont fucking delete my beauty code. !! get out of my code ****
 
                     let API_URL = '/api/users/register';
-
+                    // console.log('signUpInfo CCCwekt4tl3434 3gert  :', signUpInfo);
                     postApi(API_URL,
                         JSON.stringify({
                             "email": signUpInfo.email,
@@ -295,9 +302,10 @@ class SignUpInfo extends Component{
                             // "first_name": '',
                             // "last_name": '',
                             // "gender": '',
-                            "phone": signUpInfo.phone_number,
-                            "country_code": signUpInfo.lang_code,
-                            "country": signUpInfo.country
+                            "phone": signUpInfo.phone_number, 
+                            "country_code": signUpInfo.phone_num_code,
+                            "country": signUpInfo.country,
+                            is_register_completed : false,
                         })
                     ).then((response) => {
                         console.log('Response Object: ', response);
@@ -313,8 +321,8 @@ class SignUpInfo extends Component{
                             _userData.then(function(result){
                                 console.log('complete save sign up process 1');
                                 // navigate('WhoAreYou',{ sign_up_info: signUpInfo});
-                                navigate('WhoAreYou',{ sign_up_info: _result});
-                                
+                                // navigate('WhoAreYou',{ sign_up_info: _result});
+                                that.replaceScreen(_result)
                             });
                         }
                         else{
@@ -349,7 +357,7 @@ class SignUpInfo extends Component{
             return 'red';
         }
         else{
-            return Colors.textBlack;
+            return 'black';
         }
     }
    
@@ -357,6 +365,16 @@ class SignUpInfo extends Component{
         this.refs[nextField].focus();
     };
 
+    replaceScreen = (signUpInfo) => {
+        // const { locations, position } = this.props.navigation.state.params;
+        // console.log('Replace the screen');
+        this.props.navigation.dispatch({
+            key: 'WhoAreYou',
+            type: 'ReplaceCurrentScreen',
+            routeName: 'WhoAreYou',
+            params: {sign_up_info: signUpInfo}
+        });
+    };
 
     // start keyboard handle
     componentWillMount () {
@@ -439,7 +457,7 @@ class SignUpInfo extends Component{
                                 <CountryPicker
                                     countryList={ALL_COUNTRIES}
                                     closeable = {true}
-                                    // filterable = {true}
+                                    filterable = {true}
                                     onChange={(value)=> {
                                          this.setState({
                                             phone: {
@@ -461,7 +479,7 @@ class SignUpInfo extends Component{
                                     translation='eng' >
 
                                     <View style = {styles.countryPicker} >     
-                                        <Text style={[ {fontSize: 17, color:  this.checkColorCountryInput() } ]}> { this.state.country.val || 'Country' } </Text>
+                                        <Text style={[styles.inputValueFontSize, {color:  this.checkColorCountryInput() } ]}> { this.state.country.val || 'Country' } </Text>
                                     </View>
                                 </CountryPicker>
                                 
@@ -475,7 +493,7 @@ class SignUpInfo extends Component{
                                         placeholder="Phone number *"
                                         placeholderTextColor={ this.state.phone.isErrRequired ? 'red' :"#B9B9B9"}
                                         returnKeyType="next"
-                                        style={[styles.phoneNumber]}
+                                        style={[styles.phoneNumber,styles.inputValueFontSize]}
                                         onFocus = { ()=> this.keyboardDidShow(null) }
                                         onSubmitEditing={()=> this.focusNextField('3') }
                                         underlineColorAndroid = 'transparent'
@@ -495,7 +513,7 @@ class SignUpInfo extends Component{
                                     onFocus = { ()=> this.keyboardDidShow(null) }
                                     placeholderTextColor={ this.state.email.isErrRequired ? 'red' :"#B9B9B9"}
                                     returnKeyType="next"
-                                    style={[styles.flatInputBox, styles.marginTopBig]}
+                                    style={[styles.flatInputBox, styles.marginTopBig, styles.inputValueFontSize,{color : this.state.email.isErrRequired ? 'red' : '#4a4a4a'}]}
                                     onSubmitEditing={()=> this.focusNextField('4') }
                                     underlineColorAndroid = 'transparent'
                                     textAlignVertical = 'bottom'
@@ -514,7 +532,7 @@ class SignUpInfo extends Component{
                                     placeholderTextColor={ this.state.password.isErrRequired ? 'red' :"#B9B9B9"}
                                     returnKeyType="done"
                                     secureTextEntry
-                                    style={styles.flatInputBox}
+                                    style={[styles.flatInputBox,styles.inputValueFontSize]}
                                     onFocus = { ()=> this.keyboardDidShow(null) }
                                     onSubmitEditing={()=>this.joinUsNow()}
                                     underlineColorAndroid = 'transparent'
@@ -551,10 +569,16 @@ class SignUpInfo extends Component{
                             </TouchableOpacity>
 
                             <View style={[styles.centerEle, styles.marginTopSM]}>
-                                <Text style={styles.grayLessText}>By signin up, you agree to our</Text>
-                                <TouchableOpacity onPress={ () => {  } }>
-                                    <Text style={[styles.darkGrayText, styles.fontBold]}>Terms of Service & Privacy Policy.</Text>
-                                </TouchableOpacity>
+                                <Text style={styles.grayLessText}>By signing up, you agree to our</Text>
+                                <View style={{flexDirection:'row'}}>
+                                    <TouchableOpacity onPress={ () => { navigate('TermOfUse') } }>
+                                        <Text style={[styles.darkGrayText, styles.fontBold]}>Terms of Service</Text>
+                                    </TouchableOpacity>
+                                    <Text> & </Text>
+                                    <TouchableOpacity onPress={ () => { navigate('PrivacyPolicy') } }>
+                                        <Text style={[styles.darkGrayText, styles.fontBold]}>Privacy Policy.</Text>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
 
                         </View>

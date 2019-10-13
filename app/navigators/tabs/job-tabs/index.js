@@ -1,7 +1,7 @@
 import React from 'react'
-import {
-    TabNavigator,
-    StackNavigator
+import {    
+    createBottomTabNavigator,
+    createStackNavigator
 } from 'react-navigation';
 
 import { Colors } from '@themes/index';
@@ -61,14 +61,14 @@ const optionsStack = {
     lazyLoad: true,
 }
 
-const StackRoute = StackNavigator({
+const StackRoute = createStackNavigator({
 
     AvailableJob:   { screen: AvailableJob },
     ViewPostJob:   { screen: ViewPostJob },
 
 }, optionsStack);
 
-export default TabNavigator({
+export default createBottomTabNavigator({
 
     Available:       { 
                     screen: AvailableJob,  

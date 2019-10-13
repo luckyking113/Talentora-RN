@@ -44,9 +44,11 @@ import ButtonBack from '@components/header/button-back'
 import TalentFeedItem from '@components/lists/feed/talent-feed-list'
 import ProfileHeader from '@components/user/comp/profile-header'
 
-import { UserHelper, StorageData, Helper } from '@helper/helper';
+import { UserHelper, StorageData, Helper, GoogleAnalyticsHelper } from '@helper/helper';
 import _ from 'lodash'
 
+import Tab from '@components/tabs/tab'
+import SpamReport from '@components/other/spam-report';
 
 function mapStateToProps(state) {
     // console.log('wow',state)
@@ -105,6 +107,7 @@ class Profile extends React.PureComponent {
         super(props);
 
         this.state={
+            tmpVideoData: [],
             refreshing: false,
             selected: (new Map(): Map<string, boolean>),
             // data: tmpData,
@@ -118,25 +121,38 @@ class Profile extends React.PureComponent {
                     name: 'Dancer',
                     value: 'cancer',
                 },
-            ]
+            ],
+            user_name: UserHelper._getUserFullName(),
+            showModal: false,
+            userId: this._chkGetOtherUser()?this._chkGetOtherUser().user._id:''
         }
 
         const { navigate, goBack, state } = this.props.navigation;
-        // console.log(' State : ', state.params);
+        console.log(' State : ', state.params);
 
         _SELF = this;
-
     }
-    
     
     static navigationOptions = ({ navigation }) => ({
         // title: '', 
+        // tabBarIcon: (props) => (<Tab {...props} navigation={navigation} iconType="C" icon="profile-icon" badgeNumber={typeof navigation.state.params === 'undefined' ? 0 : navigation.state.params.badgeCount} />),        
         headerVisible: false, 
         headerTitle: navigation.state.params ? (navigation.state.params.user_info 
             ? Helper._getUserFullName(navigation.state.params.user_info.attributes) 
             : UserHelper._getUserFullName()) : UserHelper._getUserFullName(),
-            headerRight: (<ButtonRight
-                icon= {navigation.state.params ? (navigation.state.params.user_info ? "chat" : "settings") : "settings"}
+            headerRight: navigation.state.params ? (navigation.state.params.is_direct_chat ? (<ButtonRight
+                icon= {"message-icon"}
+                navigate={navigation.goBack}
+            />):(<ButtonRight
+                icon= {navigation.state.params ? (navigation.state.params.user_info ? "message-icon" : "settings-icon") : "settings-icon"}
+                navigate={navigation.navigate}
+                // to= {navigation.state.params ? (navigation.state.params.user_info ? "Chat" : "Setting") : "Setting"}
+                to= {navigation.state.params ? (navigation.state.params.user_info ? "Message" : "Setting") : "Setting"}
+                chat_info = {navigation.state.params ? (navigation.state.params.user_info ?
+                    navigation.state.params.user_info : undefined) : undefined}
+                navigation = {navigation}
+            />)) : (<ButtonRight
+                icon= {navigation.state.params ? (navigation.state.params.user_info ? "message-icon" : "settings-icon") : "settings-icon"}
                 navigate={navigation.navigate}
                 // to= {navigation.state.params ? (navigation.state.params.user_info ? "Chat" : "Setting") : "Setting"}
                 to= {navigation.state.params ? (navigation.state.params.user_info ? "Message" : "Setting") : "Setting"}
@@ -206,7 +222,6 @@ class Profile extends React.PureComponent {
 
         });
     }
-
 
     _getVideoList = (_isLoadMore = false, txtSearch='', isSearchLoading=false) => {
         // 
@@ -291,19 +306,22 @@ class Profile extends React.PureComponent {
                 //     _goodData.push(_tmp);
                 // }
 
-                // console.log('_isLoadMore', _goodData);
+                console.log('_isLoadMore', _isLoadMore);
                 if(_isLoadMore){
                     _SELF.setState({
-                        data: [..._SELF.state.data, ..._goodData]
+                        data: [..._SELF.state.data, ..._goodData],          
                     }, () => {
 
                     })
                 }
                 else{
                     _SELF.setState({
-                        data: _goodData
+                        data: [],
                     }, () => {
-
+                        _SELF.setState({
+                            data: _goodData,
+                            extraData: [{_id : _SELF.state.extraData[0]._id++}] // change this value to re-render header or footer 
+                        })
                     })
                 }
                 // console.log('this ', _SELF.state);
@@ -319,10 +337,13 @@ class Profile extends React.PureComponent {
                 })
 
             }
+            setTimeout(function() {
 
-            _SELF.setState({
-                refreshing: false,
-            })
+                _SELF.setState({
+                    refreshing: false,
+                })
+
+            }, 500);
             // console.log('_SELF', _SELF.state);
 
             // _SELF.listRef.scrollToOffset({offset: 50})
@@ -330,13 +351,14 @@ class Profile extends React.PureComponent {
         });
     }
 
-
-
     componentDidMount() {
+
+        GoogleAnalyticsHelper._trackScreenView('Profile');                 
+
         let _SELF = this;
-        setTimeout(function(){
+        // setTimeout(function(){
             // _SELF.props.navigation.setParams({ handleFunc1: this.goToSetting });
-        },5000)
+        // },5000)
         // this.props.navigation.setParams({ handleFunc: this.goToSetting });
         // console.log('this.props.navigation', this.props.navigation);
 
@@ -348,6 +370,10 @@ class Profile extends React.PureComponent {
 
         // console.log('User Info', UserHelper.UserInfo)
         
+        // remove temp videos
+        StorageData._removeStorage('TmpVideoData');
+
+
         // get first photo
         if(!UserHelper.UserInfo.cover){
             this._getAndUpdatePhoto();
@@ -384,8 +410,37 @@ class Profile extends React.PureComponent {
         // }));
     };
 
+    _togglePlayVideoPopup = (_id, _isMuted = false) => {
+        // this.setState({
+        //     paused : !this.state.paused,
+        // })
+        // console.log('video click :', _id, ' =', _isMuted);
+        let _tmpData = _.cloneDeep(this.state.data);
+        let _videoData = {};
+        _.each(_tmpData, function(v,k){
+            if(v._id == _id){
+
+                const _localVideo = _SELF._chkTmpVideoData(v);
+                console.log('_localVideo : ', _localVideo, ' === ', v);
+                if(v.is_processing && _localVideo.length>0){
+                    v.local_url = _.head(_localVideo).uri;
+                    v.localVideoThum = _.head(_localVideo).videoThum;
+                }
+                _videoData = v;
+            }
+        })
+
+
+        const { navigate, goBack, state } = this.props.navigation;
+        navigate('VideoScreen',{video_data: _videoData}); 
+
+
+    }
 
     _togglePlayVideo = (_id, _isMuted = false) => {
+
+        this._togglePlayVideoPopup(_id, _isMuted);
+        return;
         // this.setState({
         //     paused : !this.state.paused,
         // })
@@ -428,40 +483,45 @@ class Profile extends React.PureComponent {
         console.log('report video', _postId)
     }
 
-    _renderItem = ({item}) => (
+
+    _renderItem = ({item}) => {
+        // if(item.media_type == 'video')
+        return (
         <TalentFeedItem
-        myVideo={true}
-        id={ item._id }  
-        userId={ item.user._id }  
-        videoId={ item._id }   
-        onPressItem={ this._onPressItem } 
-        togglePlayVideo={ this._togglePlayVideo }
-        selected={ !!this.state.selected.get(item._id) }
-        title={ Helper._getUserFullName(item.user) } 
-        cover={ Helper._getCover(item.user) }  
-        caption = {item.caption || ''}
-        media_type={ 'video' } 
-        createdAt={item._created_at} 
-        videoUrl={item.s3_url + item.formatted_sd_video_url} 
-        paused={item.paused}   
-        loaded={item.loaded} 
-        alreadyLoaded={item.alreadyLoaded} 
-        updateVideoStatus = {this._updateVideoStatus}
-        videoThum={this._getVideoCover(item)}  
-        muted={item.muted}   
-        profile_cover={ Helper._getCover(item.user) } 
-        profile_id={ item.user._id } 
-        navigation={ this.props.navigation }
-        paddFirstItem={ true }
+            myVideo={true}
+            id={ item._id }  
+            userId={ item.user._id || item.user }  
+            videoId={ item._id }   
+            onPressItem={ this._onPressItem } 
+            togglePlayVideo={ this._togglePlayVideo }
+            selected={ !!this.state.selected.get(item._id) }
+            title={ Helper._getUserFullName(item.user) } 
+            cover={ Helper._getCover(item.user) }  
+            caption = {item.caption || ''}
+            media_type={ item.media_type } 
+            createdAt={item._created_at} 
+            videoUrl={ this._getVideoUri(item)}  
+            //videoUrl={'http://profficialsite.origin.mediaservices.windows.net/5ab94439-5804-4810-b220-1606ddcb8184/tears_of_steel_1080p-m3u8-aapl.ism/manifest(format=m3u8-aapl)'} 
+            //videoUrl={'http://stolaf-flash.streamguys.net/webcams/himom.stream/playlist.m3u8)'} 
+            
+            isLocalFile={this._chkTmpVideoData(item).length>0 ? true : false}
 
-        deleteVideo={this._deleteVideo}
-        reportVideo={this._reportVideo}
-
-        />
-    );
+            paused={item.paused}   
+            loaded={item.loaded} 
+            alreadyLoaded={item.alreadyLoaded} 
+            updateVideoStatus = {this._updateVideoStatus}
+            videoThum={this._getVideoCover(item)}  
+            muted={item.muted}   
+            profile_cover={ Helper._getCover(item.user) } 
+            profile_id={ item.user._id || item.user } 
+            navigation={ this.props.navigation }
+            paddFirstItem={ true }
+            deleteVideo={this._deleteVideo}
+            reportVideo={this._reportVideo} />
+    )};
 
     _updateVideoStatus = (_id, isLoaded = false) => {
-        console.log('_updateVideoStatus : ', _id);
+        // console.log('_updateVideoStatus : ', _id);
         
          let _tmpData = _.cloneDeep(this.state.data);
         _.each(_tmpData, function(v,k){
@@ -470,7 +530,7 @@ class Profile extends React.PureComponent {
             }
 
         });
-        console.log('_tmpData : ',_tmpData);
+        // console.log('_tmpData : ',_tmpData);
         this.setState({
             data: _tmpData
         }, () => {
@@ -478,15 +538,47 @@ class Profile extends React.PureComponent {
         });
     }
 
+    // check if video processing but we have backup video in local
+    _chkTmpVideoData = (item) => {
+        // let _video = null;
+        return _.filter(this.state.tmpVideoData,function(v,k){
+            return v.uuid == item.upload_session_key;
+        });
+
+        // return !_.isEmpty(_video) ? true : false;
+    }
+
+    _getVideoUri = (item) => {
+        const _chkTmpVideo = this._chkTmpVideoData(item);
+        // console.log('Cover _chkTmpVideo', _chkTmpVideo);        
+        if(_chkTmpVideo.length>0){
+            return _.head(_chkTmpVideo).uri;
+        }
+        else{
+            return !_.isEmpty(item.s3_url) ? item.s3_url + item.formatted_sd_video_url : item.video_id;
+        }
+    }
+
     _getVideoCover = (item) => {
-        return item.s3_url + item.formatted_video_thumbnail_url.replace('{{FILE_KEY}}',item.file_key)
+
+        const _chkTmpVideo = this._chkTmpVideoData(item);
+        // console.log('Cover _chkTmpVideo', _chkTmpVideo);
+        if(_chkTmpVideo.length>0){
+            return _.head(_chkTmpVideo).videoThum;
+        }
+        else{
+            if(item.media_type == 'video')
+                return item.s3_url + item.formatted_video_thumbnail_url.replace('{{FILE_KEY}}',item.file_key)
+            else
+                return item.thumbnail_url_link;
+        }
     }
 
     _renderHeader = ({item}) => (
         // console.log('item : ', item)
         <ProfileHeader
-        onPressItem={this._onPressItem}
-        />
+            onPressItem = {this._onPressItem}
+            canReview = {this.props.navigation.state?this.props.navigation.state.params.canReview:false}/>
     );
 
     renderFooter = () => {
@@ -506,7 +598,12 @@ class Profile extends React.PureComponent {
     };
 
     handleRefresh = () => {
-        console.log('pull to refresh');
+        // console.log('pull to refresh');
+        this.setState({
+            refreshing: true,
+        }, function(){
+            this._getVideoList();
+        })
     }
 
     handleLoadMore = () => {
@@ -546,8 +643,8 @@ class Profile extends React.PureComponent {
     }
 
     onViewableItemsChanged = (e) => {
-        console.log('onViewableItemsChanged :', e);
-
+        // console.log('onViewableItemsChanged :', e);
+        return;
         let _tmpData = _.cloneDeep(this.state.data);
 
         _.each(e.viewableItems,function(v,k){
@@ -583,7 +680,7 @@ class Profile extends React.PureComponent {
     componentWillMount() {
         let _SELF = this;
         DeviceEventEmitter.addListener('updateProfileInfo', (e)=>{ 
-            console.log('event',e);
+            // console.log('event',e);
             _SELF.setState({ 
                 extraData: [{_id : _SELF.state.extraData[0]._id++}] // change this value to re-render header or footer 
             }, function(){
@@ -591,44 +688,103 @@ class Profile extends React.PureComponent {
                     _SELF._getVideoList();
                 }
             })
+            // console.log('This Navigation: ', this.props.navigation);
+            // console.log('This _SELF Info: ', _SELF.props.user.profile.attributes);
+            // console.log('User Helper', UserHelper.UserInfo.profile);
+            // console.log('User Full Name: ', UserHelper._getUserFullName());
 
-         });
+            // isEdit is just set to update navigation, it isn't used in any place.
+            this.props.navigation.setParams({
+                isEdit: true
+            });
+            // console.log('IS Edit: ', this.props.navigation.state.params);
+        });
+
+        DeviceEventEmitter.addListener('PausedAllVideosProfile', (data) => {
+            // console.log('WOW Paused All Videos : ', data);
+
+            let _tmpData = _.cloneDeep(_SELF.state.data);  
+
+            _.each(_tmpData, function(v,k){
+                v.paused = true;
+            });
+            // console.log('_tmpData : ',_tmpData);
+            this.setState({
+                data: _tmpData
+            }, () => {
+
+            });
+
+        })
+
+        DeviceEventEmitter.addListener('UpdateHeader', () => {   
+
+            _SELF.setState({
+                extraData: [{_id : _SELF.state.extraData[0]._id++}] // change this value to re-render header or footer 
+            })
+
+        });
+
+        DeviceEventEmitter.addListener('SpamReport', () => {    
+            _SELF.setState({
+                showModal: true
+            })
+        });
+
+        DeviceEventEmitter.addListener('UpdateTmpVideoData', (_data) => {    
+            console.log('UpdateTmpVideoData :', _data);
+            _SELF.setState({
+                tmpVideoData: _data.tmpVideoData
+            })
+        });
+
     }
 
     componentWillUnmount() {
+        DeviceEventEmitter.removeListener('UpdateHeader');
         DeviceEventEmitter.removeListener('updateProfileInfo');
+        DeviceEventEmitter.removeListener('PausedAllVideosProfile');
+        DeviceEventEmitter.removeListener('SpamReport');
+        DeviceEventEmitter.removeListener('UpdateTmpVideoData');
     }
 
     // end testing flatlist
 
     render() {
         return (
-            
-            <FlatList
-                data={this.state.data}
-                keyExtractor={this._keyExtractor}
-                ListHeaderComponent={(): React$Element<*> => (
-                    <ProfileHeader
-                        userInfo={this._chkGetOtherUser() || UserHelper.UserInfo.profile}
-                        onPressItem={this._onPressItem}
-                        navigation = {this.props.navigation}
-                    />
-                )}
-                ListFooterComponent={this.renderFooter}
-                renderItem={this._renderItem}
-                removeClippedSubviews={false}
-                viewabilityConfig={VIEWABILITY_CONFIG}
+            <View>
+                <FlatList
+                    data={this.state.data}
+                    keyExtractor={this._keyExtractor}
+                    ListHeaderComponent={(): React$Element<*> => (
+                        <ProfileHeader
+                            userInfo={this._chkGetOtherUser() || (UserHelper.UserInfo ? UserHelper.UserInfo.profile : null)}
+                            onPressItem={this._onPressItem}
+                            navigation = {this.props.navigation}
+                        />
+                    )}
+                    ListFooterComponent={this.renderFooter}
+                    renderItem={this._renderItem}
+                    removeClippedSubviews={false}
+                    viewabilityConfig={VIEWABILITY_CONFIG}
 
-                onViewableItemsChanged = {this.onViewableItemsChanged}
+                    onViewableItemsChanged = {this.onViewableItemsChanged}
 
-                refreshing={this.state.refreshing}
-                onRefresh={this.handleRefresh}
-                onEndReachedThreshold={0.5}
-                onEndReached={this.handleLoadMore}
-            />
+                    refreshing={this.state.refreshing}
+                    onRefresh={this.handleRefresh}
+                    onEndReachedThreshold={0.5}
+                    onEndReached={this.handleLoadMore}
+                />
+                
+                <SpamReport type = { 'user' }
+                    reportId = { this.state.userId }
+                    visible = { this.state.showModal }
+                    setModalVisible = { () => { this.setState({showModal: false})} }/>
 
+            </View>
         );
     }
+    
 }
 
 var styles = StyleSheet.create({ ...Styles, ...Utilities, ...FlatForm, ...TagsSelect, ...BoxWrap,

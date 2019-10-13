@@ -23,32 +23,27 @@ function mapStateToProps(state) {
 
 class Detail extends Component {
 
-    static navigationOptions = (state) => ({
-        // title: ({ state }) => `${state.params.item.title}`,
-        title: 'Detail',
-        headerStyle:headerStyle,
-        headerTitleStyle:titleStyle,
-        headerRight: ({ state, navigate }, defaultHeader) => (            
-            state.params && state.params.right
-        )
-    })
+    static navigationOptions = ({ navigation }) => ({
+            headerTitle: navigation.state.params.item.title,
+            headerRight: (navigation.state.params && navigation.state.params.right),
+        });
 
     // If no detail items loaded, load now
     componentWillMount() {
 
-        const { detail, navigation } = this.props
-        const { index } = navigation.state.params.item
+        const { detail, navigation } = this.props;
+        const { index } = navigation.state.params.item;
 
         if (!detail[index])
-            this.props.fetchDetailState({ limit: 10 })
+            this.props.fetchDetailState({ limit: 10 });
     }
 
     // Link right header button to component
     // In this case we want the button to bookmark the detail item
     componentDidMount() {
 
-        const { navigation } = this.props
-        const { index } = navigation.state.params.item
+        const { navigation } = this.props;
+        const { index } = navigation.state.params.item;
 
         const params = {
             right: (<TouchableOpacity
@@ -63,7 +58,7 @@ class Detail extends Component {
         };
 
         // Set the navigation params here
-        this.props.navigation.setParams(params);
+        navigation.setParams(params);
     }
 
     // Trivial to navigate from within component context
@@ -73,12 +68,12 @@ class Detail extends Component {
 
     render() {
 
-        const { detail, navigation } = this.props
-        const { navigate, goBack, state } = navigation
-        const { index, title } = state.params.item
+        const { detail, navigation } = this.props;
+        const { navigate, goBack, state } = navigation;
+        const { index, title } = state.params.item;
 
         if (!detail[index])
-            return (<View><Text>Loading...</Text></View>)
+            return (<View><Text>Loading...</Text></View>);
 
         return (
             <ScrollView style={[ styles.wrapper ]}>

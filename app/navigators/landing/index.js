@@ -1,17 +1,12 @@
 import React from 'react'
 import {
     createBottomTabNavigator,
-    createStackNavigator,
-    createAppContainer
+    StackNavigator
 } from 'react-navigation';
 
 // Screens
 // Only one for now, add more as required
 import SIGNUP_LOGIN_PROCESS from './sign-up-login-process'
-
-// Tabs
-import Tab from '../../components/tabs/tab'
-
 
 // TabNavigator options
 const options = {
@@ -27,27 +22,25 @@ const options = {
         }
     },
     animationEnabled: false,
-    // tabBarComponent: TabBarComponent
+    // mode: 'modal'
 }
 
 const TabBarComponent = (props) => {
     console.log('TabBarComponent Props: ', Object.keys(props));
 }
 
+const navOptions = {
+    // tabBarVisible: false,
+    tabBar: { 
+        visible: false,
+        label: '', 
+        icon: (props) => (<Tab {...props} icon="home" />) 
+    }
 
-const AppStackNavigator = createBottomTabNavigator({
+}
 
-    // LandingLogIn:       { screen: SIGNUP_LOGIN_PROCESS, navigationOptions: { tabBar: { visible: false,label: '', icon: (props) => (<Tab {...props} icon="home" />) }}},
-    LandingLogIn:      { 
-        screen: SIGNUP_LOGIN_PROCESS, 
-        navigationOptions: { 
-            tabBarVisible:false,
-            tabBarLabel: '', 
-            tabBarIcon: (props) => (<Tab {...props} icon="home" />) 
-        }
-    },
-    // HomeTest:       { screen:Home, navigationOptions: { tabBar: { visible: true,label: '', icon: (props) => (<Tab {...props} icon="home" />) }}},
+export default createBottomTabNavigator({
+
+    LandingLogIn:       { screen: SIGNUP_LOGIN_PROCESS, navigationOptions: {navOptions } },
 
 }, options);
-
-export default createAppContainer(AppStackNavigator);

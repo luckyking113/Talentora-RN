@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import * as AuthActions from '@actions/authentication'
 
-import { StyleSheet, Image, ScrollView, Text, View, TextInput, TouchableOpacity, Alert, StatusBar } from 'react-native';
+import { StyleSheet, Image, ScrollView, Text, View, TextInput, TouchableOpacity, Alert, StatusBar, ActionSheetIOS, ActivityIndicator, Dimensions, FlatList } from 'react-native';
 
 import ButtonBack from '@components/header/button-back'
 
@@ -12,13 +12,16 @@ import FlatForm from '@styles/components/flat-form.style';
 import BoxWrap from '@styles/components/box-wrap.style';
 import Utilities from '@styles/extends/ultilities.style';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-
+import { IconCustom } from '@components/ui/icon-custom';
 import { transparentHeaderStyle, titleStyle } from '@styles/components/transparentHeader.style';
-import ImagePicker from 'react-native-image-picker';
+// import ImagePicker from 'react-native-image-picker';
 import uuid from 'react-native-uuid';
-import { postMedia, putApi, postApi, getApi } from '@api/request';
+import { postMedia, putApi, postApi, getApi, deleteApi } from '@api/request';
 
-import { UserHelper, StorageData, Helper } from '@helper/helper';
+import { UserHelper, StorageData, Helper, GoogleAnalyticsHelper } from '@helper/helper';
+import ImagePickerCrop from 'react-native-image-crop-picker';
+
+import PhotoBoxItem from '@components/user/comp/photo-box-item';
 
 let options = {
     title: 'Select Image',
@@ -27,6 +30,20 @@ let options = {
         path: 'images'
     }
 };
+
+
+const VIEWABILITY_CONFIG = {
+    minimumViewTime: 3000,
+    viewAreaCoveragePercentThreshold: 100,
+    waitForInteraction: false,
+  };
+
+var BUTTONS = [
+  'Delete',
+  'Cancel',
+];
+var DESTRUCTIVE_INDEX = 0;
+var CANCEL_INDEX = 1;
 
 const pic = [
     // {
@@ -51,6 +68,9 @@ const pic = [
 import _ from 'lodash'
 
 
+const {width, height} = Dimensions.get('window');
+
+
 function mapStateToProps(state) {
     // console.log(state)
     return {
@@ -71,27 +91,67 @@ class UploadPhoto extends Component{
             item_selected: '',
             // img: [{'id': 0, 'uri': 'https://talentora-rn.s3.amazonaws.com/resources/clouds/5906addab81611399dadd78b/photos/original/c4e57210-3177-11e7-b8f9-270be727ae37.JPG'}],
             img:[],
+            // videoFromApi: [], // store video from api for delete
             photoUploaded: [],
             idx: 0,
             isFirstPhoto: false,
-            featuredPhoto: {}
+            featuredPhoto: {},
+            uploading: false,
+            selected: (new Map(): Map<string, boolean>),
+            data: [],
+            extraData: [{_id : 1}],
         }
 
         // const { navigate, goBack, state } = this.props.navigation;
         // console.log('User Info : ',state.params);
     }
 
+    _generateBox = (_boxs) => {
+
+        _boxs = _.filter(_boxs,function(v,k){
+            return v.boxType == 'photo';
+        })
+
+        let _missingBox = 5 - _boxs.length
+
+        // if(_boxs.length>=3)
+
+        if(_missingBox>=0){
+            _boxs.push({
+                boxType: 'add_more',
+                created_date: new Date('01/01/1970').getTime()
+            })
+        }
+
+        for(let _i =0; _i<=_missingBox; _i++){
+            _boxs.push({
+                boxType: null,
+                created_date: new Date('01/01/1969').getTime()
+            })
+        }
+
+        // _boxs = _.sortBy(_boxs, [function(v,k) {
+
+        //      return -v.created_date; 
+
+        // }]);
+
+        return _boxs;
+
+    }
+
     static navigationOptions = ({ navigation }) => ({
-            // title: '',
-            headerVisible: true,
-            headerLeft: navigation.state.params.noBackButton ? null : (<ButtonBack
-                isGoBack={ navigation }
-                btnLabel= { UserHelper._getFirstRole().role.name == 'employer' ? 'Welcome to Talentora': 'To the details' }
-            />),
-        });
+        // title: '',
+        headerVisible: true,
+        headerLeft: navigation.state.params.noBackButton ? null : (<ButtonBack
+            isGoBack={ navigation }
+            btnLabel= { UserHelper._getFirstRole().role.name == 'employer' ? 'Welcome to Talentora': 'To the details' }
+        />),
+    });
 
     joinUsNow() {
         const { navigate, goBack, state } = this.props.navigation;
+        console.log('state.params.sign_up_info', state.params.sign_up_info);
         // merge info 
         var signUpInfo = _.extend({
             // talent_category: this.getTalentSelected(),
@@ -99,8 +159,16 @@ class UploadPhoto extends Component{
         }, state.params ? state.params.sign_up_info : {});
 
         if(this.state.img.length > 0){
-            const { navigate, goBack, state } = this.props.navigation;
-            navigate('UploadVideo', { sign_up_info: signUpInfo });
+            let _chkImgFeatured = _.filter(_.cloneDeep(this.state.img), function(v,k){
+                return v.is_featured;
+            })
+            if(_chkImgFeatured.length<=0){
+                alert('Please set your photo cover')
+            }
+            else{
+                const { navigate, goBack, state } = this.props.navigation;
+                navigate('UploadVideo', { sign_up_info: signUpInfo });
+            }
         
         }else{
             Alert.alert('Upload at least 1 image to continue.');
@@ -108,31 +176,68 @@ class UploadPhoto extends Component{
     }
 
     checkActiveTag = (item) => {
-        // console.log(item);
-        return this.state.item_selected == item.id;
+        // console.log(checkActiveTag, item);
+        // return item.is_featured || this.state.item_selected == item._id;
+        return item.is_featured || false;
     }
 
     selectedTag = (item) => {
         // console.log(item);
 
         console.log('item selected : ', item)
-        if(this.state.item_selected != item.id){
-            if(this.state.img.length>1){
+        if(this.state.item_selected != item._id){
+            if(this.state.img.length>=1){
                 this._setPhotoFeature(item.uuid);
             }
         }
 
         this.setState({
-            item_selected: item.id
+            item_selected: item._id
         })
 
     }
 
+    _updateCoverPhotoProfile = (_allImg) => {
+        let that = this;
+
+        const { navigate, goBack, state, setParams } = that.props.navigation;
+
+        let _userInfo = state.params.sign_up_info;
+        
+        const _cover = _.filter(_allImg, function(v,k){
+            return v.is_featured;
+        });
+        console.log('Cover Only: ',_cover);
+
+        if(!_userInfo.cover && !_userInfo.photos){
+
+            _userInfo  = _.extend({
+                cover: _.head(_cover),
+                photos: _allImg,
+            },_userInfo);
+
+        }
+        else{
+            _userInfo.cover = _.head(_cover);
+            _userInfo.photos = _allImg;
+        }
+
+        that.props.navigation.setParams({ sign_up_info : _userInfo });
+
+        console.log('_userInfo : ', _userInfo);
+
+        let _userData =  StorageData._saveUserData('SignUpProcess',JSON.stringify(_userInfo)); 
+        // UserHelper.UserInfo = _result; // assign for tmp user obj for helper
+        _userData.then(function(result){
+            console.log('complete save sign up process 3'); 
+        });
+    }
 
     // get photo that user already upload
     _getPhoto = () => {
         // GET /api/media?type=photo or /api/media?type=video or  /api/media
         let that = this;
+        const { navigate, goBack, state, setParams } = that.props.navigation;
         
         let API_URL = '/api/media?type=photo';
         getApi(API_URL).then((_response) => {
@@ -140,21 +245,155 @@ class UploadPhoto extends Component{
             if(_response.code == 200){
                 let _allImg = _response.result;
 
-                console.log('User Photo Already Uploaded : ', _response);
+                console.log('User Photo Already Uploaded : ', _allImg);
                 let _tmp = [];
-                _.each(_allImg,function(v,k){
-                    _tmp.push({'id': k, 'uri':v.preview_url_link, 'uuid':''});
+                _.each(_.cloneDeep(_allImg),function(v,k){
+                    _tmp.push({
+                        'id': k, 
+                        'type':'image',                         
+                        'uri':v.thumbnail_url_link, 
+                        'uuid': v.upload_session_key, 
+                        'boxType': 'photo',   
+                        created_date: new Date().getTime(),                    
+                        _id: v._id, is_featured: 
+                        v.is_featured});
                 })
+
+                that._updateCoverPhotoProfile(_allImg);
 
                 that.setState({ 
                     img: _tmp,
-                    idx: _tmp.length
+                    idx: _tmp.length,
+                    data: this._generateBox(_tmp),
+                    extraData: [{_id : this.state.extraData[0]._id++}]                    
                 })
             }
 
         });
     }
 
+    _removePhoto = (_media, _mediaIndex) => {
+        let that = this;
+        let _mediaInfo = null;
+        // _mediaInfo = this.state.img[_mediaIndex] ? this.state.img[_mediaIndex] : null;
+        _mediaInfo = _.filter(this.state.img,function(v,k){
+            
+            if(v.uuid)
+                return v.uuid == _media.uuid;
+            else
+                return v.upload_session_key == _media.uuid
+
+        });
+
+        if(_mediaInfo.length>0){
+            _mediaInfo = _.head(_mediaInfo);
+        }
+
+        console.log('_mediaInfo : ', _mediaInfo, ' == ', _mediaIndex);
+        console.log('this.state.photoFromApi : ', this.state.img);
+        // return;
+        if(_mediaInfo && _mediaInfo._id){
+
+            let API_URL = '/api/media/photos/'+ _mediaInfo._id;
+
+            // console.log('this.state.videoFromApi : ', this.state.videoFromApi);
+            // console.log('_mediaIndex : ', _mediaIndex, ' === ', '_mediaInfo :', _mediaInfo);
+
+            // return;
+
+            deleteApi(API_URL).then((_response) => {
+                console.log('Delete photos : ', _response);
+                if(_response.code == 200){
+
+                    var _ImageTmp = _.filter(_.cloneDeep(that.state.img), function(v,k) {
+                        if(v.uuid)
+                            return v.uuid != _media.uuid;
+                        else
+                            return v.upload_session_key != _media.uuid
+                    });
+
+                    // console.log('_videoFromApi :', _videoFromApi);
+                    // console.log('_ImageTmp :', _ImageTmp);
+
+                    that._updateCoverPhotoProfile(_ImageTmp);
+
+                    if(_ImageTmp.length <= 0){
+                        that.setState({
+                            isFirstPhoto: false
+                        }) 
+                    }
+
+                    that.setState({
+                        img: _ImageTmp,
+                        idx: _ImageTmp.length,
+                        data: [],
+                        extraData: [{_id : this.state.extraData[0]._id++}]
+                    }, function(){
+
+                        that.setState({
+                            data: that._generateBox(_ImageTmp),                    
+                            extraData: [{_id : that.state.extraData[0]._id++}]  
+                        }, function(){
+                            if(_mediaInfo.is_featured){
+                                if(that.state.img.length>0){
+    
+                                    that._setPhotoFeature(that.state.img[0].uuid);
+    
+                                }
+                            }
+                        });
+                        
+                    })
+                    
+                }
+
+            });
+        }
+        else{
+            alert('Can not delete this photo. Please try again.');
+        }
+    }
+
+    _mediaOption = (_media, _mediaIndex) => {
+        let _SELF = this;
+        _mediaIndex = _media.id;
+        if(Helper._isIOS()){
+            // popup message from bottom with ios native component
+            ActionSheetIOS.showActionSheetWithOptions({
+
+                message: 'Are you sure you want to delete this photo?',
+                options: BUTTONS,
+                cancelButtonIndex: CANCEL_INDEX,
+                destructiveButtonIndex: DESTRUCTIVE_INDEX,
+
+            },
+            (buttonIndex) => {
+
+                // console.log(buttonIndex);
+                //   this.setState({ clicked: BUTTONS[buttonIndex] });
+                if(buttonIndex==0){
+                    _SELF._removePhoto(_media, _mediaIndex)
+                }
+
+            });
+        }
+        else{
+
+            // for android ask with alert message with button
+
+            // Works on both iOS and Android
+            Alert.alert(
+            'Are you sure you want to delete this photo?',
+            '', 
+            [
+                // {text: 'Ask me later', onPress: () => console.log('Ask me later pressed')},
+                {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                {text: 'Delete', onPress: () =>  _SELF._removePhoto(_media, _mediaIndex) },
+            ],
+            { cancelable: false }
+            )
+        }
+    }
 
     // set feature photo
     _setPhotoFeature = (_id) => {
@@ -166,38 +405,76 @@ class UploadPhoto extends Component{
         })).then((_response) => {
             console.log('success set photo cover response: ', _response);
 
-            that._getFeaturePhotoLink(_response.result)
+            let _tmp = _.cloneDeep(that.state.img);
+            _.each(_tmp, function(v,k){
+                console.log(v.upload_session_key,' == ', _id)
+                if(v.uuid == _id){
+                    v.is_featured = true;
+                }
+                else{
+                    v.is_featured = false;
+                }
+            })
+            console.log('_tmp : ', _tmp);
+            this.setState({
+                img: _tmp,
+                data: [],
+                extraData: [{_id : this.state.extraData[0]._id++}]
+            }, function(){
+                
+                that.setState({
+                    data: that._generateBox(_tmp),                    
+                    extraData: [{_id : that.state.extraData[0]._id++}]  
+                });
+
+            })  
+
 
         });
     }
 
-    // get feature photo link for update profile sendbird
-    // on get started complete we will create sendbird account for user
-    _getFeaturePhotoLink = (_featuredPhotoResp) => {
-        let _allImg = this.state.photoUploaded;
-
-        console.log('_allImg: ', _allImg);
-
-        // feature_photo
-        let _featuredPhoto = _.filter(_allImg,function(v,k){
-            return v.upload_session_key == _featuredPhotoResp.feature_photo;
-        })
-        console.log('_featuredPhoto: ' , _featuredPhoto);
-        // store photo uploaded 
-        this.setState((previousState) => {
-            return {
-                featuredPhoto: _.head(_featuredPhoto).small_url_link,
-            };
-        });
-
-        console.log('_getFeaturePhotoLink : ', this.state);
-    }
-
-    chooseImage () {
+    chooseImage = () => {
         let that = this;
+        console.log('this.state : ', this.state);
+        if(this.state.uploading)
+            return;
+
+        ImagePickerCrop.openPicker({
+            mediaType: 'photo',
+            // cropping: true,
+            includeBase64: true,
+          }).then(image => {
+            // console.log(image);
+            const _sizeCrop = Helper._getSizeCrop(image);
+            // console.log('_sizeCrop: ', _sizeCrop);
+            ImagePickerCrop.openCropper({
+                ..._sizeCrop,
+                path: image.path,
+                includeBase64: true,
+            }).then(imageAfterScrop => {
+
+                let _imageData = imageAfterScrop;
+                let defUUID = uuid.v4();
+                _imageData.filename = image.filename || defUUID;
+                // console.log(_imageData);
+
+                // this.imageCropUpload(_imageData);
+                this.imageCropUpload(_imageData, defUUID);
+                
+            }).catch(e => {
+                // alert(e);
+                console.log('error : ', e);
+            });
+
+            
+        }).catch(e => {
+            // alert(e);
+            console.log('error : ', e);
+        });
+
+        return;
 
         console.log('check is first photo : ', that.state.isFirstPhoto);
-
         ImagePicker.launchImageLibrary(options, (response) => {
             if (response.didCancel) {
                 console.log('User cancelled image picker');
@@ -209,6 +486,14 @@ class UploadPhoto extends Component{
                 console.log('User tapped custom button: ', response.customButton);
             }
             else {
+
+                this.setState({
+                    uploading: true
+                })
+                let _prevImgObj = _.cloneDeep(this.state);
+
+                let _tmpSource = response.uri;
+
                 let source = { uri: response.uri };
                 // console.log('The state: ', this.state);
                 let arrImg = this.state.img.slice();
@@ -218,11 +503,11 @@ class UploadPhoto extends Component{
 
                 let _photoUUID = uuid.v4();
 
-                arrImg.push({'id': _id, 'uri':source.uri, 'uuid':_photoUUID});
-                this.setState({
-                    img: arrImg,
-                    idx: arrImg.length
-                })
+                
+                // this.setState({
+                //     img: arrImg,
+                //     idx: arrImg.length
+                // })
                 
                 let data = response.data;
                 
@@ -231,19 +516,35 @@ class UploadPhoto extends Component{
                 // console.log('Response: ', response);
                 postMedia(url, [
                     // {name: response.fileName , filename: response.fileName, data: data, type: 'image/jpg'},
-                    {name: 'image' , filename: response.fileName, data: data, type:'image/foo'}
+                    {name: 'image' , filename: response.fileName, data: data, type:'image/jpg'}
                 ]).then((response) => {
+                    this.setState({
+                        uploading: false
+                    }) 
                     console.log('success response: ', response);  
 
-                    let _tmpPhotoUpload = this.state.photoUploaded;
-                    _tmpPhotoUpload.push(response.result);
+                    let objPhoto = response.result;
+
+                    if(response.code != 200){
+                        console.log('Error');
+                        alert('Can not upload this image !! please try again');
+                        this.setState({
+                            img: _prevImgObj.img,
+                            idx: _prevImgObj.idx
+                        })
+                        return;
+                    }
+
+                    // let _tmpPhotoUpload = this.state.photoUploaded;
+                    // _tmpPhotoUpload.push(response.result); 
+
+                    arrImg.push({'id': _id, tmpSource: _tmpSource, 'uri':objPhoto.thumbnail_url_link, 'uuid': objPhoto.upload_session_key, _id: objPhoto._id, is_featured: objPhoto.is_featured});
 
                     // store photo uploaded
-                    that.setState((previousState) => {
-                        // console.log('previousState.messages : ',previousState.messages); 
-                        return {
-                           photoUploaded: _tmpPhotoUpload
-                        };
+                    that.setState({
+                        img: arrImg,
+                        idx: arrImg.length,
+                        // photoUploaded: _tmpPhotoUpload
                     });
 
                     console.log('photo uploaded: ', this.state);
@@ -253,14 +554,30 @@ class UploadPhoto extends Component{
                     const { navigate, goBack, state } = that.props.navigation;
                     let _userInfo = state.params.sign_up_info;
                     _userInfo.profile.photo_uploaded_count++;
+
+                    if(_userInfo.photos){
+                        _userInfo.photos.push(response.result);
+                    }
+                    else{
+                        _userInfo = _.extend({
+
+                            photos: [response.result]
+
+                        }, _userInfo);
+                    }
+
                     let _userData =  StorageData._saveUserData('SignUpProcess',JSON.stringify(_userInfo)); 
                     // UserHelper.UserInfo = _result; // assign for tmp user obj for helper
+
+                    console.log('UserHelper.UserInfo', UserHelper.UserInfo);
+
                     _userData.then(function(result){
                         console.log('complete save sign up process 3'); 
                     });
 
                     // set cover on first upload image 
-                    if(!that.state.isFirstPhoto){
+                    if(!that.state.isFirstPhoto && that.state.img.length==1){
+                        console.log('set feature on first time');
                         // let _photoId =  response.result._id;
                         that._setPhotoFeature(_photoUUID);
                         that.setState({
@@ -270,18 +587,156 @@ class UploadPhoto extends Component{
                 });
             }
         });
+
     }
 
+    imageCropUpload = (imgData = null, _UUID = '') => {
+        let that = this;
+        if(imgData){
+            this.setState({
+                uploading: true
+            })
+            let _prevImgObj = _.cloneDeep(this.state);
+
+
+            let tmpSource =  ( Helper._isIOS() ? 'file://' : '' ) + imgData.path;
+            let source = { uri: tmpSource };
+
+            // console.log('The state: ', this.state);
+            let arrImg = this.state.img.slice();
+            let _id =0;
+            if(arrImg.length > 0)
+                _id = arrImg.length;
+
+            let _photoUUID = _UUID;
+
+            
+            // this.setState({
+            //     img: arrImg,
+            //     idx: arrImg.length
+            // })
+            
+            let data = imgData.data;
+            
+            let url = '/api/media/photos/'+ _photoUUID +'/save';
+
+            // console.log('Response: ', response);
+            postMedia(url, [
+                // {name: response.fileName , filename: response.fileName, data: data, type: 'image/jpg'},
+                {name: 'image' , filename: imgData.filename, data: data, type:'image/jpg'}
+            ]).then((response) => {
+                this.setState({
+                    uploading: false
+                }) 
+                console.log('success response: ', response);  
+
+                let objPhoto = response.result;
+
+                if(response.code != 200){
+                    console.log('Error');
+                    alert('Can not upload this image !! please try again');
+                    this.setState({
+                        img: _prevImgObj.img,
+                        idx: _prevImgObj.idx
+                    })
+                    return;
+                }
+
+                // let _tmpPhotoUpload = this.state.photoUploaded;
+                // _tmpPhotoUpload.push(response.result); 
+
+                arrImg.push({
+                    'id': _id, 
+                    'type':'image',                     
+                    tmpSource: tmpSource, 
+                    'uri':objPhoto.thumbnail_url_link, 
+                    'uuid': objPhoto.upload_session_key, 
+                    _id: objPhoto._id, 
+                    'boxType': 'photo',
+                    created_date: new Date().getTime(),
+                    is_featured: objPhoto.is_featured
+                });
+
+                arrImg = _.filter(arrImg, function(v,k){
+                    return v.boxType == 'photo';
+                })
+
+                // store photo uploaded
+                this.setState({
+                    img: arrImg,
+                    idx: arrImg.length,
+                    data: [],
+                    extraData: [{_id : this.state.extraData[0]._id++}]
+                    // photoUploaded: _tmpPhotoUpload
+                }, function(){
+                    
+                    that.setState({
+                        data: that._generateBox(arrImg),                    
+                        extraData: [{_id : that.state.extraData[0]._id++}]  
+                    });
+    
+                })  
+
+                console.log('photo uploaded: ', this.state);
+
+                // Save photo number.
+                const { navigate, goBack, state } = this.props.navigation;
+                let _userInfo = state.params.sign_up_info;
+                _userInfo.profile.photo_uploaded_count++;
+
+                if(_userInfo.photos){
+                    _userInfo.photos.push(response.result);
+                }
+                else{
+                    _userInfo = _.extend({
+
+                        photos: [response.result]
+
+                    }, _userInfo);
+                }
+
+                let _userData =  StorageData._saveUserData('SignUpProcess',JSON.stringify(_userInfo)); 
+                // UserHelper.UserInfo = _result; // assign for tmp user obj for helper
+
+                console.log('UserHelper.UserInfo', UserHelper.UserInfo);
+
+                _userData.then(function(result){
+                    console.log('complete save sign up process 3'); 
+                });
+
+                // set cover on first upload image 
+                if(!this.state.isFirstPhoto && this.state.img.length==1){
+                    console.log('set feature on first time');
+                    // let _photoId =  response.result._id;
+                    this._setPhotoFeature(_photoUUID);
+                    this.setState({
+                        isFirstPhoto: true
+                    })
+                }
+            });
+        }
+    }
 
     componentDidMount(){
+
+        GoogleAnalyticsHelper._trackScreenView('Sign Up - Upload Photo');         
+        
 
         // if user not yet completed register
         // get all photo that user upload 
         if(UserHelper._getUserInfo()){
             console.log('get photo');
-            // this._getPhoto();
+            this._getPhoto();
         }
     }
+
+    _keyExtractor = (item, index) => index;
+    
+    _renderItem = ({item}) => {
+        return (  
+            <PhotoBoxItem { ...item } uploading={this.state.uploading} isBigSize={true} chooseImage={ this.chooseImage } rowPress={ this._onRowPress } checkActiveTag={this.checkActiveTag} selectedTag={this.selectedTag} _mediaOption={this._mediaOption} />
+    )};
+
 
     render() {
         return (    
@@ -302,26 +757,26 @@ class UploadPhoto extends Component{
                                 {this.state.img.length || 0}/6 Photos
                             </Text>
                         </View>
-
                         
-                            <View style={[styles.boxWrapContainer,styles.marginTopMD1]}> 
+                        { false && <View style={[styles.boxWrapContainer,styles.marginTopMD1]}> 
 
-                                {this.state.img.map((item, index) => {
-                                    {/*console.log(item);*/}
-                                    return (
+                            {this.state.img.map((item, index) => {
+                                {/*console.log(item);*/}
+                                return (
+                                    <View key={ index } style={[styles.boxWrapItem, styles.boxWrapItemSizeMD, this.checkActiveTag(item) && styles.boxWrapSelected, styles.marginBotSM, {overflow: 'visible'}]}>
                                         <TouchableOpacity
                                             activeOpacity = {0.9}
-                                            key={ index } 
-                                            style={[styles.boxWrapItem, styles.boxWrapItemSizeMD, this.checkActiveTag(item) && styles.boxWrapSelected]} 
+                                            style={[ styles.justFlexContainer ]} 
                                             onPress={ () => this.selectedTag(item) }
                                         >
 
                                             <Image
+                                                key={ index }
                                                 style={styles.userAvatarFull}
-                                                source={{ uri: item.uri }}
+                                                source={{ uri: item.tmpSource || item.uri }}
                                             />
 
-                                            {this.checkActiveTag(item) && (
+                                            {this.checkActiveTag(item) && 
                                             
                                                 <View style={[styles.absoluteBox,styles.boxFeatured]}> 
                                                     <View style={[styles.boxWrapStatusContainer,styles.mainHorizontalPaddingSM]}> 
@@ -330,29 +785,77 @@ class UploadPhoto extends Component{
                                                         </Text>
                                                     </View>
                                                 </View> 
-
-                                            )
                                                 
                                             }
                                     
-                                        </TouchableOpacity>     
-                                    )
-                                })}
+                                        </TouchableOpacity> 
 
-                                {this.state.idx > 5 ? null : 
-                                    <TouchableOpacity 
-                                        activeOpacity = {0.9}
-                                        style={[ styles.boxWrapItem, styles.boxWrapItemSizeMD, styles.flexCenter ]} 
-                                        onPress={this.chooseImage.bind(this)} >
 
-                                        <Icon
-                                            name="add"
+                                        <TouchableOpacity 
+                                        activeOpacity={.8}
+                                        style={[ 
+                                            styles.iconPlayTopRightSM,
+                                            {
+                                                right: -14, 
+                                                top: -15, 
+                                                backgroundColor: Colors.primaryColorDark,
+                                                borderRadius: 12,
+                                                padding: 3,
+                                            } 
+                                            ]} onPress={() => this._mediaOption(item, index) }>
+                                            <Icon 
+                                                name={ 'close' }
+                                                style={[ {color: 'white', fontSize: 20, backgroundColor: 'transparent'}, styles.shadowBox ]} 
+                                            />
+                                        </TouchableOpacity>
+
+                                    </View>    
+                                )
+                            })}
+
+                            {this.state.idx > 5 ? null : 
+                                <TouchableOpacity 
+                                    activeOpacity = {0.9}
+                                    style={[ styles.boxWrapItem, styles.boxWrapItemSizeMD, styles.flexCenter, styles.marginBotSM ]} 
+                                    onPress={this.chooseImage.bind(this)} >
+
+                                    { this.state.uploading ? 
+                                        <ActivityIndicator color="gray" animating={true} /> 
+                                        : 
+                                        <IconCustom
+                                            name="plus-gray-icon"
                                             style={[ styles.iconPlus ]} 
-                                        />
-                                    </TouchableOpacity>
-                                } 
+                                        /> 
+                                    }
+                                </TouchableOpacity>
+                            } 
 
-                            </View>
+                        </View> }
+
+                        <FlatList
+                            style={{flex: 1}}
+                            extraData={this.state.extraData}
+                            data={this.state.data}
+                            keyExtractor={this._keyExtractor}
+                            ref={ref => this.listRef = ref}
+                            //ListHeaderComponent={this.renderHeader}
+                            horizontal={false}
+                            numColumns={2}
+                            scrollEnabled={false}
+                            columnWrapperStyle={{ margin: 5 }}
+                            //ListFooterComponent={this.renderFooter}
+                            renderItem={this._renderItem}
+                            removeClippedSubviews={false}
+                            viewabilityConfig={VIEWABILITY_CONFIG}
+
+                            //onViewableItemsChanged = {this.onViewableItemsChanged}
+
+                            //refreshing={this.state.refreshing}
+                            //onRefresh={this.handleRefresh}
+                            //onEndReachedThreshold={0.5}
+                            //onEndReached={this.handleLoadMore}
+                        />
+
                     </View>
                 </ScrollView>
                 

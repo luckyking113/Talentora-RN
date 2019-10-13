@@ -30,8 +30,9 @@ import {
 
 import { view_profile_category } from '@api/response'
 
+import SendBird from 'sendbird';
 
-import Icon from 'react-native-vector-icons/MaterialIcons';
+// import Icon from 'react-native-vector-icons/MaterialIcons';
 import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
 import Styles from '@styles/card.style'
 import { Colors } from '@themes/index';
@@ -47,8 +48,9 @@ import ButtonLeft from '@components/header/button-left'
 import ButtonBack from '@components/header/button-back'
 
 
-import { UserHelper, StorageData, Helper } from '@helper/helper';
+import { UserHelper, StorageData, Helper, GoogleAnalyticsHelper } from '@helper/helper';
 
+import { IconCustom } from '@components/ui/icon-custom';
 
 function mapStateToProps(state) {
     // console.log('wow',state)
@@ -76,55 +78,63 @@ class Setting extends Component {
             falseSwitchIsOn: true,
             items:[
                 {
-                    icon : 'person-add',
-                    icon_type : 'M',
+                    icon : 'invite-icon',
+                    icon_type : 'C',
                     text : 'Invite friends',
                     func : this.inviteFriend,
                 },
                 {
-                    icon : 'exit-to-app',
-                    icon_type : 'M',
-                    text : 'Log Out',
-                    func : this.showActionSheetLogOut,
-                },
-                {
-                    icon : 'facebook-square',
-                    icon_type : 'F',
+                    icon : 'facebook-gray-logo',
+                    icon_type : 'C',
                     text : 'Like us on Facebook',
                     isMargTop: true,
                     func : this.linkToFacebook,
                 },
                 {
-                    icon : 'twitter',
-                    icon_type : 'F',
+                    icon : 'twitter-outline-icon',
+                    icon_type : 'C',
                     text : 'Follow us on Twitter',
                     func : this.linkToTwitter,
                 },
                 {
-                    icon : 'instagram',
-                    icon_type : 'F',
+                    icon : 'instagram-outline-icon',
+                    icon_type : 'C',
                     text : 'Follow us on Instagram',
                     func : this.linkToInstagram,
                 },
                 {
-                    icon : 'thumbs-up-down',
-                    icon_type : 'M',
+                    icon : 'youtube',
+                    icon_type : 'F',
+                    text : 'Subscribe to us on Youtube',
+                    func : this.linkToYoutube,
+                },
+                {
+                    icon : 'feedback-icon',
+                    icon_type : 'C',
                     text : 'Tell us how to improve',
                     isMargTop: true,
                     func : this.howToImprove,
                 },
                 {
-                    icon : 'library-books',
-                    icon_type : 'M',
+                    icon : 'tnc-icon',
+                    icon_type : 'C',
                     text : 'Terms of use',
                     func : this.termOfUse,
                 },
                 {
-                    icon : 'vpn-lock',
-                    icon_type : 'M',
+                    icon : 'pp-icon',
+                    icon_type : 'C',
                     text : 'Privacy policy',
                     func : this.privacyPolicy,
+                    // isNoBorderBot : true,
+                },
+                {
+                    icon : 'logout-icon',
+                    isMargTop: true,
+                    icon_type : 'C',
+                    text : 'Logout',
                     isNoBorderBot : true,
+                    func : this.showActionSheetLogOut,
                 },
             ]
 
@@ -137,7 +147,7 @@ class Setting extends Component {
     static navigationOptions = ({ navigation }) => ({ 
         // title: '', 
         headerVisible: false,
-        headerTitle: 'Setting',
+        headerTitle: 'Settings',
         headerLeft: (<ButtonBack
             isGoBack={ navigation }
             btnLabel= ""
@@ -145,11 +155,15 @@ class Setting extends Component {
     });
 
     inviteFriend = () => {
+        GoogleAnalyticsHelper._trackEvent('Invite Friends','Setting Screen');
+        
         const { navigate, goBack, state } = this.props.navigation;
         navigate('InviteFriend');
     }
 
     linkToFacebook=()=>{
+        GoogleAnalyticsHelper._trackEvent('Visited Our Social Page','Facebook');
+        
         // Linking.openURL('https://www.facebook.com/Talentorapp/');
         Linking.openURL('fb://profile/529934683759474').catch(err => 
             {
@@ -158,8 +172,18 @@ class Setting extends Component {
         );
         
     }
-
+    linkToYoutube=()=>{
+        GoogleAnalyticsHelper._trackEvent('Visited Our Social Page','Youtube');
+        
+        Linking.openURL('youtube://channel/UCidfQZFow_IA6AYkGjhSlhw').catch(err => 
+            {
+                Linking.openURL('https://www.youtube.com/channel/UCnCicBw5-w9NzJ7nuZghY1g')
+            }
+        );
+    }
     linkToTwitter=()=>{
+        GoogleAnalyticsHelper._trackEvent('Visited Our Social Page','Twitter');
+        
         // Linking.openURL('https://twitter.com/talentora?lang=en');
         Linking.openURL('twitter://user?screen_name=talentora').catch(err => 
             {
@@ -170,10 +194,12 @@ class Setting extends Component {
     }
 
     linkToInstagram=()=>{
+        GoogleAnalyticsHelper._trackEvent('Visited Our Social Page','Instagram');
+        
         // Linking.openURL('https://www.instagram.com/talentora/');
         Linking.openURL('instagram://user?username=talentora').catch(err => 
             {
-                Linking.openURL('http://instagram.com/_u/talentora')
+                Linking.openURL('https://instagram.com/_u/talentora')
             }
         );
     }
@@ -191,6 +217,8 @@ class Setting extends Component {
     };
 
     howToImprove=()=>{
+        GoogleAnalyticsHelper._trackEvent('Feedback','Tell Us How To Improve');
+        
         Linking.openURL('mailto:hello@talentora.co?subject=Hello%20Talentora%20Team&body=').catch(err => 
             {
                 alert('No email app on this device. Please try to install the email app.')
@@ -211,8 +239,8 @@ class Setting extends Component {
     // show action sheet log out for IOS ONLY
     showActionSheetLogOut = () => {
         let _SELF = this;
-
-        if(Helper._isIOS){
+        // console.log('Helper._isIOS() :', Helper._isIOS());
+        if(Helper._isIOS()){
             // popup message from bottom with ios native component
             ActionSheetIOS.showActionSheetWithOptions({
 
@@ -224,7 +252,7 @@ class Setting extends Component {
             },
             (buttonIndex) => {
 
-                console.log(buttonIndex);
+                // console.log(buttonIndex);
                 //   this.setState({ clicked: BUTTONS[buttonIndex] });
                 if(buttonIndex==0){
                     _SELF.logOutNow()
@@ -239,7 +267,7 @@ class Setting extends Component {
             // Works on both iOS and Android
             Alert.alert(
             'Are you sure you want to sign out?',
-            // 'My Alert Msg', 
+            '', 
             [
                 // {text: 'Ask me later', onPress: () => console.log('Ask me later pressed')},
                 {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
@@ -255,19 +283,36 @@ class Setting extends Component {
     // log out of app
     logOutNow = () => { 
 
-        // check if user has login ask facebook acc log out
-        if(UserHelper._chkFacebookAcc()){
-            console.log('logout from facebook');
-            LoginManager.logOut();
-        }
+        GoogleAnalyticsHelper._trackEvent('App Action','logOut');
+        
+        UserHelper._logOut(this);
+        // return;
+        // // check if user has login ask facebook acc log out
+        // if(UserHelper._chkFacebookAcc()){
+        //     console.log('logout from facebook');
+        //     LoginManager.logOut(this);
+        // }
 
-        // remove storage data
-        StorageData._removeStorage('TolenUserData'); 
-        UserHelper.UserInfo = null; // assign null to user info obj. so it auto set autheticate data = null too
-        this.props.authenticate();
+
+        // // disconnet sendbird if user no longer to received message
+        // sb = SendBird.getInstance();
+        // sb.disconnect(function(){
+        //     // You are disconnected from SendBird.
+        //     console.log('Send Bird Now Disconnected')
+        // });
+
+        // // remove storage data
+        // StorageData._removeStorage('SignUpProcess'); 
+        // StorageData._removeStorage('TolenUserData'); 
+        // UserHelper.UserInfo = null; // assign null to user info obj. so it auto set autheticate data = null too
+        // this.props.authenticate();
 
     }
 
+
+    componentDidMount(){
+        GoogleAnalyticsHelper._trackScreenView('Setting');        
+    }
 
     render() {
          return (
@@ -299,10 +344,11 @@ class Setting extends Component {
                             return (
                                 
                                 <TouchableOpacity onPress={()=> item.func() } key={ index } activeOpacity={.8} style={[ styles.flexVer, styles.rowNormal, !item.isNoBorderBot && styles.rowBorderBot,
-                                    item.isMargTop && styles.marginTopMDD
+                                    item.isMargTop && styles.marginTopMD
                                  ]}>
-                                    {item.icon_type=="M" &&  <Icon name={item.icon} style={[ styles.itemIcon, 3 ]} /> }
-                                    {item.icon_type=="F" && <IconFontAwesome name={item.icon} style={[ styles.itemIcon, 3 ]} />}
+                                    {item.icon_type=="C" &&  <IconCustom name={item.icon} style={[ styles.itemIcon, 3 ]} /> }
+                                    {/*{item.icon_type=="M" &&  <Icon name={item.icon} style={[ styles.itemIcon, 3 ]} /> }*/}
+                                    {item.icon_type=="F" && <IconFontAwesome name={item.icon} style={[ styles.itemIcon, 3 ]} />} 
                                     <Text style={[ styles.itemText ]}>   
                                         { item.text }
                                     </Text>
@@ -318,6 +364,7 @@ class Setting extends Component {
             </View>
          );
     }
+
 }
 
 

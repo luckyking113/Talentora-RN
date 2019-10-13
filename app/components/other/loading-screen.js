@@ -32,22 +32,22 @@ export default class LoadingScreen extends Component {
 
         return (
            
-            <View style={[styles.defaultContainer, styles.shadowBox, {backgroundColor: 'red', alignItems: 'stretch'} ]}>
-                <Image
+            <View style={[styles.defaultContainer, styles.shadowBox, {backgroundColor: 'white', alignItems: 'stretch'} ]}>
+                {/*<Image
                     style={[ styles.bgCover]}  
                     source={require('@assets/loading-bg.jpg')}  
-                />
+                />*/}
                 <View style={[ styles.fullWidthHeightAbsolute, styles.defaultContainer, {backgroundColor: 'transparent'} ]}>
-                    <Image
-                        style={[ styles.bgContain, {width: 200}  ]} 
-                        source={require('@assets/talentora.png')}  
-                    />
-                    <ActivityIndicator
+                    {/*<Image
+                        style={[ styles.bgContain, {width: 100}  ]} 
+                        source={require('@assets/talentora-icon.png')}  
+                    />*/}
+                    {/*<ActivityIndicator
                         animating={true}
                         style={[ {marginTop: 20} ]}
                         size="small"
                         color="white"
-                    />
+                    />*/}
                 </View>
 
             </View>

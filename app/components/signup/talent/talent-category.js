@@ -17,7 +17,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import { transparentHeaderStyle, titleStyle } from '@styles/components/transparentHeader.style'
 
-import { UserHelper, StorageData, Helper } from '@helper/helper';
+import { UserHelper, StorageData, Helper, GoogleAnalyticsHelper } from '@helper/helper';
 
 import { postApi, putApi } from '@api/request';
 
@@ -137,6 +137,10 @@ class TalentCategory extends Component{
         }else{
             Alert.alert('Please choose at least one type');
         }
+    }
+
+    componentDidMount() {
+        GoogleAnalyticsHelper._trackScreenView('Sign Up - Category - Talent');                                         
     }
 
 

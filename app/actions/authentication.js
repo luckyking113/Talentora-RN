@@ -11,8 +11,7 @@ export function authenticate(opts) {
 
             dispatch({
                 type: ActionTypes.SET_USER,
-                // user,
-                user: UserHelper.UserInfo
+                user: UserHelper.UserInfo,
             })
 
             // check background on first launch the app

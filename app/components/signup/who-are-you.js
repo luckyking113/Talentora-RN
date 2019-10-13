@@ -12,13 +12,14 @@ import FlatForm from '@styles/components/flat-form.style';
 import TagsSelect from '@styles/components/tags-select.style';
 import Utilities from '@styles/extends/ultilities.style';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import BoxWrap from '@styles/components/box-wrap.style';
 
 import { transparentHeaderStyle, titleStyle } from '@styles/components/transparentHeader.style'
 
 import _ from 'lodash'
 
 import { postApi } from '@api/request';
-import { UserHelper, StorageData } from '@helper/helper';
+import { UserHelper, StorageData, GoogleAnalyticsHelper } from '@helper/helper';
 
 
 const dismissKeyboard = require('dismissKeyboard');
@@ -69,6 +70,12 @@ class WhatAreYou extends Component{
     continue() {
         // Alert.alert('login now');
         // dismissKeyboard();
+
+        if(!this.state.user_type_select.role){
+            Alert.alert('Please select one type');
+            return;
+        }
+
         if(!this.state.joining){
 
             const { navigate, goBack, state } = this.props.navigation;
@@ -125,7 +132,10 @@ class WhatAreYou extends Component{
 
     }
 
-
+    componentDidMount(){
+        GoogleAnalyticsHelper._trackScreenView('Sign Up - Who Are You');                                 
+    }
+ 
     render() {
         
         return (    
@@ -139,8 +149,11 @@ class WhatAreYou extends Component{
                         Who are you?
                     </Text>
 
-                    <Text style={[styles.grayLessText, styles.marginTopXS]}>
+                    {/*<Text style={[styles.grayLessText, styles.marginTopXS]}>
                         You may only select one. This can be easily changed later in your account settings.
+                    </Text>*/}
+                    <Text style={[styles.grayLessText, styles.marginTopXS]}>
+                        You may only select one. 
                     </Text>
 
                     <View style={[styles.tagContainer,styles.marginTopLG]}> 
@@ -148,10 +161,11 @@ class WhatAreYou extends Component{
                         {user_type.map((item, index) => {
                             {/*console.log(item);*/}
                             return (
+                        
                                 <TouchableOpacity
+                                    key={index}
                                     activeOpacity = {0.9}
-                                    key={ index } 
-                                    style={[styles.tagsSelect, this.checkActiveTag(item) && styles.tagsSelected]} 
+                                    style={[styles.boxWrapItem,styles.myWrapWhoAreYou,this.checkActiveTag(item) && styles.tagsSelected]} 
                                     onPress={ () => this.selectedTag(item) }
                                 >
                                     <Text style={[styles.tagTitle, styles.btFontSize, this.checkActiveTag(item) && styles.tagTitleSelected]}>
@@ -176,7 +190,8 @@ class WhatAreYou extends Component{
                                     }
 
                                     
-                                </TouchableOpacity>     
+                                </TouchableOpacity>    
+                  
                             )
                         })}
 
@@ -202,7 +217,7 @@ class WhatAreYou extends Component{
 }
 
 
-var styles = StyleSheet.create({ ...FlatForm, ...Utilities, ...TagsSelect,
+var styles = StyleSheet.create({ ...FlatForm, ...Utilities, ...TagsSelect, ...BoxWrap,
     container: {
         flex: 1,
         // padding: 20

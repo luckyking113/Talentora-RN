@@ -23,13 +23,17 @@ export default class Row extends React.Component {
 
     _getKind = () => {
         let _kinds = UserHelper._getKind(this.props.candidate_detail.attributes.kind.value)
-        console.log('Kinds :', _kinds);
+        // console.log('Kinds :', _kinds);
         return _kinds;
     }
 
     _getCover = () => {
         // feature_photo
-        return this.props.feature_photo.photo.thumbnail_url_link;
+        if(this.props.feature_photo.photo)
+            return { uri: this.props.feature_photo.photo.thumbnail_url_link };
+        else
+            return require('@assets/job-banner.jpg');
+
     }
 
     _chkStatusToShowItem = () => {
@@ -38,7 +42,7 @@ export default class Row extends React.Component {
 
     render() {
         //   const movie = this.props.data;
-        console.log('Job Row',this);
+        // console.log('Job Row',this); 
         return (
     
             <View style={[styles.itemContainer, styles.mainHorizontalPadding, styles.mainVerticalPaddingXS]}>
@@ -47,7 +51,7 @@ export default class Row extends React.Component {
 
                     {/* avatar */}
                     <TouchableOpacity style={[ styles.grayBg, styles.grayLessBg, {width: 50, height: 50} ]} onPress={ () => this.props.viewProfileFunc(this.props.candidate) }>
-                        <Image source={{ uri: this._getCover() }} style={styles.itemPhoto} />
+                        <Image source={ this._getCover() } style={styles.itemPhoto} />
                     </TouchableOpacity>
 
                     <View style={[ styles.infoContainer ]}>
@@ -74,7 +78,7 @@ export default class Row extends React.Component {
                                         style={[ styles.tagsSelectNormal, styles.withBgGray, styles.tagsSelectAutoWidth, styles.noMargin, styles.marginTopXXS ]}
                                     >
                                         <Text style={[ styles.tagTitle, styles.btFontSize, styles.tagTitleSizeSM ]}>
-                                            {item.display_name}
+                                            { Helper._capitalizeText(item.display_name)}
                                         </Text>
                                         
                                     </TouchableOpacity>     
@@ -85,18 +89,18 @@ export default class Row extends React.Component {
 
 
                         {/* application button action */}
-                    { this._chkStatusToShowItem() && <View style={[ {flex: 1, flexDirection: 'row', alignItems: 'stretch', height: 37 } ]}>
-            
-                            <TouchableOpacity activeOpacity = {0.5} style={[ styles.flatButton, styles.flatButtonSizeSM, styles.greenBg, styles.noBorder, {flex: 1, alignItems: 'stretch', marginRight: 5} ]} onPress={() => this.props.func_1(this.props) }>
-                                <Text style={[ styles.flatBtnText, styles.btFontSizeXS, {flex: 1} ]}>Shortlist</Text>
-                            </TouchableOpacity>
-            
-                            <TouchableOpacity activeOpacity = {0.5} style={[ styles.flatButton, styles.flatButtonSizeSM, styles.darkishRedBg, {flex: 1, alignItems: 'stretch', marginRight: 0} ]} onPress={() => this.props.func_2(this.props) }>
-                                <Text style={[ styles.flatBtnText, styles.btFontSizeXS, {flex: 1} ]}>Unsuitable</Text>
-                            </TouchableOpacity>
+                        { this._chkStatusToShowItem() && <View style={[ {flex: 1, flexDirection: 'row', alignItems: 'stretch', height: 37 } ]}>
+                
+                                <TouchableOpacity activeOpacity = {0.5} style={[ styles.flatButton, styles.flatButtonSizeSM, styles.greenBg, styles.noBorder, {flex: 1, alignItems: 'stretch', marginRight: 5} ]} onPress={() => this.props.func_1(this.props) }>
+                                    <Text style={[ styles.flatBtnText, styles.btFontSizeXS, {flex: 1} ]}>Shortlist</Text>
+                                </TouchableOpacity>
+                
+                                <TouchableOpacity activeOpacity = {0.5} style={[ styles.flatButton, styles.flatButtonSizeSM, styles.darkishRedBg, {flex: 1, alignItems: 'stretch', marginRight: 0} ]} onPress={() => this.props.func_2(this.props) }>
+                                    <Text style={[ styles.flatBtnText, styles.btFontSizeXS, {flex: 1} ]}>Unsuitable</Text>
+                                </TouchableOpacity>
 
-                        </View>
-                    }
+                            </View>
+                        }
 
                     </View>
 
