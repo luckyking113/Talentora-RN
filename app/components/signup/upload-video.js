@@ -63,10 +63,10 @@ var CANCEL_INDEX_UPLOAD = 2;
 
 const pic = [
 
-    // {
-    //     id: 1,
-    //     uri: 'https://scontent-hkg3-1.xx.fbcdn.net/v/t1.0-9/13690662_777391902401412_7742506644238257845_n.jpg?oh=88ea15a000a4ae04db0c72065af02abb&oe=59876F91',
-    // },
+    {
+        id: 1,
+        uri: 'https://scontent-hkg3-1.xx.fbcdn.net/v/t1.0-9/13690662_777391902401412_7742506644238257845_n.jpg?oh=88ea15a000a4ae04db0c72065af02abb&oe=59876F91',
+    },
     // {
     //     id: 2,
     //     uri: 'https://scontent-hkg3-1.xx.fbcdn.net/v/t1.0-1/p160x160/17799245_820895741395836_893744169114306193_n.jpg?oh=9f5dbd67b6df76217571ec7b8804e6f1&oe=59993FD3',
@@ -330,7 +330,7 @@ class UploadVideo extends Component{
     _prompt = () =>{
         return (
             <Prompt
-                title=''
+                title=""
                 placeholder="Title"
                 //defaultValue="Hello"
                 visible={ this.state.promptVisible }

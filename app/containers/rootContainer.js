@@ -55,7 +55,7 @@ class Root extends Component {
         // console.log('Panhna Seng ====================== Will Mount', count);
         OneSignal.addEventListener('received', this.onReceived);
         OneSignal.addEventListener('opened', this.onOpened);
-        OneSignal.addEventListener('registered', this.onRegistered);
+        // OneSignal.addEventListener('registered', this.onRegistered);
         OneSignal.addEventListener('ids', this.onIds);
     }
  
@@ -64,7 +64,7 @@ class Root extends Component {
         // console.log('Panhna Seng ====================== Will UnMount', count);
         OneSignal.removeEventListener('received', this.onReceived);
         OneSignal.removeEventListener('opened', this.onOpened);
-        OneSignal.removeEventListener('registered', this.onRegistered);
+        // OneSignal.removeEventListener('registered', this.onRegistered);
         OneSignal.removeEventListener('ids', this.onIds);
     }
     
@@ -293,13 +293,13 @@ class Root extends Component {
         // show login form on first load
         // console.log(this.props);
         console.log('this.props.appOption', this.props);  
-        if(this.state.isLoading){
+        if (this.state.isLoading) {
             return (
                 <LoadingScreen/>
             ) 
         }
         else{
-            if (this.props.user){
+            if (this.props.user) {
 
                 // after user login or complete signup 
                 // need register new device with user id

@@ -31,7 +31,6 @@ export default class LoadingScreen extends Component {
         // const { navigate, goBack } = this.props.navigation;
 
         return (
-           
             <View style={[styles.defaultContainer, styles.shadowBox, {backgroundColor: 'white', alignItems: 'stretch'} ]}>
                 {/*<Image
                     style={[ styles.bgCover]}  
@@ -49,7 +48,6 @@ export default class LoadingScreen extends Component {
                         color="white"
                     />*/}
                 </View>
-
             </View>
 
         );

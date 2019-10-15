@@ -54,11 +54,11 @@
 // export default RootAutoNav;
 
 import {
-    createStackNavigator,  DrawerNavigator, NavigationActions
+    createStackNavigator,  DrawerNavigator, NavigationActions, createAppContainer
 } from 'react-navigation';
 // import React, { Component } from 'react'
-import VideoScreen from '@components/discovery/video-view';
-import VideoTrimScreen from '@components/user/comp/video-trim-view';
+// import VideoScreen from '@components/discovery/video-view';
+// import VideoTrimScreen from '@components/user/comp/video-trim-view';
 
 // import { StyleSheet, Text, View, TextInput, TouchableOpacity, TouchableWithoutFeedback , Alert, StatusBar, ActivityIndicator } from 'react-native';
 
@@ -79,19 +79,19 @@ const options = {
 // export default StackNavigator({
 const authRootStack = createStackNavigator({
         
-    RootScreen:   { screen: TabNavigator, navigationOptions: { } },
-    VideoScreen:   { 
-        screen: VideoScreen,
-        navigationOptions: {
-            headerVisible: false,
-            header: null,
-        }},
-    VideoTrimScreen:   { 
-        screen: VideoTrimScreen,
-        navigationOptions: {
-            headerVisible: false,
-            header: null,
-        }},
+    RootScreen:   { screen: TabNavigator, navigationOptions: { header:null} },
+    // VideoScreen:   { 
+    //     screen: VideoScreen,
+    //     navigationOptions: {
+    //         headerVisible: false,
+    //         header: null,
+    //     }},
+    // VideoTrimScreen:   { 
+    //     screen: VideoTrimScreen,
+    //     navigationOptions: {
+    //         headerVisible: false,
+    //         header: null,
+    //     }},
 }, options);
 
 const navigateOnce = (getStateForAction) => (action, state) => {
@@ -108,4 +108,4 @@ const navigateOnce = (getStateForAction) => (action, state) => {
   
   authRootStack.router.getStateForAction = navigateOnce(authRootStack.router.getStateForAction);
   
-  export default authRootStack;
+  export default createAppContainer(authRootStack);

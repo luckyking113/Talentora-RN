@@ -1,6 +1,6 @@
 import React from 'react'
 import {
-    createBottomTabNavigator,
+    createStackNavigator,
     StackNavigator
 } from 'react-navigation';
 
@@ -22,6 +22,7 @@ const options = {
         }
     },
     animationEnabled: false,
+    headerMode:'none'
     // mode: 'modal'
 }
 
@@ -31,15 +32,15 @@ const TabBarComponent = (props) => {
 
 const navOptions = {
     // tabBarVisible: false,
-    tabBar: { 
-        visible: false,
-        label: '', 
-        icon: (props) => (<Tab {...props} icon="home" />) 
-    }
-
+    // tabBar: { 
+    //     visible: false,
+    //     label: '', 
+    //     icon: (props) => (<Tab {...props} icon="home" />) 
+    // }    
+    header:null
 }
 
-export default createBottomTabNavigator({
+export default createStackNavigator({
 
     LandingLogIn:       { screen: SIGNUP_LOGIN_PROCESS, navigationOptions: {navOptions } },
 

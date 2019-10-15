@@ -7,9 +7,9 @@ import {
     TouchableOpacity,
     DeviceEventEmitter
 } from 'react-native'
-// import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from 'react-native-vector-icons/FontAwesome';
 // import Icon from 'react-native-vector-icons/Ionicons';
-import Icon from 'react-native-vector-icons/Entypo';
+// import Icon from 'react-native-vector-icons/Entypo';
 import { Colors } from '@themes/index';
 import { IconCustom } from '@components/ui/icon-custom';
 import { UserHelper, Helper } from '@helper/helper';
@@ -110,15 +110,15 @@ class ButtonBack extends Component {
             onPress={ () => this._handleClick() }
 
         >
-            {/*<Icon
+            <Icon
                 name1="ios-arrow-back"
                 name="chevron-small-left"
                 style={[ styles.icon, colBtn ]}
-            />*/}
-            <IconCustom
+            />
+            {/* <IconCustom
                 name="back-gray-icon"
                 style={[ styles.icon, colBtn ]}
-            />
+            /> */}
             <Text style={[styles.btnLabel, colBtn]}>{btnLabel}</Text> 
 
         </TouchableOpacity>)
