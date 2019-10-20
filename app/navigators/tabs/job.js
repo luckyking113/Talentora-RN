@@ -1,11 +1,10 @@
-import {
-    createStackNavigator,      
-    NavigationActions
+import {    
+    NavigationActions,
+    createStackNavigator
 } from 'react-navigation';
 
 // talent seeker (employer)
 import Job from '@components/job/job'
-import PostJobList from '@components/job/talent-seeker/post-job-list'
 import CreatePostJob from '@components/job/talent-seeker/create-post-job'
 import ViewPostJob from '@components/job/talent-seeker/view-post-job'     
 import JobDetail from '@components/job/talent-seeker/job-detail'
@@ -19,16 +18,7 @@ import MessageDetail from '@components/message/message'
 import Review from '@components/user/review';
 import LeaveReview from '@components/user/leave-review';
 
-// tabel (user)
-// import AvailableAppliedJob from '@components/job/talent/available-applied-job'
-import JobTab from '@navigators/tabs/job-tabs'; // talent (user) has tab on job page (available & applied)
-
-
-import { Colors } from '@themes/index';
 import { headerStyle, titleStyle } from '@styles/header.style'
-
-import { UserHelper, StorageData, Helper } from '@helper/helper';
-
 import { transparentHeaderStyle, defaultHeaderStyle } from '@styles/components/transparentHeader.style';
 
 
@@ -37,26 +27,19 @@ const TabBarComponent = (props) => {
     console.log('TabBarComponent Props: ', props);
 }
 const options = {
-    // initialRouteName: 'CreatePostJob',
-    // initialRouteName: 'JobDetail',
     initialRouteName: 'JobList',
     navigationOptions:{
         headerStyle: headerStyle,  
-        headerTitleStyle: titleStyle,
-        // headerTintColor: Colors.textColorDark,
+        headerTitleStyle: titleStyle,        
     }
 }
 
 const navOptions =  {   
-    headerStyle: defaultHeaderStyle,   
-    // headerTintColor: Colors.textColorDark, 
+    headerStyle: defaultHeaderStyle,    
 }
 
 
 const jobStack = createStackNavigator({
-
-    // JobList:   { screen: UserHelper._isEmployer() ? PostJobList : JobTab },
-    // JobList:   { screen: PostJobList },
     JobList:   { 
         screen: Job,
         navigationOptions: ({ navigation }) => ({ 

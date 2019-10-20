@@ -63,10 +63,10 @@ var CANCEL_INDEX_UPLOAD = 2;
 
 const pic = [
 
-    {
-        id: 1,
-        uri: 'https://scontent-hkg3-1.xx.fbcdn.net/v/t1.0-9/13690662_777391902401412_7742506644238257845_n.jpg?oh=88ea15a000a4ae04db0c72065af02abb&oe=59876F91',
-    },
+    // {
+    //     id: 1,
+    //     uri: 'https://scontent-hkg3-1.xx.fbcdn.net/v/t1.0-9/13690662_777391902401412_7742506644238257845_n.jpg?oh=88ea15a000a4ae04db0c72065af02abb&oe=59876F91',
+    // },
     // {
     //     id: 2,
     //     uri: 'https://scontent-hkg3-1.xx.fbcdn.net/v/t1.0-1/p160x160/17799245_820895741395836_893744169114306193_n.jpg?oh=9f5dbd67b6df76217571ec7b8804e6f1&oe=59993FD3',
@@ -93,7 +93,6 @@ function mapStateToProps(state) {
     }
 }
 
-// export default class SignUpInfo extends React.Component {
 class UploadVideo extends Component{
     constructor(props){
         super(props);
@@ -330,7 +329,7 @@ class UploadVideo extends Component{
     _prompt = () =>{
         return (
             <Prompt
-                title=""
+                title=''
                 placeholder="Title"
                 //defaultValue="Hello"
                 visible={ this.state.promptVisible }
@@ -1003,7 +1002,7 @@ class UploadVideo extends Component{
                                                     <View style={[ styles.justFlexContainer ]}>
 
                                                         {/* { (item.media_type == 'video' && !item.file_key) && <Video source={{uri: item.uri}}   // Can be a URL or a local file. */}
-                                                        { false && <Video source={{uri: item.uri}}   // Can be a URL or a local file.
+                                                        {/* { false && <Video source={{uri: item.uri}}   // Can be a URL or a local file.
                                                         
                                                             ref={(ref) => {
                                                                 this.player = ref
@@ -1025,7 +1024,7 @@ class UploadVideo extends Component{
                                                             //onError={this.videoError}               // Callback when video cannot be loaded
                                                             //onBuffer={this.onBuffer}                // Callback when remote video is buffering
                                                             //onTimedMetadata={this.onTimedMetadata}  // Callback when the stream receive some metadata
-                                                            style={styles.backgroundVideo} /> }
+                                                            style={styles.backgroundVideo} /> } */}
 
                                                         { item.isLocal && <Image
                                                             style={[styles.myAvatar, styles.mybgcover]}

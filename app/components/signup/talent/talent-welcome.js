@@ -29,7 +29,6 @@ function mapStateToProps(state) {
     }
 }
 
-// export default class SignUpInfo extends React.Component { 
 class TalentSeekerWelcome extends Component{
     
      constructor(props){

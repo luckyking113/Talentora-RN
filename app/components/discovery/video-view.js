@@ -48,7 +48,7 @@ function mapStateToProps(state) {
     }
 }
 
-class VideoView extends React.Component {
+class VideoView extends Component {
 
     constructor(props){
         super(props)

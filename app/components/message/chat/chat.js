@@ -1,9 +1,9 @@
-import React from 'react';
+import React, {Component} from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, StatusBar, ListView } from 'react-native';
 import { Colors } from '@themes/index';
 
 
-export default class Chat extends React.Component {
+export default class Chat extends Component {
 
     constructor(props) {
         super(props);

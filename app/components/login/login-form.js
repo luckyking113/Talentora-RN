@@ -1,8 +1,8 @@
-import React from 'react';
+import React, {Component} from 'react';
 import { StyleSheet, Text, View, TextInput, ActivityIndicator, TouchableOpacity, Alert, StatusBar, AsyncStorage } from 'react-native';
 import { Colors } from '../../themes/index';
 import Icon from 'react-native-vector-icons/FontAwesome';
-// import { IconCustom } from '@components/ui/icon-custom';
+import { IconCustom } from '@components/ui/icon-custom';
 
 const FBSDK = require('react-native-fbsdk');
 const { LoginButton, AccessToken, LoginManager } = FBSDK;
@@ -18,7 +18,7 @@ var func = require('@helper/validate');
 let _deviceId;
 let that;
 
-export default class LogInForm extends React.Component {
+export default class LogInForm extends Component {
 
     constructor(props){
         super(props);
@@ -470,14 +470,14 @@ export default class LogInForm extends React.Component {
                 </View>
 
                 <TouchableOpacity activeOpacity={.8} style={styles.fbContainer} onPress={() =>  this.facebookLogin()}>
-                    <Icon
+                    {/*<Icon
                         name='facebook-square'
                         style={[ styles.icon, ]}
-                    />
-                    {/* <Icon 
+                    />*/}
+                    <IconCustom 
                         name='facebook-gray-logo'
                         style={[ styles.icon, ]}
-                    /> */}
+                    />
                     <Text style={styles.fbLogin}> Log in with Facebook</Text>
                 </TouchableOpacity>
                 <View>

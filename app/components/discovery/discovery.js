@@ -7,14 +7,14 @@ import { connect } from 'react-redux'
 
 import * as AuthActions from '@actions/authentication'
 
-// import AllJobPosted from '@components/job/talent-seeker/post-job-list' // for talent seeker (employer)
-// import AvailableJobApplied from '@navigators/tabs/job-tabs' // for talent (user)
+import AllJobPosted from '@components/job/talent-seeker/post-job-list' // for talent seeker (employer)
+import AvailableJobApplied from '@navigators/tabs/job-tabs' // for talent (user)
 
 import { StyleSheet, Text, View, AsyncStorage, Alert, TouchableOpacity, Modal ,TouchableWithoutFeedback, DeviceEventEmitter } from 'react-native';
 
-// import Authenticate from '@components/authentication/authenticate';
-// import LoadingScreen from '@components/other/loading-screen'; 
-// import OneSignal from 'react-native-onesignal'; 
+import Authenticate from '@components/authentication/authenticate';
+import LoadingScreen from '@components/other/loading-screen'; 
+import OneSignal from 'react-native-onesignal'; 
 
 import { UserHelper, StorageData, GoogleAnalyticsHelper, Helper } from '@helper/helper';
 
@@ -24,11 +24,11 @@ import { Colors } from '@themes/index';
 import Styles from '@styles/card.style'
 import Utilities from '@styles/extends/ultilities.style';
 
-// import BoxWrap from '@styles/components/box-wrap.style';
+import BoxWrap from '@styles/components/box-wrap.style';
 import Tabs from '@styles/tab.style';
 
-// import Icon from 'react-native-vector-icons/MaterialIcons';
-// import { headerStyle, titleStyle } from '@styles/header.style'
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { headerStyle, titleStyle } from '@styles/header.style'
 import ButtonRight from '@components/header/button-right'
 import ButtonLeft from '@components/header/button-left'
 
@@ -42,7 +42,7 @@ import People from '@components/discovery/people'
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 import CustomizeTabBar from '@components/ui/scroll-tab-view-custom-tab/customize-tab-item';
 
-// import Tab from '@components/tabs/tab'
+import Tab from '@components/tabs/tab'
 
 const dismissKeyboard = require('dismissKeyboard');
 
@@ -73,7 +73,8 @@ class DiscoveryRoot extends Component {
                 to="InviteFriend"
                 //babo={console.log('navigation', navigation.state.hasOwnProperty('params') ? (navigation.state.params.hasOwnProperty('hideFilter') ? 'man has': 'ot man te' ): "false")}
             />),
-            headerRight: (navigation.state.params ?
+            headerRight:
+                (navigation.state.params ?
                     (navigation.state.params.hasOwnProperty('hideFilter') ? 
                         (navigation.state.params.hideFilter ? null :
                         <View style={[styles.flexVerMenu, styles.flexCenter]}>

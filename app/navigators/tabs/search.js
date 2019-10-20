@@ -4,23 +4,17 @@ import {
 } from 'react-navigation';
 
 import Search from '../../components/card/home'
-import ProfileUser from '../../components/user/profile'
-import { Colors } from '@themes/index';
 import { headerStyle, titleStyle } from '../../styles/header.style'
 
 const options = {
     navigationOptions:{
         headerStyle: headerStyle,  
-        headerTitleStyle: titleStyle,
-        // headerTintColor: Colors.textColorDark,
+        headerTitleStyle: titleStyle    
     }
 }
 
 const searchStack = createStackNavigator({
-
-    Home:   { screen: Search },
-    // Detail: { screen: ProfileUser }
-
+    Home:   { screen: Search },    
 }, options);
 
 const navigateOnce = (getStateForAction) => (action, state) => {

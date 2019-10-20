@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Component} from 'react';
 
 import { StyleSheet, 
 	Text, 
@@ -78,7 +78,7 @@ function mapStateToProps(state) {
     }
 }
 
-class Message extends React.Component {
+class Message extends Component {
 
 	constructor(props) {
 		super(props);

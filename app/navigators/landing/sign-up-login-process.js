@@ -1,3 +1,5 @@
+import React from 'react'
+
 import {
     createStackNavigator,
     NavigationActions
@@ -26,30 +28,16 @@ import TalentDetail from '@components/signup/talent/talent-detail'
 import TalentWelcome from '@components/signup/welcome' 
 
 import UploadPhoto from '@components/signup/upload-photo' 
-// import UploadVideo from '@components/signup/upload-video'
+import UploadVideo from '@components/signup/upload-video'
 
 import Authenticate from '@components/authentication/authenticate'
 
 import { Colors } from '@themes/index';
-import { transparentHeaderStyle, titleStyle } from '@styles/components/transparentHeader.style';
-
-// const options = {
-//     headerMode: 'screen',  
-//     initialRouteName: 'LogIn',
-//     // initialRouteName: 'SignUp',
-//     // initialRouteName: 'TalentUploadVideo',
-    
-// }
+import { transparentHeaderStyle } from '@styles/components/transparentHeader.style';
 
 const options = {
-    headerMode: 'screen',  
-    // initialRouteName: 'UploadPhoto', 
-    // initialRouteName:'TalentSeekerWelcome',
-    // initialRouteName: 'UploadVideo',
-    initialRouteName: 'LogIn',  
-    // initialRouteName: 'SignUp',   
-    // initialRouteName: 'TalentWelcome',   
-    // initialRouteName: 'TalentDetail',   
+    headerMode: 'screen',      
+    initialRouteName: 'LogIn',   
     lazyLoad: true,
 }
 
@@ -83,7 +71,7 @@ const signInSignUp =  createStackNavigator({
     TalentDetail: { screen: TalentDetail, navigationOptions: navOptions },
 
     UploadPhoto: { screen: UploadPhoto, navigationOptions: navOptions },
-    // UploadVideo: { screen: UploadVideo, navigationOptions: navOptions },
+    UploadVideo: { screen: UploadVideo, navigationOptions: navOptions },
 
     TermOfUse:{screen: TermOfUse, navigationOptions: navOptions},
     PrivacyPolicy:{screen:PrivacyPolicy, navigationOptions: navOptions},

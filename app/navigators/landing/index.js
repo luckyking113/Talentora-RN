@@ -1,11 +1,8 @@
 import React from 'react'
 import {
-    createStackNavigator,
-    StackNavigator
+    createBottomTabNavigator,    
 } from 'react-navigation';
 
-// Screens
-// Only one for now, add more as required
 import SIGNUP_LOGIN_PROCESS from './sign-up-login-process'
 
 // TabNavigator options
@@ -22,7 +19,6 @@ const options = {
         }
     },
     animationEnabled: false,
-    headerMode:'none'
     // mode: 'modal'
 }
 
@@ -32,16 +28,14 @@ const TabBarComponent = (props) => {
 
 const navOptions = {
     // tabBarVisible: false,
-    // tabBar: { 
-    //     visible: false,
-    //     label: '', 
-    //     icon: (props) => (<Tab {...props} icon="home" />) 
-    // }    
-    header:null
+    tabBar: { 
+        visible: false,
+        label: '', 
+        icon: (props) => (<Tab {...props} icon="home" />) 
+    }
+
 }
 
-export default createStackNavigator({
-
+export default createBottomTabNavigator({
     LandingLogIn:       { screen: SIGNUP_LOGIN_PROCESS, navigationOptions: {navOptions } },
-
 }, options);

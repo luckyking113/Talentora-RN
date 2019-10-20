@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Component} from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
 import ListItem from '@styles/components/list-item.style';
@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
 
 // console.log(this);
 
-export default class Row extends React.Component {
+export default class Row extends Component {
 
 
     _getCover = (item) => {

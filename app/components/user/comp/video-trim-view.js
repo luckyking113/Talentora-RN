@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react';
 import { connect } from 'react-redux'
 import {
     AppState,
@@ -48,7 +48,7 @@ function mapStateToProps(state) {
     }
 }
 
-class VideoTrimView extends React.Component {
+class VideoTrimView extends Component {
 
     constructor(props){
         super(props)

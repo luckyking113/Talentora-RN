@@ -1,31 +1,19 @@
 import React from 'react'
-import {
+import {    
     NavigationActions,
     createStackNavigator
 } from 'react-navigation';
 
 import { Colors } from '@themes/index';
 
-import ButtonRight from '@components/header/button-right'
-import ButtonLeft from '@components/header/button-left'
-
 // tabel (user)
-import Videos from '@components/discovery/video'
-import People from '@components/discovery/people'
 import Discovery from '@components/discovery/discovery'
-
 import ProfileUser from '@components/user/profile'
 import MessageDetail from '@components/message/message'
 import Review from '@components/user/review';
 import LeaveReview from '@components/user/leave-review';
-import VideoScreen from '@components/discovery/video-view';
 
-
-// Tabs
-import Tab from '@components/tabs/tab' 
-import TabItem from '@components/tabs/tab-item'
-
-import { transparentHeaderStyle, defaultHeaderStyle, titleStyle } from '@styles/components/transparentHeader.style';
+import { defaultHeaderStyle } from '@styles/components/transparentHeader.style';
 
 // TabNavigator options
 const optionsStack = {
@@ -36,27 +24,18 @@ const optionsStack = {
 const options = {
     initialRouteName: 'People',
     lazyLoad: true,
-    tabBarPosition: 'top',
-    // indicatorStyle: {
-    //     backgroundColor: 'red',
-    // },
+    tabBarPosition: 'top',    
     tabBarOptions: {
         // inactiveTintColor: '#aaa',
         inactiveTintColor: Colors.tabBarInactiveTintColor,
         activeTintColor: Colors.primaryColor,
         showIcon: false,
-        showLabel: true,
-        // indicatorStyle: {
-        //     backgroundColor: 'red',
-        // },
+        showLabel: true,        
         style: {
             height: 40,
-            paddingHorizontal: 15,
-            // marginBottom: 20,
-            // paddingBottom: 5,
-            backgroundColor: Colors.tabBarBg, 
-            // backgroundColor: 'gray', 
-            borderTopWidth: 0, 
+            paddingHorizontal: 15,            
+            backgroundColor: Colors.tabBarBg,     
+            borderTopWidth: 0,
             borderBottomWidth: 1, 
             borderBottomColor: Colors.lineColor,  
             elevation: 1,
@@ -74,34 +53,9 @@ const options = {
 }
 
 const navOptions =  {
-    headerStyle: defaultHeaderStyle,  
-    // headerTintColor: Colors.textColorDark, 
+    headerStyle: defaultHeaderStyle,      
 }
 
-// not use
-// const discoveryTab = TabNavigator({
-
-//     Videos:       { 
-//                     screen: Videos,  
-//                     navigationOptions: ({ navigation }) => ({ 
-//                         ...navOptions,
-//                         tabBarLabel: (props) => (<TabItem {...props} label="Videos" iconType="M" icon="card-travel" />),
-//                         // tabBarIcon: (props) => (<Tab {...props} iconType="M" icon="card-travel" />)
-//                     })
-//                 },
-
-//     People:     { 
-//                     screen: People, 
-//                     navigationOptions: { 
-//                         ...navOptions,
-//                         tabBarLabel: (props) => (<TabItem {...props} label="People" iconType="M" icon="card-travel" />),
-//                         // tabBarIcon: (props) => (<Tab {...props} iconType="M" icon="public" />)
-//                     }
-//                 },
-
-// }, options);
-
-// export default StackNavigator({
 const discoveryStack = createStackNavigator({
 
     Discovery:   { 
@@ -134,16 +88,6 @@ const discoveryStack = createStackNavigator({
             ...navOptions,
         })
     },
-    // VideoScreen:   { 
-    //     screen: VideoScreen,
-    //     navigationOptions: ({ navigation }) => ({ 
-    //         ...navOptions,
-    //         headerVisible: false, 
-    //     })
-    // },
-    // Videos:   { screen: Videos },
-    // People:   { screen: People },
-
 }, optionsStack);
 
 
@@ -157,8 +101,6 @@ const navigateOnce = (getStateForAction) => (action, state) => {
   ) ? null : getStateForAction(action, state);
   // you might want to replace 'null' with 'state' if you're using redux (see comments below)
 };
-
-// console.log('discoveryStack :',discoveryStack);
 
 discoveryStack.router.getStateForAction = navigateOnce(discoveryStack.router.getStateForAction);
 

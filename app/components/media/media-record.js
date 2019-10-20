@@ -1,7 +1,7 @@
-import React from 'react';
+import React, {Component} from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, StatusBar, Image } from 'react-native';
 import {
-    createStackNavigator, NavigationActions
+    NavigationActions
 } from 'react-navigation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -13,7 +13,7 @@ import { Colors } from '../../themes/index';
 // import LogInForm from '../Components/Form/LogInForm';
 
 
-export default class MediaRecord extends React.Component {
+export default class MediaRecord extends Component {
 
   // static navigationOptions = {
   //   title: 'Take Media',

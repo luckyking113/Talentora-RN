@@ -1,7 +1,5 @@
-import React from 'react'
-
 import {
-    createStackNavigator,
+    createStackNavigator
 } from 'react-navigation';
 
 
@@ -11,12 +9,11 @@ import CreateNewPassword from '@components/signup/forget-password/create-new-pas
 import SuccessResetPassword from '@components/signup/forget-password/success-reset-password'
 
 import { Colors } from '@themes/index';
-import { transparentHeaderStyle, titleStyle } from '@styles/components/transparentHeader.style';
+import { transparentHeaderStyle } from '@styles/components/transparentHeader.style';
 
 const options = {
     headerMode: 'screen',  
-    initialRouteName: 'ForgetPassword',   
-    // lazyLoad: true,
+    initialRouteName: 'ForgetPassword',       
 }
 
 const navOptions =  ({ navigation }) => ({

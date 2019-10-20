@@ -1,4 +1,5 @@
-import React from 'react';
+import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
 import ListItem from '@styles/components/list-item.style';
@@ -21,7 +22,7 @@ const styles = StyleSheet.create({
 
 // console.log(this);
 
-export default class Row extends React.PureComponent {
+export default class Row extends Component {
 
 
     _getCover = () => {
@@ -47,9 +48,6 @@ export default class Row extends React.PureComponent {
         <View style={[styles.itemContainer, styles.mainHorizontalPadding]}> 
 
             <TouchableOpacity onPress= {() => this.props.rowPress(this.props)} activeOpacity = {0.8} style={[styles.itemSubContainerSM, styles.rowBorderBot, {backgroundColor: 'white', marginBottom: 0,paddingHorizontal: 0,}]}>   
-
-                {/* avatar */}
-                {/*<Image source={ _cover } style={styles.itemPhoto} /> */}
                 <CustomCachedImage
                     style={[styles.itemPhoto]} 
                     defaultSource={ require('@assets/job-banner.jpg') }

@@ -21,7 +21,6 @@ import { UserHelper, StorageData, Helper, GoogleAnalyticsHelper } from '@helper/
 const Item = Picker.Item;
 import { ethnicities, hair_colors, eye_colors, languages } from '@api/response'
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
 
 var func = require('@helper/validate');
 
@@ -37,7 +36,6 @@ function mapStateToProps(state) {
 
 let originalLanguage = null;
 
-// export default class SignUpInfo extends React.Component {
 class TalentDetail extends Component{
 
     static navigationOptions = ({ navigation }) => ({
@@ -266,33 +264,7 @@ class TalentDetail extends Component{
             this.setState({languageModalVisible: visible})
         }
     }
-    genderSelect=(item,index,type)=>{
-        // let temp=this.state.Genders;
-        // let selectedCount=[];
-        // _.map(temp,function(v,k){
-        //    if(v.id==item.id){
-        //        v.selected=true;
-        //        console.log("condition v select is true");
-        //    }
-        //    else{
-        //        v.selected=false;
-        //    }
-        //    selectedCount.push(v);
-        // });
-        //     console.log("temp in genderselect",selectedCount);
-        // let displayGendersAndroid;
-        // _.map(selectedCount,function(val,key){
-        //     if(val.selected){
-        //         displayGendersAndroid=val.display_name;
-        //     }
-        // })
-        // console.log("display gender android",displayGendersAndroid);
-        // this.setState({
-        //     Genders:selectedCount,
-        //     selectedGender:displayGendersAndroid=='Both(Male & Female)' ? 'B':(displayGendersAndroid=='Male' ? 'M':'F'),
-        //     displayGendersAndroid:displayGendersAndroid
-        // })
-        // this.setModalVisible(false,"genderAndroid");
+    genderSelect=(item,index,type)=>{    
         let temp=(type=='ethnicity' ? ethnicities: (type=='hair'? hair_colors:eye_colors));
         console.log("temp in genderselect",temp);
         let selectedvalue;

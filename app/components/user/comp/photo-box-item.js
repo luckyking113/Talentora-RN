@@ -58,15 +58,16 @@ export default class Row extends React.PureComponent {
                     activeOpacity = {0.9}
                     style={[ styles.justFlexContainer, styles.boxWrapItem, styles.myWrap, styles.flexCenter, item.isBigSize && styles.boxWrapItemSizeMD ]} 
                     onPress={() => this.props.chooseImage()} >
-                        { 
-                            this.props.uploading ? 
-                            <ActivityIndicator color="gray" animating={true} /> 
-                            : 
-                            <IconCustom
-                                name="plus-gray-icon"
-                                style={[ styles.iconPlus ]} 
-                            /> 
-                        }
+
+                        {/* <IconCustom
+                            name="plus-gray-icon"
+                            style={[ styles.iconPlus ]} 
+                        /> */}
+
+                        { this.props.uploading ? <ActivityIndicator color="gray" animating={true} /> : <IconCustom
+                            name="plus-gray-icon"
+                            style={[ styles.iconPlus ]} 
+                        /> }
 
                     </TouchableOpacity>
                 </View>

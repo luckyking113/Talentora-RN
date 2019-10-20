@@ -2,7 +2,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import * as AuthActions from '@actions/authentication'
-import { NavigationActions, StackActions } from 'react-navigation';
+import { NavigationActions } from 'react-navigation';
 
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, TouchableWithoutFeedback , Alert, StatusBar, ActivityIndicator, Keyboard } from 'react-native';
 
@@ -37,7 +37,6 @@ function mapStateToProps(state) {
     }
 }
 
-// export default class SignUpInfo extends React.Component {
 class ForgetPassword extends Component{
 
     constructor(props){
@@ -164,19 +163,8 @@ class ForgetPassword extends Component{
     backToSignIn = () => {
         const { navigate, goBack, setParams, state, dispatch } = this.props.navigation;
 
-        const resetAction = StackActions.reset(
-            { 
-                index: 0, 
-                actions: [
-                    {
-                        type: NavigationActions.NAVIGATE, 
-                        routeName: 'RootScreen'
-                    }
-                ], 
-                key: null 
-            }
-        )
-        dispatch(resetAction);        
+        const resetAction = NavigationActions.reset({ index: 0, actions: [{type: NavigationActions.NAVIGATE, routeName: 'RootScreen'}], key: null })
+        dispatch(resetAction);
     }
 
     componentDidMount() {

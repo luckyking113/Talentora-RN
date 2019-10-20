@@ -8,6 +8,4 @@ export default createStackNavigator({
 
     SettingsModal: { screen: Settings },
 
-}, {
-
-});
+}, {});

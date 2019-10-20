@@ -1,5 +1,5 @@
 import {
-    createStackNavigator, createAppContainer
+    createStackNavigator, DrawerNavigator, createAppContainer
 } from 'react-navigation';
 import React from 'react'
 import { StyleSheet, Text, View, AsyncStorage, Alert, TouchableOpacity,ScrollView } from 'react-native';
@@ -24,7 +24,7 @@ const options = {
     mode: 'modal'
 }
 
-const MainNavigator = createStackNavigator({
+const mainNavigator = createStackNavigator({
 
     RootScreen:   { 
         screen: TabNavigator,
@@ -80,5 +80,4 @@ const MainNavigator = createStackNavigator({
 },options);
 
 // export default TabNavigator;
-
-export default createAppContainer(MainNavigator)
+export default createAppContainer(mainNavigator);

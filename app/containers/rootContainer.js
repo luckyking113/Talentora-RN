@@ -1,16 +1,11 @@
 import React, { Component} from 'react'
 import { connect } from 'react-redux'
 import * as AuthActions from '@actions/authentication'
-import * as AppOption from '@actions/app-option'
 import RootNavigator from '@navigators/root'
 import RootAuthNavigator from '@navigators/auth-root'
-import { StyleSheet, Text, View, AsyncStorage, Alert, DeviceEventEmitter, Linking } from 'react-native';
-
-import Authenticate from '@components/authentication/authenticate';
+import {Alert, DeviceEventEmitter, Linking } from 'react-native';
 import LoadingScreen from '@components/other/loading-screen'; 
 import OneSignal from 'react-native-onesignal'; 
-import Introduce from '@components/signup/introduce'
-
 import { UserHelper, StorageData, NotificationHelper, ChatHelper, Helper, GoogleAnalyticsHelper } from '@helper/helper';
 import { getApi } from '@api/request';
 import {notification_data} from '@api/response';
@@ -21,11 +16,10 @@ import _ from 'lodash'
 import ImagePickerCrop from 'react-native-image-crop-picker';
 
 const FBSDK = require('react-native-fbsdk');
-const { LoginButton, AccessToken, LoginManager } = FBSDK;
+const { LoginManager } = FBSDK;
 
 // ignore some warning yellow box you want
 console.ignoredYellowBox = ['Remote debugger','source.uri', 'Can only update a mounted', 'Task orphaned for request'];  
-// console.disableYellowBox = true;
 
 // Trigger if the app mount more than once when click android back button, and start app again.
 let count = 0;
@@ -74,26 +68,8 @@ class Root extends Component {
     }
 
     onOpened(openResult) {
-        console.log('======================== OPEN NOTIFICATION ========================');
-        // console.log('Message: ', openResult.notification.payload.body);
-        // console.log('Data: ', openResult.notification.payload.additionalData);
-        // console.log('isActive: ', openResult.notification.isAppInFocus);
+        console.log('======================== OPEN NOTIFICATION ========================');        
         console.log('openResult: ', openResult);
-
-        // if(openResult.notification.isAppInFocus){
-        //     console.log('do nothing');
-        //     return;
-        // } 
-        
-        // if(openResult.notification.payload.additionalData.action == 'apply-job'){
-        //     let obj = {
-        //         'type': 'apply-job',
-        //         'data': openResult.notification.payload.additionalData
-        //     }
-        //     notification_data.push(obj);
-        //     console.log('Go to view post job with data.', notification_data);
-        // }
-
         let obj = {
             'type': openResult.notification.payload.additionalData.action,
             'data': openResult.notification.payload.additionalData
@@ -171,40 +147,16 @@ class Root extends Component {
         }
     }
 
-    // for testing 
-    // no use for prod
-    // _removeStorage = () => {
-    //     StorageData._removeStorage('TolenUserData');
-    // } 
 
     _loadInitialState = () => {
         // StorageData._removeStorage('IntroScreenVisited');
         let that = this;
         let _userData =  StorageData._loadInitialState('TolenUserData');
 
-        // let _chkIntroScreen =  StorageData._loadInitialState('IntroScreenVisited'); 
-         
-        // _chkIntroScreen.then(function(result){
-        //     console.log('_chkIntroScreen', result);
-
-        //     if(result){
-        //         that.setState({
-        //             isVisitedTutorialScreen: true
-        //         })
-        //     }
-
-        // });
-
         _userData.then(function(result){ 
-
-            // console.log('result', result);
-
             // if has user login data
             if(!_.isEmpty(result)){
                 UserHelper.UserInfo = JSON.parse(result);
-
-                // console.log('lol : ',UserHelper.UserInfo);
-
                 // delay 500ms to show loading screen
                 setTimeout(function() {
                     // check expire user token
@@ -217,7 +169,6 @@ class Root extends Component {
                         if(UserHelper._chkFacebookAcc()){
                             LoginManager.logOut();
                         }
-
                         // remove storage data
                         StorageData._removeStorage('TolenUserData'); 
                         UserHelper.UserInfo = null; // assign null to user info obj. so it auto set autheticate data = null too
@@ -288,21 +239,14 @@ class Root extends Component {
 
     }
 
-    render() {
-        // console.log(this.props.user, this.state.userData);
-        // show login form on first load
-        // console.log(this.props);
-        console.log('this.props.appOption', this.props);  
-        if (this.state.isLoading) {
+    render() {        
+        if(this.state.isLoading){
             return (
                 <LoadingScreen/>
             ) 
         }
         else{
-            if (this.props.user) {
-
-                // after user login or complete signup 
-                // need register new device with user id
+            if (this.props.user){
                 this._registerDeviceToApi();
 
                 ImagePickerCrop.clean().then(() => {
@@ -322,39 +266,13 @@ class Root extends Component {
                 this._sendBirdLoginRegister();
 
 
-                return (<RootNavigator onNavigationStateChange={(prevState, currentState) => {
-                    
-                                            // uncomment to enable paused video after state change
-                                            {/* this.checkToPausedVideo(prevState, currentState); */}
-                    
-                                        }} />)   // onNavigationStateChange={null} no console navigation change
-
-                
-                // if(!this.props.appOption && !this.state.isVisitedTutorialScreen)
-
-                //     return (<Introduce onNavigationStateChange={(prevState, currentState) => {
-
-                //         // uncomment to enable paused video after state change
-                //         {/* this.checkToPausedVideo(prevState, currentState); */}
-
-                //     }} />)   // onNavigationStateChange={null} no console navigation change
-
-                // else
-
-                //     return (<RootNavigator onNavigationStateChange={(prevState, currentState) => {
-
-                //         // uncomment to enable paused video after state change
-                //         {/* this.checkToPausedVideo(prevState, currentState); */}
-
-                //     }} />)   // onNavigationStateChange={null} no console navigation change
-
+                return (
+                    <RootNavigator onNavigationStateChange={(prevState, currentState) => {}} />
+                )   // onNavigationStateChange={null} no console navigation change     
             }
             else
-
-                return (
-                    
-                    <RootAuthNavigator onNavigationStateChange={null} /> // onNavigationStateChange={null} no console navigation change
-                    
+                return (                      
+                    <RootAuthNavigator onNavigationStateChange={null} /> // onNavigationStateChange={null} no console navigation change                    
                 );
         }
         

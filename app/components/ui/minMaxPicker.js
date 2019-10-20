@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {Component} from 'react';
 import {
     StyleSheet,
     TextInput,
@@ -19,7 +19,7 @@ import { Colors } from '@themes/index'
 import { ages } from '@api/response'
 import { Helper } from '@helper/helper';
 const Item = Picker.Item;
-class minMaxPicker extends React.Component {
+class minMaxPicker extends Component {
 
     constructor(props) {
         super(props);

@@ -28,10 +28,6 @@ import TagsSelect from '@styles/components/tags-select.style';
 
 import BoxWrap from '@styles/components/box-wrap.style';
 
-import { headerStyle, titleStyle } from '@styles/header.style'
-import ButtonRight from '@components/header/button-right'
-import ButtonLeft from '@components/header/button-left'
-
 import _ from 'lodash'
 import { UserHelper, StorageData, Helper, GoogleAnalyticsHelper } from '@helper/helper';
 

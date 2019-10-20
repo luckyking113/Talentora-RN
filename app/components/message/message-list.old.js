@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Component} from 'react';
 import { StyleSheet, Text, View, RefreshControl, TextInput, ListView, TouchableOpacity, Alert, StatusBar, Platform, AppState, DeviceEventEmitter, ActionSheetIOS } from 'react-native';
 import { Colors } from '@themes/index';
 
@@ -58,7 +58,7 @@ var BUTTONS = [
   var DESTRUCTIVE_INDEX = 0;
   var CANCEL_INDEX = 1;
 
-class MessageList extends React.Component {
+class MessageList extends Component {
 
     constructor(props) {
         super(props);

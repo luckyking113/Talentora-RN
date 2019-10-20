@@ -36,8 +36,6 @@ function mapStateToProps(state) {
         // navigation: state.navigation
     }
 }
-
-// export default class SignUpInfo extends React.Component {
 class SignUpInfo extends Component{
 
     constructor(props){

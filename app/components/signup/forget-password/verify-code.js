@@ -32,8 +32,6 @@ function mapStateToProps(state) {
         // navigation: state.navigation
     }
 }
-
-// export default class SignUpInfo extends React.Component {
 class VerifyCode extends Component{
 
     constructor(props){

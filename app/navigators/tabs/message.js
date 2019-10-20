@@ -1,6 +1,6 @@
 import {
-    createStackNavigator,    
-    NavigationActions
+    NavigationActions,
+    createStackNavigator
 } from 'react-navigation';
 
 import MessageContainer from '@components/message/message-container';
@@ -8,19 +8,15 @@ import MessageList from '@components/message/message-list'
 import Message from '@components/message/message'
 import MessageProfileUser from '@components/user/profile'
 import JobDetail from '@components/job/talent-seeker/job-detail'
-// import Notification from '@components/messsage/notification/notification'
-import { Colors } from '@themes/index';
 import { headerStyle, titleStyle } from '../../styles/header.style'
 import { transparentHeaderStyle, defaultHeaderStyle, defaultHeaderWithShadowStyle } from '@styles/components/transparentHeader.style';
 
 const options = {
     headerMode: 'screen',
-    // initialRouteName: 'Message',
     initialRouteName: 'MessageList',
     navigationOptions:{
         headerStyle: defaultHeaderWithShadowStyle,  
-        headerTitleStyle: titleStyle,
-        // headerTintColor: Colors.textColorDark,
+        headerTitleStyle: titleStyle,        
     }
 }
 
@@ -30,9 +26,7 @@ const messageStack = createStackNavigator({
     MessageList:   { screen: MessageList },
     Message:   { screen: Message },
     Profile: { screen: MessageProfileUser },
-    JobDetail: { screen: JobDetail},
-    // Notification: { screen: Notification }
-
+    JobDetail: { screen: JobDetail}
 }, options);
 
 

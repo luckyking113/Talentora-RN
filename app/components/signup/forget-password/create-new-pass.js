@@ -33,7 +33,7 @@ function mapStateToProps(state) {
     }
 }
 
-// export default class SignUpInfo extends React.Component {
+
 class CreateNewPass extends Component{
 
     constructor(props){

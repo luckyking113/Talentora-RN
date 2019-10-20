@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Component} from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, StatusBar } from 'react-native';
 import { Colors } from '@themes/index';
 // import { GiftedChat } from 'react-native-gifted-chat';
@@ -14,7 +14,7 @@ import SendBird from 'sendbird';
 
 let sb = null;
 
-export default class Message extends React.Component {
+export default class Message extends Component {
 
   constructor(props) {
     super(props);

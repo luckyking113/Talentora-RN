@@ -1,6 +1,6 @@
 import {
-    createStackNavigator,
-    NavigationActions
+    NavigationActions,
+    createStackNavigator
 } from 'react-navigation';
 
 import ProfileUser from '../../components/user/profile'
@@ -10,9 +10,6 @@ import PrivacyPolicy from '../../components/user/privacy-policy'
 import HowToImprove from '../../components/user/how-to-improve'
 import EditProfile from '../../components/user/edit-profile'
 import Review from '../../components/user/review'
-
-// import ProfileUser from '../../components/user/profile'
-import { Colors } from '@themes/index';
 import { headerStyle, titleStyle } from '../../styles/header.style'
 import { transparentHeaderStyle, defaultHeaderStyle, defaultHeaderWithShadowStyle } from '@styles/components/transparentHeader.style';
 
@@ -21,11 +18,9 @@ const options = {
     initialRouteName: 'Profile',
     navigationOptions:{
         headerStyle: defaultHeaderWithShadowStyle,  
-        headerTitleStyle: titleStyle,
-        // headerTintColor: Colors.textColorDark,
+        headerTitleStyle: titleStyle,        
     }
 }
-
 
 const profileStack = createStackNavigator({
 

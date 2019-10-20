@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {Component} from 'react';
 import {
     StyleSheet,
     TextInput,
@@ -16,7 +16,7 @@ import { Colors } from '@themes/index'
 const { width, height } = Dimensions.get('window') 
 
 
-class SearchBox extends React.Component {
+class SearchBox extends Component {
 
     constructor(props) {
         super(props);
