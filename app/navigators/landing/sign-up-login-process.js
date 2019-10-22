@@ -39,13 +39,17 @@ const options = {
     headerMode: 'screen',      
     initialRouteName: 'LogIn',   
     lazyLoad: true,
+    navigationOptions:{
+      headerVisible:false,
+      header:null,
+    }
 }
 
 const navOptions =  ({ navigation }) => ({
     tabBarVisible: false,
     headerVisible: false, 
     headerStyle: transparentHeaderStyle,  
-    headerTintColor: Colors.textColorDark, 
+    headerTintColor: Colors.textColorDark,    
 });
 
 const signInSignUp =  createStackNavigator({

@@ -65,9 +65,8 @@ class Authenticate extends Component {
         tabBarVisible :false,
         headerVisible :false,
         headerStyle: transparentHeaderStyle, 
-        headerLeft: null
-        // headerTintColor: Colors.textColorDark, 
-        // headerLeft: (<Text>Login</Text>),
+        headerLeft: null,      
+        header:null,
     });
 
     static tabBarOptions = {
@@ -78,7 +77,7 @@ class Authenticate extends Component {
         showLabel: false,
         style: {
             backgroundColor: '#272822',
-        }
+        },    
     };
 
     constructor(props) {

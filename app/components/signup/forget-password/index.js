@@ -250,7 +250,7 @@ class ForgetPassword extends Component{
                                     }
                             </TouchableOpacity>
                             <View style={[styles.centerEle, styles.marginTopSM]}>
-                                <TouchableOpacity activeOpacity={.8} onPress={ () => { this.backToSignIn() } }>
+                                <TouchableOpacity activeOpacity={.8} onPress={ () => this.backToSignIn  }>
                                     <Text style={styles.darkGrayText}> Back to login </Text>
                                 </TouchableOpacity>
                             </View>

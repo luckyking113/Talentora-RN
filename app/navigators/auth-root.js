@@ -17,7 +17,13 @@ const options = {
 
 const authRootStack = createStackNavigator({
         
-    RootScreen:   { screen: TabNavigator, navigationOptions: { } },
+    RootScreen:   { 
+        screen: TabNavigator, 
+        navigationOptions: {
+            headerVisible: false,
+            header: null,
+        } 
+    },
     VideoScreen:   { 
         screen: VideoScreen,
         navigationOptions: {

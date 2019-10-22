@@ -1,6 +1,6 @@
 import React from 'react'
 import {
-    createBottomTabNavigator,    
+    createStackNavigator,    
 } from 'react-navigation';
 
 import SIGNUP_LOGIN_PROCESS from './sign-up-login-process'
@@ -8,6 +8,8 @@ import SIGNUP_LOGIN_PROCESS from './sign-up-login-process'
 // TabNavigator options
 const options = {
     lazyLoad: true,
+    headerVisible: false,
+    header: null, 
     tabBarOptions: {
         visible: false,
         inactiveTintColor: '#aaa',
@@ -27,15 +29,20 @@ const TabBarComponent = (props) => {
 }
 
 const navOptions = {
-    // tabBarVisible: false,
+    headerVisible: false,
+    header: null,
     tabBar: { 
-        visible: false,
-        label: '', 
-        icon: (props) => (<Tab {...props} icon="home" />) 
+        headerVisible: false,
+        header: null,
+        tabBarLabel: '',
+        tabBarIcon: (props) => (<Tab {...props} icon="home" />) 
+    },
+    navigationOptions: {
+        headerVisible: false,
+        header: null,
     }
-
 }
 
-export default createBottomTabNavigator({
+export default createStackNavigator({
     LandingLogIn:       { screen: SIGNUP_LOGIN_PROCESS, navigationOptions: {navOptions } },
 }, options);
