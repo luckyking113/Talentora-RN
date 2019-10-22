@@ -50,7 +50,7 @@ import { UserHelper, StorageData, Helper, GoogleAnalyticsHelper} from '@helper/h
 import _ from 'lodash'
 
 import moment from 'moment'
-import Prompt from 'react-native-prompt';
+// import Prompt from 'react-native-prompt';
 
 
 import { CachedImage, ImageCache, CustomCachedImage } from "react-native-img-cache";
@@ -779,45 +779,45 @@ export default class VideoUploadEditProfile extends Component {
         // }
     }
 
-    _prompt = () =>{
-        console.log("Prompt calling");
-        return (
-            <Prompt
-                title=''
-                placeholder="Title"
-                //defaultValue="Hello"
-                visible={this.state.promptVisible}
-                onCancel={ () => { 
-                    // alert('You need to provide title');
-                    this.state.video.splice(-1, 1);
-                    this.setState({
-                        video:this.state.video,
-                        promptVisible:false
-                    });
-                    /* this.setState({
-                        // promptVisible: false,
-                        message: "Unnamed Video"
-                    }).then(function(){  
-                        console.log('This is video name: ', this.state.promptMessage);
-                        this._uploadVideo()
-                    }) } */
-                } }
-                onSubmit={(value) => { 
-                    if(value == '') return;
-                    this.setState({
-                        promptVisible: false,
-                        isUploading: true,
-                        promptMessage: value
-                    })
+    // _prompt = () =>{
+    //     console.log("Prompt calling");
+    //     return (
+    //         <Prompt
+    //             title=''
+    //             placeholder="Title"
+    //             //defaultValue="Hello"
+    //             visible={this.state.promptVisible}
+    //             onCancel={ () => { 
+    //                 // alert('You need to provide title');
+    //                 this.state.video.splice(-1, 1);
+    //                 this.setState({
+    //                     video:this.state.video,
+    //                     promptVisible:false
+    //                 });
+    //                 /* this.setState({
+    //                     // promptVisible: false,
+    //                     message: "Unnamed Video"
+    //                 }).then(function(){  
+    //                     console.log('This is video name: ', this.state.promptMessage);
+    //                     this._uploadVideo()
+    //                 }) } */
+    //             } }
+    //             onSubmit={(value) => { 
+    //                 if(value == '') return;
+    //                 this.setState({
+    //                     promptVisible: false,
+    //                     isUploading: true,
+    //                     promptMessage: value
+    //                 })
                     
-                    setTimeout(function(){
-                        // console.log('This is video name: ', that.state.promptMessage);
-                        that._uploadVideo(that.state.promptMessage);
-                    }, 50)}
-                }
-            />
-        );
-    }
+    //                 setTimeout(function(){
+    //                     // console.log('This is video name: ', that.state.promptMessage);
+    //                     that._uploadVideo(that.state.promptMessage);
+    //                 }, 50)}
+    //             }
+    //         />
+    //     );
+    // }
 
     chkVideoAlreadyUpload = (_item) => {
 
@@ -1033,7 +1033,7 @@ export default class VideoUploadEditProfile extends Component {
                     </View>
                 </ScrollView>
 
-                {this._prompt()}
+                {/* {this._prompt()} */}
 
             </View>
      

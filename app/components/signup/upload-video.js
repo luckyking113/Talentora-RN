@@ -30,7 +30,7 @@ import uuid from 'react-native-uuid';
 import { postMedia, postApi, putApi, getApi, deleteApi } from '@api/request';
 import RNFetchBlob from 'react-native-fetch-blob';
 import Video from 'react-native-video';
-import Prompt from 'react-native-prompt';
+// import Prompt from 'react-native-prompt';
 
 import { UserHelper, StorageData, Helper, GoogleAnalyticsHelper } from '@helper/helper';
 
@@ -327,44 +327,44 @@ class UploadVideo extends Component{
         });
     }
 
-    _prompt = () =>{
-        return (
-            <Prompt
-                title=''
-                placeholder="Title"
-                //defaultValue="Hello"
-                visible={ this.state.promptVisible }
-                onCancel={ () => { 
-                    // alert('You need to provide title');
-                    this.state.video.splice(-1, 1);
-                    this.setState({
-                        video:this.state.video,
-                        promptVisible:false
-                    });
-                    /* this.setState({
-                        // promptVisible: false,
-                        message: "Unnamed Video"
-                    }).then(function(){
-                        console.log('This is video name: ', this.state.promptMessage);
-                        this._uploadVideo()
-                    }) } */
-                } }
-                onSubmit={(value) => { 
-                    if(value == '') return;
-                    this.setState({
-                        promptVisible: false,
-                        isUploading: true,
-                        promptMessage: value
-                    })
+    // _prompt = () =>{
+    //     return (
+    //         <Prompt
+    //             title=''
+    //             placeholder="Title"
+    //             //defaultValue="Hello"
+    //             visible={ this.state.promptVisible }
+    //             onCancel={ () => { 
+    //                 // alert('You need to provide title');
+    //                 this.state.video.splice(-1, 1);
+    //                 this.setState({
+    //                     video:this.state.video,
+    //                     promptVisible:false
+    //                 });
+    //                 /* this.setState({
+    //                     // promptVisible: false,
+    //                     message: "Unnamed Video"
+    //                 }).then(function(){
+    //                     console.log('This is video name: ', this.state.promptMessage);
+    //                     this._uploadVideo()
+    //                 }) } */
+    //             } }
+    //             onSubmit={(value) => { 
+    //                 if(value == '') return;
+    //                 this.setState({
+    //                     promptVisible: false,
+    //                     isUploading: true,
+    //                     promptMessage: value
+    //                 })
                     
-                    setTimeout(function(){
-                        // console.log('This is video name: ', that.state.promptMessage);
-                        that._uploadVideo(that.state.promptMessage);
-                    }, 50)}
-                }
-            />
-        );
-    }
+    //                 setTimeout(function(){
+    //                     // console.log('This is video name: ', that.state.promptMessage);
+    //                     that._uploadVideo(that.state.promptMessage);
+    //                 }, 50)}
+    //             }
+    //         />
+    //     );
+    // }
 
     chooseVideo () {
 
@@ -1144,7 +1144,7 @@ class UploadVideo extends Component{
                         </View>
                     </View>
 
-                    {this._prompt()}
+                    {/* {this._prompt()} */}
 
                 </View>
         );
