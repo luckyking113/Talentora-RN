@@ -35,6 +35,7 @@ import Prompt from 'react-native-prompt';
 import { UserHelper, StorageData, Helper, GoogleAnalyticsHelper } from '@helper/helper';
 
 import YoutubePopup from '@components/user/comp/youtube-link-popup';
+import { underline } from 'ansi-colors';
 
 let sb = null;
 
@@ -394,7 +395,7 @@ class UploadVideo extends Component{
                 }
                 else{
                     const { navigate, goBack, state } = this.props.navigation;
-                    navigate('VideoTrimScreen',{video_data: response}); 
+                    navigate('VideoTrimScreen',{video_data: (response !== undefined) ? "" : response}); 
                 }
             }
         });
@@ -1002,7 +1003,7 @@ class UploadVideo extends Component{
                                                     <View style={[ styles.justFlexContainer ]}>
 
                                                         {/* { (item.media_type == 'video' && !item.file_key) && <Video source={{uri: item.uri}}   // Can be a URL or a local file. */}
-                                                        {/* { false && <Video source={{uri: item.uri}}   // Can be a URL or a local file.
+                                                        { false && <Video source={{uri: item.uri}}   // Can be a URL or a local file.
                                                         
                                                             ref={(ref) => {
                                                                 this.player = ref
@@ -1024,7 +1025,7 @@ class UploadVideo extends Component{
                                                             //onError={this.videoError}               // Callback when video cannot be loaded
                                                             //onBuffer={this.onBuffer}                // Callback when remote video is buffering
                                                             //onTimedMetadata={this.onTimedMetadata}  // Callback when the stream receive some metadata
-                                                            style={styles.backgroundVideo} /> } */}
+                                                            style={styles.backgroundVideo} /> }
 
                                                         { item.isLocal && <Image
                                                             style={[styles.myAvatar, styles.mybgcover]}

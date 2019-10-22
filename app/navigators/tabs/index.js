@@ -123,7 +123,7 @@ export default createBottomTabNavigator({
                     })
                 },
 
-    Chat:     { 
+    Chat:       { 
                     screen: Message, 
                     navigationOptions: ({ navigation }) => ({  
                         headerVisible: false,  

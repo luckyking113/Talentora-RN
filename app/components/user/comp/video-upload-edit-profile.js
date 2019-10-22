@@ -252,7 +252,7 @@ export default class VideoUploadEditProfile extends Component {
                 else{
                     // this.props.updateSpinerLoading();
                     const { navigate, goBack, state } = this.props.navigation;
-                    navigate('VideoTrimScreen',{video_data: response}); 
+                    navigate('VideoTrimScreen',{video_data: (response !== undefined) ? "" : response}); 
                 }
                 // return;
 
