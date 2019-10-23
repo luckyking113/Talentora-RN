@@ -164,7 +164,7 @@ class Authenticate extends Component {
     }
 
 
-    signUpPress = () => { 
+    signUpPress() { 
         
         let that = this;
         

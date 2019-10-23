@@ -71,7 +71,7 @@ const Button = require('./Button');
     // customize
     const _fullWidth = containerWidth / numberOfTabs
     const margLeft = (_fullWidth-70) / numberOfTabs
-    
+    // console.log('_margLeft: ', _margLeft);
 
     
     const tabUnderlineStyle = {

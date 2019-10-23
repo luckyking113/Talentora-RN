@@ -35,21 +35,12 @@ export default class LogInForm extends Component {
             },
             fbLoading: false,
             emailLoginLoading: false,
-
         };
-
-        // testing helper func
-        // let _bd = Helper._getBirthDateByAge(24);  
-        // let _gender = Helper._getGender('male');
-        // console.log('_bd :', _bd, ', gender: ', _gender);
     }
 
     componentDidMount() {
-
         LoginManager.logOut();
-
-        GoogleAnalyticsHelper._trackScreenView('Log In');         
-        
+        GoogleAnalyticsHelper._trackScreenView('Log In');                 
         this.txtUsername.focus();
     }
 
@@ -405,6 +396,7 @@ export default class LogInForm extends Component {
 
         const { navigate, goBack, setParams, state } = this.props.loginFrm.props.navigation;
         navigate('ForgetPassword',{});
+        
     }
     
     

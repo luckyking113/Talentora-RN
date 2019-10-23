@@ -161,10 +161,9 @@ class ForgetPassword extends Component{
 
 
     backToSignIn = () => {
-        console.log("test back to login button");
-        // const { navigate, goBack, setParams, state, dispatch } = this.props.navigation;
-
         this.props.navigation.goBack(null);
+        // alert("test back to login button");
+        // const { navigate, goBack, setParams, state, dispatch } = this.props.navigation;
 
         // const resetAction = NavigationActions.reset({ index: 0, actions: [{type: NavigationActions.NAVIGATE, routeName: 'RootScreen'}], key: null })
         // dispatch(resetAction);

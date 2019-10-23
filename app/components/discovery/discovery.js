@@ -103,7 +103,7 @@ class DiscoveryRoot extends Component {
             </View>
         })};
 
-    componentWillMount(){        
+    componentWillMount(){
         DeviceEventEmitter.addListener('UpdateFilterIconDiscover', (data) => {
             
             const { navigate, goBack, state, setParams } = this.props.navigation; 
@@ -173,34 +173,30 @@ class DiscoveryRoot extends Component {
     }
 
     render() {
-        
-
-
-            return (
-                <View style={[ styles.justFlexContainer, styles.mainScreenBg ]}>
-                    <ScrollableTabView
-                        style={[{marginTop: 0}]}
-                        //renderTabBar={() => <ScrollableTabBar tabsContainerStyle={[ styles.tabItem, {padding: 0}, styles.tabsContainer ]} tabStyle={[styles.scrollableTabBar]} style={[{ borderColor: Colors.lineColor } ]} />}
-                        //tabBarUnderlineStyle={[{ backgroundColor: Colors.primaryColor,height:2 }, styles.tabBarUnderline]}                    
-                        renderTabBar={() => <CustomizeTabBar style={[{ borderColor: Colors.componentBackgroundColor } ]} />} 
-                        tabBarUnderlineStyle={[{ backgroundColor: Colors.primaryColor,height:2 }]}
-                        tabBarBackgroundColor='white'
-                        tabBarPosition='overlayTop'
-                        tabBarActiveTextColor={ Colors.primaryColor }
-                        tabBarInactiveTextColor={ Colors.textBlack }
-                        scrollWithoutAnimation={false}
-                        tabBarTextStyle={{fontSize: 16}}
-                        onChangeTab={ this.onChangeTab }
-                        prerenderingSiblingsNumber={1} // load content in all tav
-                        ref={'scrollableTabView'}
-                        locked={ Helper._isIOS() ? false : true }
-                    >
-                        <Videos  tabLabel='Videos' navigation={this.props.navigation} discoverState={this.state}/>
-                        <People  tabLabel='People' navigation={this.props.navigation} discoverState={this.state}/>
-                    </ScrollableTabView>
-                </View>
-            
-            );
+        return (
+            <View style={[ styles.justFlexContainer, styles.mainScreenBg ]}>
+                <ScrollableTabView
+                    style={[{marginTop: 0}]}
+                    //renderTabBar={() => <ScrollableTabBar tabsContainerStyle={[ styles.tabItem, {padding: 0}, styles.tabsContainer ]} tabStyle={[styles.scrollableTabBar]} style={[{ borderColor: Colors.lineColor } ]} />}
+                    //tabBarUnderlineStyle={[{ backgroundColor: Colors.primaryColor,height:2 }, styles.tabBarUnderline]}                    
+                    renderTabBar={() => <CustomizeTabBar style={[{ borderColor: Colors.componentBackgroundColor } ]} />} 
+                    tabBarUnderlineStyle={[{ backgroundColor: Colors.primaryColor,height:2 }]}
+                    tabBarBackgroundColor='white'
+                    tabBarPosition='overlayTop'
+                    tabBarActiveTextColor={ Colors.primaryColor }
+                    tabBarInactiveTextColor={ Colors.textBlack }
+                    scrollWithoutAnimation={false}
+                    tabBarTextStyle={{fontSize: 16}}
+                    onChangeTab={ this.onChangeTab }
+                    prerenderingSiblingsNumber={1} // load content in all tav
+                    ref={'scrollableTabView'}
+                    locked={ Helper._isIOS() ? false : true }
+                >
+                    <Videos  tabLabel='Videos' navigation={this.props.navigation} discoverState={this.state}/>
+                    <People  tabLabel='People' navigation={this.props.navigation} discoverState={this.state}/>
+                </ScrollableTabView>
+            </View>
+        );
 
         
     }
