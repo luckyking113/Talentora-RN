@@ -95,9 +95,9 @@ export default class MatchJobRow extends React.PureComponent {
                                             const _thumn = this._getCover(item).uri;
 
                                             ImageCache.get().clear(_thumn).then(function(e){
-                                                console.log('clear thum ', e)
+                                                
                                                 ImageCache.get().bust(_thumn, function(e){
-                                                    console.log('bust', e);
+                                                
                                                 });
                                             });
 

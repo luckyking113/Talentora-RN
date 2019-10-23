@@ -30,6 +30,7 @@ const mainNavigator = createStackNavigator({
         screen: TabNavigator,
         navigationOptions: {
             headerVisible: false,
+            header: null,
         }
     },
     Settings:   { 

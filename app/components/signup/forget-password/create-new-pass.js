@@ -122,7 +122,7 @@ class CreateNewPass extends Component{
                 isLoading: false 
             })
 
-            console.log('Response Object: ', response);
+            
             if(response.status=="success"){
 
                 let _result = response.result;

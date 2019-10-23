@@ -81,7 +81,7 @@ class PeopleList extends React.PureComponent {
         this.state = {
             allJobList: this.props.allData,
         }
-        //console.log('all job list: ', this.state.allJobList);
+        
     }
 
     render() {
@@ -111,7 +111,7 @@ class PeopleList extends React.PureComponent {
                             <View  style={[ styles.boxWrapContainerNew, styles.mainHorizontalPaddingMD]}>
                                 
                                 {this.state.allJobList.map((item, index) => { 
-                                    {/*console.log('item : ',this.state.allJobList.length, " and " ,  index);*/}
+                                    
                                     return (
                                         <TouchableOpacity
                                                 activeOpacity = {0.9} 
@@ -133,16 +133,16 @@ class PeopleList extends React.PureComponent {
                                                 indicator={ProgressCircle}
                                                 onError={(e) => {
         
-                                                    {/* console.log('error image view post : ', e); */}
+                                                    
         
                                                     GoogleAnalyticsHelper._trackException('People Listing == '); 
         
                                                     const _thumn = item.photo.thumbnail_url_link;
                                                     
                                                     ImageCache.get().clear(_thumn).then(function(e){
-                                                        console.log('clear thum ', e)
+                                                        
                                                         ImageCache.get().bust(_thumn, function(e){
-                                                            console.log('bust', e);
+                                                            
                                                         });
                                                     });
         
@@ -155,10 +155,10 @@ class PeopleList extends React.PureComponent {
 
                                                 <View style={[styles.tagContainerNormal,styles.paddingBotNavXS]}> 
 
-                                                    {/*{console.log('Item Type: ', item)}*/}
+                                                    
 
                                                     {UserHelper._getKind(item.attributes.kind.value).map((item_sub, index_sub) => {
-                                                        {/*console.log('Index sub: ', index_sub);*/}
+                                                        
                                                         if(index_sub < 2){
                                                             return ( 
                                                                 <TouchableOpacity

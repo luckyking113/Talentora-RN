@@ -94,7 +94,7 @@ class JobDetail extends Component {
 
         // console.log('Apply Constructor', this.state.jobInfo.post);
         // const { navigate, goBack, state } = this.props.navigation;
-        console.log('Job Detail Obj : ', state.params);
+        
     }
 
     static navigationOptions = ({ navigation }) => ({
@@ -119,7 +119,7 @@ class JobDetail extends Component {
                     <TouchableOpacity 
                         style={[{ marginRight: 10 }]}
                         onPress={ () => {
-                            console.log('_SELF', _SELF);
+                            
                             _SELF._applyJob();
                         }}>
                     
@@ -153,7 +153,7 @@ class JobDetail extends Component {
                     <TouchableOpacity 
                         style={[ {marginRight: 5} , navigation.state.params && navigation.state.params.applied && { marginRight: 15 }]}
                         onPress={ () => {
-                            console.log('_SELF', _SELF);
+                            
                             _SELF._prepareRemoveJob();
                         }}>
                         { navigation.state.params && navigation.state.params.isLoadingOnHeader ?
@@ -196,7 +196,7 @@ class JobDetail extends Component {
     
         let API_URL = '/api/jobs/'+ this.state.jobInfo.post +'/apply';
         postApi(API_URL).then((response) => {
-            console.log('Apply Job: ', response);
+            
             if(response.code == 200){
 
                 try{
@@ -208,10 +208,10 @@ class JobDetail extends Component {
                         location: this.state.jobInfo.criteria.country
                     }); 
                 }catch(e){
-                    console.log('data problem');
+                    
                 }
 
-                console.log('Applied Completed: ', response);
+                
                 DeviceEventEmitter.emit('refreshJopListList', {});
                 DeviceEventEmitter.emit('refreshApplyList', {});
                 goBack();
@@ -243,7 +243,7 @@ class JobDetail extends Component {
         setParams({ isLoadingOnHeader: true });    
         let API_URL = '/api/jobs/'+ this.state.jobInfo.job_detail[0]._id +'/withdraw';
         postApi(API_URL).then((response) => {
-            console.log('This response for remove applied job: ', response);
+            
             if(response.code == 200){
 
 
@@ -256,7 +256,7 @@ class JobDetail extends Component {
                         location: this.state.jobInfo.criteria.country
                     }); 
                 }catch(e){
-                    console.log('data problem');
+                    
                 }
 
                 DeviceEventEmitter.emit('refreshApplyList');

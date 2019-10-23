@@ -44,12 +44,12 @@ export default class MediaRecord extends Component {
   }
 
   _handleFocusChanged(event) {
-    console.log(event);
+    
     // call capture() here
   }
 
   _handleZoomChanged(event) {
-    console.log(event);
+    
     // call capture() here
   }
 

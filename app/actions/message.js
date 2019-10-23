@@ -4,8 +4,7 @@ import { UserHelper, StorageData } from '@helper/helper';
 
 // Fetch and set user
 export function message(objAssign) {
-    return (dispatch, getState) => {
-        console.log('objAssign : ', objAssign);
+    return (dispatch, getState) => {        
         // setTimeout( () => { 
             dispatch({
                 messageObj: objAssign,

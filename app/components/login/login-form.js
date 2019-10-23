@@ -26,11 +26,11 @@ export default class LogInForm extends Component {
         // this._successLogin = this._successLogin.bind(this);
         this.state = {
             email: {
-                val: '',
+                val: 'TopDev19930328@outlook.com',
                 isErrRequired: false
             },
             password: {
-                val: '',
+                val: 'lucky113',
                 isErrRequired: false
             },
             fbLoading: false,

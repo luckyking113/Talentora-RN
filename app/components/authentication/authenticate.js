@@ -51,7 +51,7 @@ const transparentHeaderStyle = Helper._isIOS() ? {
     height: 0,
 };
 function mapStateToProps(state) {
-    // console.log(state)
+
     return {
         user: state.user,
         // navigation: state.navigation
@@ -88,7 +88,7 @@ class Authenticate extends Component {
             btnLoginText: 'Log in',
             isActionButton: true,
         }
-        // console.log(this.props);
+        
     }
 
     authenticate() {
@@ -131,7 +131,7 @@ class Authenticate extends Component {
                         if(!_.isEmpty(_attrData.ethnicity.value) || !_.isEmpty(_attrData.language.value) || !_.isEmpty(_attrData.height.value) ||
                         !_.isEmpty(_attrData.weight.value) || !_.isEmpty(_attrData.hair_color.value) || !_.isEmpty(_attrData.eye_color.value)){
                             
-                            // console.log('WOWO User info: ', _userInfo.profile);
+                            
                             if(!_userInfo.photos || _userInfo.photos.length<=0)
                                 navigate('UploadPhoto',{ sign_up_info: _userInfo, noBackButton : true  });
                             else
@@ -145,7 +145,7 @@ class Authenticate extends Component {
                         }
                     }
                     else{
-                        // console.log('WOWO DOwn User info: ', _userInfo.profile);
+                        
                         if(!_userInfo.photos || _userInfo.photos.length<=0)
                             navigate('UploadPhoto',{ sign_up_info: _userInfo, noBackButton : true }); 
                         else
@@ -165,35 +165,23 @@ class Authenticate extends Component {
 
 
     signUpPress() { 
-        // console.log(this.props);
+        
         let that = this;
         
         // load sign up process (if user sign up success on first step & they missed next 'internet problem or ...') 
         // we will continue to force them to fill more info
         let _userData =  StorageData._loadInitialState('SignUpProcess'); 
         _userData.then(function(result){   
-            // console.log("SignUpProcess Storage Data: " , result);
+            
 
             if(result){
                 let _userInfo = JSON.parse(result);
                 UserHelper.UserInfo = _userInfo;
-                console.log('Account User Login Info : ',UserHelper.UserInfo);
+                
 
                 that._verifyRouteToGo(_userInfo);            
     
-                // const { navigate, goBack, state } = that.props.navigation;
-                // if(_userInfo.activeUserRoles.length<=0){
-                //     navigate('WhoAreYou');
-                //     // console.log('not yet has role'); 
-                // } 
-                // else if(_userInfo.activeUserRoles.length>0 && _userInfo.profile.gender == ''){
-                //     const userRole = UserHelper._getFirstRole();
-                //     if(userRole.role.name == 'user')
-                //         navigate('TalentCategory');
-                //     else
-                //         navigate('TalentSeekerCategory');
-                    
-                // }
+
                 
             }else{
                 const { navigate, goBack } = that.props.navigation;
@@ -205,29 +193,16 @@ class Authenticate extends Component {
     componentDidMount(){
         let _userData =  StorageData._loadInitialState('SignUpProcess'); 
         _userData.then(function(result){
-            // console.log('complete save sign up process 3'); 
-            // console.log('Sign Up Process First Load : ',JSON.parse(result));
+
         });
 
 
-        // let _userData =  StorageData._saveUserData('TolenUserData',JSON.stringify(_userInfo)); 
-        // // assign for tmp user obj for helper
-        // UserHelper.UserInfo = _userInfo;
 
-        // _userData.then(function(result){
-
-        //     console.log('complete login : ', UserHelper.UserInfo);
-
-        //     StorageData._removeStorage('SignUpProcess');
-            
-        //     that.props.loginFrm.authenticate();
-
-        // });
     }
 
     // start keyboard handle
     componentWillMount () {
-        // console.log(Keyboard);
+        
         this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this.keyboardDidShow.bind(this))
         this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this.keyboardDidHide.bind(this))
     }
@@ -244,12 +219,12 @@ class Authenticate extends Component {
                 isActionButton: false,
             })
         }
-        // console.log('keyboard show');
+        
 
     }
     
     keyboardDidHide (e) {
-        // console.log('keyboard hide');
+        
         if(Helper._isAndroid()){
             this.setState({
                 isActionButton: true,

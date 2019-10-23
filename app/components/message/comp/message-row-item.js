@@ -41,7 +41,7 @@ export default class Row extends Component {
             if(this.props.lastMessage.customType == 'send-job')
                 _isHasSendJobCustomData = JSON.parse(this.props.lastMessage.data).job.title ? true : false;
         }catch(e){
-            console.log('_isHasSendJobCustomData', e);
+            
         }
 
         return (

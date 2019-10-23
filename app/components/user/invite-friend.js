@@ -240,7 +240,7 @@ export default class InviteFriend extends Component{
     };
 
     componentDidMount(){
-        _SELF = this;
+        // _SELF = this;
 
         GoogleAnalyticsHelper._trackScreenView('Invite Friend');        
         

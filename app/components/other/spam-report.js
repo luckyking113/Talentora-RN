@@ -49,7 +49,7 @@ export default class SpamReport extends Component{
             report_type: reportType,
             comment: this.state.description
         })).then((response) => {
-            console.log('send report', url, response);            
+                    
         });
         this.setModalVisible(false);
     }

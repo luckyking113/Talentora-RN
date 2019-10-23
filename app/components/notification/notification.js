@@ -77,7 +77,7 @@ class Notification extends Component {
         }
 
         // console.log('chunk: ', _.chunk(_test, 2));
-        console.log('this.props : ',this.props);
+        
 
     }
 
@@ -121,7 +121,7 @@ class Notification extends Component {
         let API_URL = '/api/notifications?scope=_created_by&offset='+_offset+'&limit='+this.state.limit;
 
         getApi(API_URL).then((_response) => {
-            console.log('All Notification : ', _response);
+            
             if(_response.code == 200){
                 let _result = _response.result;
                 // const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
@@ -233,7 +233,7 @@ class Notification extends Component {
             case 'shortlist-job':
                 REQ_API = '/api/jobs/' + item.reference_id;
                 getApi(REQ_API).then((_response) => {
-                    console.log('Job: ', _response);
+                    
                     if(_response.code == 200){
                         const { navigate, goBack } = this.props.navigation;
                         // view_only : status of job if it is cancel or closed. view_only allow to remove if applicable false.
@@ -252,7 +252,7 @@ class Notification extends Component {
                 REQ_API = '/api/jobs/' + item.reference_id;
                 // console.log(REQ_API)
                 getApi(REQ_API).then((_response) => {
-                    console.log('Job: ', _response);
+                    
                     if(_response.code == 200){
                         const { navigate, goBack } = this.props.navigation;
                         navigate('JobDetail', { 

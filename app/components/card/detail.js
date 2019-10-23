@@ -63,7 +63,7 @@ class Detail extends Component {
 
     // Trivial to navigate from within component context
     bookmark(opts) {
-        console.log(`Bookmark detail ${opts.index}`)
+        
     }
 
     render() {

@@ -224,7 +224,7 @@ class AvailableJob extends Component {
 
 
         getApi(API_URL, this).then((_response) => {
-            console.log('All Available Job : ', _response);
+            
 
             if(_response.code == 401)
                 return;
@@ -233,7 +233,7 @@ class AvailableJob extends Component {
                 let _allAvailableJob = _response.result;
 
                 if(_allAvailableJob.length>0){
-                    console.log('have data');
+                    
                     
                     // console.log('All Vailable Job : ', _SELF); 
                     // console.log('refreshing :',_SELF.state.refreshing);
@@ -257,10 +257,9 @@ class AvailableJob extends Component {
                     }
 
                 }
-                else{
-                    console.log('empty data');
+                else{                    
                     if((this.state.filterData || this.state.searchText) && !this.state.loading ){
-                        console.log('set to zero data');
+                        
                         _SELF.setState({
                             allJobList: [],
                             page: 1 
@@ -307,7 +306,7 @@ class AvailableJob extends Component {
 
     _getURLJob = (_offset) =>{
         if(this.state.filterData){
-            console.log('Data: ', this.state.filterData);
+            
             let _SELF = this;
             let _dataFilter = this.state.filterData;
 
@@ -336,7 +335,7 @@ class AvailableJob extends Component {
                 return v.category;
             });
 
-            console.log('Age: ',_age, 'talenCate: ', talentCateStringArray);
+
 
             return  '/api/jobs/filter?offset='+ _offset +'&limit='+ this.state.limit + '&type='+ talentCateStringArray +'&min_age='+ ageMinMax.min_age +'&max_age='+ ageMinMax.max_age +'&country='+ _country +'&gender='+_gender;
         }
@@ -403,13 +402,13 @@ class AvailableJob extends Component {
     };
 
     testRefresh = () => {
-        console.log('testRefresh');
+        
     }
 
     handleRefresh = () => { 
         // return;
         let that = this;
-        console.log('handleRefresh');
+        
         
         this.setState({
             refreshing: true,

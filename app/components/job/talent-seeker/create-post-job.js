@@ -87,10 +87,10 @@ class CreatePostJob extends Component {
     constructor(props){
         super(props);
 
-        JOB_INFO = null;
-        IMAGE_REF = null;
+        // JOB_INFO = null;
+        // IMAGE_REF = null;
 
-        console.log('this.props.navigation: ', this.props.navigation);  
+        
         // console.log('This is props: ', this.props);
         if(this.props.navigation.state.params && this.props.navigation.state.params.Job_Info){
             JOB_INFO = this.props.navigation.state.params.Job_Info.sub_reference_detail;
@@ -108,7 +108,7 @@ class CreatePostJob extends Component {
             'img': IMAGE_REF ? [{ id:IMAGE_REF._id, uri:IMAGE_REF.preview_url_link }] : []
         }
 
-        console.log('Image: ', job_info.img);
+        
 
         if(JOB_INFO){
             for(let i = 0; i < job_info.talent_cate.length; i++){
@@ -163,14 +163,14 @@ class CreatePostJob extends Component {
 
         this.chooseImage = this.chooseImage.bind(this);
 
-        console.log('THIS State: ', this.state);
+        
     }
 
     multiSliderValuesChange = (values) => {
         this.setState({
             multiSliderValue: values,
         });
-        console.log(values);
+        
     }
     
     static navigationOptions = ({ navigation }) => {
@@ -369,7 +369,7 @@ class CreatePostJob extends Component {
     };
 
     _postJob = () => {
-        console.log("state before post job",this.state);
+        
 
         // that.savePostJob({'job':'job'});
         // return;
@@ -485,7 +485,7 @@ class CreatePostJob extends Component {
 
         // return;
         setTimeout(function(){
-            console.log('Job info: ' , that.state);
+            
             // console.log('selected type: ', selectedCategory);
 
             let req_object = {
@@ -534,7 +534,7 @@ class CreatePostJob extends Component {
                         postApi(post_job_url,
                             JSON.stringify(req_object)
                         ).then((response) => {
-                            console.log('Response Posted Job: ', response);
+                            
                             if(response.code == 200){
                                 // that.state.is_api_requesting = false;
                                 that.savePostJob(response.result);
@@ -552,11 +552,11 @@ class CreatePostJob extends Component {
                 });
 
             }else{
-                console.log("Request Object",req_object);
+                
                 postApi(post_job_url,
                     JSON.stringify(req_object)
                 ).then((response) => {
-                    console.log('Response Save Job: ', response);
+                    
                     if(response.status=="success"){
                         that.setState({
                             is_api_requesting: false
@@ -808,7 +808,7 @@ class CreatePostJob extends Component {
           }).then(image => {
             // console.log(image);
             const _sizeCrop = Helper._getSizeCrop(image, true);
-            console.log('_sizeCrop: ', _sizeCrop);
+            
             ImagePickerCrop.openCropper({
                 ..._sizeCrop,
                 path: image.path,
@@ -818,20 +818,20 @@ class CreatePostJob extends Component {
                 let _imageData = imageAfterScrop;
                 let defUUID = uuid.v4();
                 _imageData.filename = image.filename || defUUID;
-                console.log('imageAfterScrop : ',imageAfterScrop);
+                
 
                 // this.imageCropUpload(_imageData);
                 this.imageCropUpload(_imageData, defUUID, callback);
                 
             }).catch(e => {
                 // alert(e);
-                console.log('error : ', e);
+                
             });
 
             
         }).catch(e => {
             // alert(e);
-            console.log('error : ', e);
+            
         });
 
     }
@@ -995,8 +995,7 @@ class CreatePostJob extends Component {
     }
 
     genderSelect=(item,index)=>{
-        console.log("my item in gender select",item);
-        console.log("state Genders",this.state.Genders);
+        
         let temp=this.state.Genders;
         let selectedvalue;
         _.map(temp,function(v,k){
@@ -1008,7 +1007,7 @@ class CreatePostJob extends Component {
         _tmpStateObject.val=selectedvalue;
         _tmpStateObject.isErrRequired=false;
         this.setState({selectedGender:selectedvalue=='Both(Male & Female)' ? 'B': (selectedvalue=='Male'? 'M':'F'),gender:_tmpStateObject},function(){
-            console.log("after setstate",this.state.gender,this.state.selectedGender);
+            
         });
         this.setModalVisible(false);
     }

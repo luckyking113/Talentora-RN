@@ -70,9 +70,9 @@ export default class Row extends React.PureComponent {
                                 const _thumn = item.reference_detail[0].thumbnail_url_link;
                                 
                                 ImageCache.get().clear(_thumn).then(function(e){
-                                    console.log('clear thum ', e)
+                                    
                                     ImageCache.get().bust(_thumn, function(e){
-                                        console.log('bust', e);
+                                    
                                     });
                                 });
                             }

@@ -70,7 +70,7 @@ class Home extends Component {
         // StatusBar.setBarStyle('default',true);
         const { detail } = this.props
         const { navigate, goBack } = this.props.navigation
-        console.log(this.props)
+        
         if (!detail.length)
             return (<View><Text>Loading...</Text></View>)
 

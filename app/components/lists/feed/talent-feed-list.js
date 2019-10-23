@@ -158,7 +158,7 @@ export default class TalentFeedList extends React.PureComponent {
             },
             (buttonIndex) => {
 
-                console.log(buttonIndex);
+                
                 //   this.setState({ clicked: BUTTONS[buttonIndex] });
                 if(buttonIndex==0){
                     this.doAction(_postId)
@@ -198,8 +198,7 @@ export default class TalentFeedList extends React.PureComponent {
     }
 
     goToProfile = (_profile) =>{
-        console.log("my profile: ",_profile);
-        console.log("IS ME?", UserHelper._isMe(_profile.userId));
+        
 
         GoogleAnalyticsHelper._trackEvent('View Profile', 'Discover - Video', {user_id: _profile.userId, user_name: this.props.caption });                                         
 
@@ -253,7 +252,7 @@ export default class TalentFeedList extends React.PureComponent {
     }
 
     _onErrorVideoLoaded = (err) => {
-        console.log('Video Loaded Error: ', err);
+        
     }
 
     setTime = (_progress) => {

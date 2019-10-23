@@ -38,7 +38,7 @@ export default class Message extends Component {
 
   componentDidMount(){
       sb = new SendBird({appId: SEND_BRID_APP_ID});
-      console.log('SendBird',sb);
+      
   }
 
   _onPressCreateChannel() {

@@ -43,6 +43,7 @@ import CustomizeTabBar from '@components/ui/scroll-tab-view-custom-tab/customize
 // import {notification_data} from '@api/response';
 
 import Tab from '@components/tabs/tab'
+import { tsThisType } from '@babel/types'
 
 // import ImagePicker from 'react-native-image-crop-picker';
 
@@ -70,7 +71,7 @@ class JobRoot extends Component {
     }
 
     static navigationOptions = ({ navigation }) => {
-        // console.log('navigation : ', navigation);
+        console.log('chae : ', navigation);
         _SELF = navigation;
         // console.log('_SELF NAV: ',_SELF);
         return ({
@@ -131,19 +132,19 @@ class JobRoot extends Component {
         let _SELF = this;
 
         let API_URL = '/api/media?type=photo';
-        console.log(API_URL);
+        
 
         let _userObj = _.cloneDeep(UserHelper.UserInfo);
 
         getApi(API_URL).then((_response) => {
-            console.log('Get All Photo : ', _response);
+            
             if(_response.code == 200){
                 let _allImg = _response.result;
 
                 const _cover = _.filter(_allImg, function(v,k){
                     return v.is_featured;
                 });
-                console.log('Cover Only: ',_cover);
+                
                 let userInfoWithPhoto = _.extend({
                     cover: _.head(_cover),
                     photos: _allImg,
@@ -159,7 +160,7 @@ class JobRoot extends Component {
                 //     console.log('complete final save sign up'); 
                 // });
 
-                console.log('Photo & Cover: ', userInfoWithPhoto);
+                
             }
 
         });

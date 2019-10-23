@@ -61,17 +61,15 @@ class DiscoveryRoot extends Component {
     }
 
     static navigationOptions = ({ navigation }) => {
-        // console.log('navigation : ', navigation);
-        // _SELF = navigation;
-        // console.log('_SELF NAV: ',_SELF);
+
         return ({
             headerTitle: 'Discover',
-            // tabBarIcon: (props) => (<Tab {...props} navigation={navigation} iconType="C" icon="discover-icon" badgeNumber={typeof navigation.state.params === 'undefined' ? 0 : navigation.state.params.badgeCount} />),
+            
             headerLeft: (<ButtonLeft
                 icon="invite-icon"
                 navigate={navigation.navigate}
                 to="InviteFriend"
-                //babo={console.log('navigation', navigation.state.hasOwnProperty('params') ? (navigation.state.params.hasOwnProperty('hideFilter') ? 'man has': 'ot man te' ): "false")}
+                
             />),
             headerRight:
                 (navigation.state.params ?
@@ -107,13 +105,13 @@ class DiscoveryRoot extends Component {
 
     componentWillMount(){
         DeviceEventEmitter.addListener('UpdateFilterIconDiscover', (data) => {
-            // console.log('Fucking Update');
+            
             const { navigate, goBack, state, setParams } = this.props.navigation; 
             setParams({
                 tabType: 'Videos',
                 // filtered: data.dataFilter ? true : false
             })
-            // console.log('UpdateFilterIconDiscover XXX : ', state.params);
+            
         })
     }
     
@@ -145,7 +143,7 @@ class DiscoveryRoot extends Component {
     }
 
     onChangeTab = (e) => { 
-        // console.log('Change Tab: ', e.ref.props.tabLabel);
+        
         dismissKeyboard();
 
         if(!e.ref)
@@ -167,7 +165,7 @@ class DiscoveryRoot extends Component {
         this.setState({
             tabSelected: e.ref.props.tabLabel
         }, function(){
-            // console.log('Discover State: ', this.state);
+            
             setParams({
                 tabType: e.ref.props.tabLabel,
             })
@@ -175,7 +173,7 @@ class DiscoveryRoot extends Component {
     }
 
     render() {
-        // console.log(this.props.user, this.state.userData);
+        
 
 
             return (
@@ -209,7 +207,7 @@ class DiscoveryRoot extends Component {
 }
 
 function mapStateToProps(state) {
-    // console.log('main state',state);
+    
     return {
         // user: state.user,
         // navigation: state.navigation,

@@ -108,7 +108,7 @@ export default createBottomTabNavigator({
                     screen: Job,  
                     navigationOptions: ({ navigation }) => ({ 
                         ...navOptions,
-                        headerVisible: false,  
+                        headerVisible: false,      
                         tabBarLabel: '',
                         tabBarIcon: (props) => (<Tab {...props} navigation={navigation} iconType="C" icon="job-icon" notiType="job" />)
                     })
