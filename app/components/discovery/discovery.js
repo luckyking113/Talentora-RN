@@ -103,7 +103,7 @@ class DiscoveryRoot extends Component {
             </View>
         })};
 
-    componentWillMount(){
+    componentWillMount(){        
         DeviceEventEmitter.addListener('UpdateFilterIconDiscover', (data) => {
             
             const { navigate, goBack, state, setParams } = this.props.navigation; 

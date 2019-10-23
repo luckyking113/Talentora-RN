@@ -162,10 +162,12 @@ class ForgetPassword extends Component{
 
     backToSignIn = () => {
         console.log("test back to login button");
-        const { navigate, goBack, setParams, state, dispatch } = this.props.navigation;
+        // const { navigate, goBack, setParams, state, dispatch } = this.props.navigation;
 
-        const resetAction = NavigationActions.reset({ index: 0, actions: [{type: NavigationActions.NAVIGATE, routeName: 'RootScreen'}], key: null })
-        dispatch(resetAction);
+        this.props.navigation.goBack(null);
+
+        // const resetAction = NavigationActions.reset({ index: 0, actions: [{type: NavigationActions.NAVIGATE, routeName: 'RootScreen'}], key: null })
+        // dispatch(resetAction);
     }
 
     componentDidMount() {
@@ -251,7 +253,7 @@ class ForgetPassword extends Component{
                                     }
                             </TouchableOpacity>
                             <View style={[styles.centerEle, styles.marginTopSM]}>
-                                <TouchableOpacity activeOpacity={.8} onPress={ () => this.backToSignIn  }>
+                                <TouchableOpacity activeOpacity={.8} onPress={ () => this.backToSignIn()  }>
                                     <Text style={styles.darkGrayText}> Back to login </Text>
                                 </TouchableOpacity>
                             </View>

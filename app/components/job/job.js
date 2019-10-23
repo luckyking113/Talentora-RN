@@ -57,7 +57,6 @@ let sb = null;
 let _SELF = null;
 
 class JobRoot extends Component {
-
     constructor(props){
         super(props);
         // console.log('=== create job start ===');
@@ -70,8 +69,7 @@ class JobRoot extends Component {
         // UserHelper.hideJobFilter = true;
     }
 
-    static navigationOptions = ({ navigation }) => {
-        console.log('chae : ', navigation);
+    static navigationOptions = ({ navigation }) => {        
         _SELF = navigation;
         // console.log('_SELF NAV: ',_SELF);
         return ({
