@@ -101,8 +101,8 @@ const putApi = (url, body) => {
 
 const loginFacebook = () => {
     let fburl = baseUrl + '/api/users/facebook-authenticate';
-
-    return LoginManager.logInWithReadPermissions(['public_profile', 'user_birthday', 'email']).then(  
+    
+    return LoginManager.logInWithPermissions(['public_profile', 'user_birthday', 'email']).then(  
         function(result) {
             if (result.isCancelled) {
        

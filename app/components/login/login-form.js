@@ -26,11 +26,11 @@ export default class LogInForm extends Component {
         // this._successLogin = this._successLogin.bind(this);
         this.state = {
             email: {
-                val: 'TopDev19930328@outlook.com',
+                val: '',
                 isErrRequired: false
             },
             password: {
-                val: 'lucky113',
+                val: '',
                 isErrRequired: false
             },
             fbLoading: false,
@@ -305,7 +305,7 @@ export default class LogInForm extends Component {
 
     facebookLogin = () =>{
         // LoginManager.logOut();
-        // Attempt a login using the Facebook login dialog asking for default permissions.
+        // Attempt a login using the Facebook login dialog asking for default permissions.                
         let _SELF = this;
         let _userData =  StorageData._loadInitialState('SignUpProcess');
         
@@ -321,7 +321,7 @@ export default class LogInForm extends Component {
                 _SELF.setState({
                     fbLoading : true,
                 })  
-                loginFacebook().then((response) => {
+                loginFacebook().then((response) => {                    
                     // console.log('reponse: ', response);
                     if(response){
                         // this._goSignUp(response);
@@ -329,7 +329,7 @@ export default class LogInForm extends Component {
                         // console.log('_result :', response.result);
                         // return;
 
-                        if(response.code == 200){
+                        if(response.code == 200) {
                             let _result = response.result;
                             // if user try to first signup with fb
                             // we need to save signup process to prevent next time they try to login facebook again
@@ -367,26 +367,6 @@ export default class LogInForm extends Component {
             }
 
         });
-
-        // _SELF.setState({
-        //     fbLoading : true,
-        // })
-        // loginFacebook().then((response) => {
-
-        //     _SELF.setState({
-        //         fbLoading : false,
-        //     })
-        //     if(response){
-        //         // this._goSignUp(response);
-        //         if(response.code == 200){
-        //             _SELF._saveUserData(response);
-        //             console.log('Response Object FB Login: ', response);
-        //         }
-        //         else{
-        //             alert('Can not login with facebook. Please try again.')
-        //         }
-        //     }
-        // });
     }
 
 

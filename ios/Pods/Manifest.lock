@@ -1,0 +1,83 @@
+PODS:
+  - FBSDKCoreKit (5.8.0):
+    - FBSDKCoreKit/Basics (= 5.8.0)
+    - FBSDKCoreKit/Core (= 5.8.0)
+  - FBSDKCoreKit/Basics (5.8.0)
+  - FBSDKCoreKit/Core (5.8.0):
+    - FBSDKCoreKit/Basics
+  - FBSDKLoginKit (5.8.0):
+    - FBSDKLoginKit/Login (= 5.8.0)
+  - FBSDKLoginKit/Login (5.8.0):
+    - FBSDKCoreKit (~> 5.0)
+  - FBSDKShareKit (5.8.0):
+    - FBSDKShareKit/Share (= 5.8.0)
+  - FBSDKShareKit/Share (5.8.0):
+    - FBSDKCoreKit (~> 5.0)
+  - QBImagePickerController (3.4.0)
+  - React (0.59.9):
+    - React/Core (= 0.59.9)
+  - react-native-camera (0.9.4):
+    - React
+  - react-native-fbsdk (0.6.3):
+    - React
+    - react-native-fbsdk/Core (= 0.6.3)
+    - react-native-fbsdk/Login (= 0.6.3)
+    - react-native-fbsdk/Share (= 0.6.3)
+  - react-native-fbsdk/Core (0.6.3):
+    - FBSDKCoreKit
+    - React
+  - react-native-fbsdk/Login (0.6.3):
+    - FBSDKLoginKit
+    - React
+  - react-native-fbsdk/Share (0.6.3):
+    - FBSDKShareKit
+    - React
+  - React/Core (0.59.9):
+    - yoga (= 0.59.9.React)
+  - RSKImageCropper (2.2.3)
+  - XCDYouTubeKit (2.8.1)
+  - yoga (0.59.9.React)
+
+DEPENDENCIES:
+  - QBImagePickerController
+  - React (from `../node_modules/react-native`)
+  - react-native-camera (from `../node_modules/react-native-camera`)
+  - react-native-fbsdk (from `../node_modules/react-native-fbsdk/ios`)
+  - RSKImageCropper
+  - XCDYouTubeKit (~> 2.5)
+  - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
+
+SPEC REPOS:
+  trunk:
+    - FBSDKCoreKit
+    - FBSDKLoginKit
+    - FBSDKShareKit
+    - QBImagePickerController
+    - RSKImageCropper
+    - XCDYouTubeKit
+
+EXTERNAL SOURCES:
+  React:
+    :path: "../node_modules/react-native"
+  react-native-camera:
+    :path: "../node_modules/react-native-camera"
+  react-native-fbsdk:
+    :path: "../node_modules/react-native-fbsdk/ios"
+  yoga:
+    :path: "../node_modules/react-native/ReactCommon/yoga"
+
+SPEC CHECKSUMS:
+  FBSDKCoreKit: e7dcac0aabcfb09d0166998edd95fe3b05a0ce5d
+  FBSDKLoginKit: 1b0cf04df0370b37404213157b060d6666ede814
+  FBSDKShareKit: abc29e1bb4f9f59f679adf1ae191006d68455f96
+  QBImagePickerController: d54cf93db6decf26baf6ed3472f336ef35cae022
+  React: a86b92f00edbe1873a63e4a212c29b7a7ad5224f
+  react-native-camera: 6aa5edd07fa18b7e80fc95bdd841a0270dc6257b
+  react-native-fbsdk: 6287fcddc3162c6e458e0e8a633188e5b51b4ebd
+  RSKImageCropper: a446db0e8444a036b34f3c43db01b2373baa4b2a
+  XCDYouTubeKit: 4ca4e3322fa556ec1c32932d378365c15ce1386e
+  yoga: 03ff42a6f223fb88deeaed60249020d80c3091ee
+
+PODFILE CHECKSUM: cab80e7a45653b8547e686c6668ba021681dec3c
+
+COCOAPODS: 1.8.3
