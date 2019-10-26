@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface FBSDKProfile(Internal)
 
-+ (void)cacheProfile:(nullable FBSDKProfile *)profile;
++ (void)cacheProfile:(FBSDKProfile *)profile;
 + (nullable FBSDKProfile *)fetchCachedProfile;
 
 @end

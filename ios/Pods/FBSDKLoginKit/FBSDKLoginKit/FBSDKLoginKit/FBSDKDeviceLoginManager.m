@@ -21,11 +21,7 @@
 
 #import <FBSDKCoreKit/FBSDKConstants.h>
 
-#ifdef COCOAPODS
-#import <FBSDKCoreKit/FBSDKCoreKit+Internal.h>
-#else
 #import "FBSDKCoreKit+Internal.h"
-#endif
 #import "FBSDKDeviceLoginCodeInfo+Internal.h"
 #import "FBSDKLoginConstants.h"
 
@@ -134,15 +130,15 @@ static NSMutableArray<FBSDKDeviceLoginManager *> *g_loginManagerInstances;
           !userID ||
           !permissionResult) {
 #if TARGET_TV_OS
-        NSError *wrappedError = [FBSDKError errorWithDomain:FBSDKShareErrorDomain
-                                                       code:FBSDKErrorTVOSUnknown
-                                                    message:@"Unable to fetch permissions for token"
-                                            underlyingError:error];
+        NSError *wrappedError = [NSError fbErrorWithDomain:FBSDKShareErrorDomain
+                                                      code:FBSDKErrorTVOSUnknown
+                                                   message:@"Unable to fetch permissions for token"
+                                           underlyingError:error];
 #else
-        NSError *wrappedError = [FBSDKError errorWithDomain:FBSDKLoginErrorDomain
-                                                       code:FBSDKErrorUnknown
-                                                    message:@"Unable to fetch permissions for token"
-                                            underlyingError:error];
+        NSError *wrappedError = [NSError fbErrorWithDomain:FBSDKLoginErrorDomain
+                                                      code:FBSDKErrorUnknown
+                                                   message:@"Unable to fetch permissions for token"
+                                           underlyingError:error];
 #endif
         [self _notifyError:wrappedError];
       } else {
@@ -219,9 +215,9 @@ static NSMutableArray<FBSDKDeviceLoginManager *> *g_loginManagerInstances;
         if (tokenString) {
           [self _notifyToken:tokenString];
         } else {
-          NSError *unknownError = [FBSDKError errorWithDomain:FBSDKLoginErrorDomain
-                                                         code:FBSDKErrorUnknown
-                                                      message:@"Device Login poll failed. No token nor error was found."];
+          NSError *unknownError = [NSError fbErrorWithDomain:FBSDKLoginErrorDomain
+                                                        code:FBSDKErrorUnknown
+                                                     message:@"Device Login poll failed. No token nor error was found."];
           [self _notifyError:unknownError];
         }
       }

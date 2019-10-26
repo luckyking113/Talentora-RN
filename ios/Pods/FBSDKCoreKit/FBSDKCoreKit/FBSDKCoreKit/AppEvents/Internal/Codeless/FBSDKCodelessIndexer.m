@@ -24,9 +24,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import <FBSDKCoreKit/FBSDKCoreKit+Internal.h>
 #import <FBSDKCoreKit/FBSDKGraphRequest.h>
 #import <FBSDKCoreKit/FBSDKSettings.h>
+
+#import "FBSDKCoreKit+Internal.h"
 
 @implementation FBSDKCodelessIndexer
 

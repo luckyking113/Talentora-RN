@@ -23,7 +23,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-DEPRECATED_FOR_MESSENGER
 typedef NS_ENUM(NSUInteger, FBSDKShareMessengerMediaTemplateMediaType) {
   FBSDKShareMessengerMediaTemplateMediaTypeImage = 0,
   FBSDKShareMessengerMediaTemplateMediaTypeVideo
@@ -34,7 +33,6 @@ typedef NS_ENUM(NSUInteger, FBSDKShareMessengerMediaTemplateMediaType) {
  https://developers.facebook.com/docs/messenger-platform/send-messages/template/media for details.
  */
 NS_SWIFT_NAME(ShareMessengerMediaTemplateContent)
-DEPRECATED_FOR_MESSENGER
 @interface FBSDKShareMessengerMediaTemplateContent : NSObject <FBSDKSharingContent>
 
 - (instancetype)init NS_UNAVAILABLE;

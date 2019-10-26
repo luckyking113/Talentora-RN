@@ -18,11 +18,7 @@
 
 #import "FBSDKShareButton.h"
 
-#ifdef COCOAPODS
-#import <FBSDKCoreKit/FBSDKCoreKit+Internal.h>
-#else
 #import "FBSDKCoreKit+Internal.h"
-#endif
 #import "FBSDKShareDialog.h"
 
 @implementation FBSDKShareButton

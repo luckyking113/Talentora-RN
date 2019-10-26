@@ -20,11 +20,7 @@
 
 #import <CoreText/CoreText.h>
 
-#ifdef COCOAPODS
-#import <FBSDKCoreKit/FBSDKCoreKit+Internal.h>
-#else
 #import "FBSDKCoreKit+Internal.h"
-#endif
 
 static const CGFloat kTransitionDuration    = 0.3;
 static const CGFloat kZoomOutScale          = 0.001f;

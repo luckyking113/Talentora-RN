@@ -18,17 +18,8 @@
 
 #import <Foundation/Foundation.h>
 
-NS_ASSUME_NONNULL_BEGIN
+#import "FBSDKCoreKit+Internal.h"
 
-@protocol FBSDKCrashObserving <NSObject>
-
-@property (nonatomic, copy) NSArray<NSString *> *prefixes;
-@property (nonatomic, copy, nullable) NSArray<NSString *> *frameworks;
-
-@optional
-
-- (void)didReceiveCrashLogs:(NSArray<NSDictionary<NSString *, id> *> *)crashLogs;
-
+NS_SWIFT_NAME(LikeButtonPopWAV)
+@interface FBSDKLikeButtonPopWAV : FBSDKAudioResourceLoader
 @end
-
-NS_ASSUME_NONNULL_END

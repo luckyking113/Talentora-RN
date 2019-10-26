@@ -16,24 +16,17 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#import "FBSDKBasicUtility.h"
-
-#import <zlib.h>
+#import "FBSDKBasicUtility+Internal.h"
 
 #import "FBSDKTypeUtility.h"
 
-#define kChunkSize 1024
+@interface NSError(FBSDKError)
 
-static NSString *const FBSDK_BASICUTILITY_ANONYMOUSIDFILENAME = @"com-facebook-sdk-PersistedAnonymousID.json";
-static NSString *const FBSDK_BASICUTILITY_ANONYMOUSID_KEY = @"anon_id";
-
-@protocol BASIC_FBSDKError
-
-+ (NSError *)invalidArgumentErrorWithName:(NSString *)name value:(id)value message:(NSString *)message;
++ (NSError *)fbInvalidArgumentErrorWithName:(NSString *)name value:(id)value message:(NSString *)message;
 
 @end
 
-@implementation FBSDKBasicUtility
+@implementation FBSDKBasicUtility (Internal)
 
 + (NSString *)JSONStringForObject:(id)object
                             error:(NSError *__autoreleasing *)errorRef
@@ -43,11 +36,10 @@ static NSString *const FBSDK_BASICUTILITY_ANONYMOUSID_KEY = @"anon_id";
     object = [self _convertObjectToJSONObject:object invalidObjectHandler:invalidObjectHandler stop:NULL];
     if (![NSJSONSerialization isValidJSONObject:object]) {
       if (errorRef != NULL) {
-        Class FBSDKErrorClass = NSClassFromString(@"FBSDKError");
-        if ([FBSDKErrorClass respondsToSelector:@selector(invalidArgumentErrorWithName:value:message:)]) {
-          *errorRef = [FBSDKErrorClass invalidArgumentErrorWithName:@"object"
-                                                              value:object
-                                                            message:@"Invalid object for JSON serialization."];
+        if ([NSError respondsToSelector:@selector(fbInvalidArgumentErrorWithName:value:message:)]) {
+          *errorRef = [NSError fbInvalidArgumentErrorWithName:@"object"
+                                                        value:object
+                                                      message:@"Invalid object for JSON serialization."];
         }
       }
       return nil;
@@ -244,98 +236,6 @@ setJSONStringForObject:(id)object
   value = [value stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 #pragma clang diagnostic pop
   return value;
-}
-
-+ (NSData *)gzip:(NSData *)data
-{
-  const void *bytes = data.bytes;
-  const NSUInteger length = data.length;
-
-  if (!bytes || !length) {
-    return nil;
-  }
-
-#if defined(__LP64__) && __LP64__
-  if (length > UINT_MAX) {
-    return nil;
-  }
-#endif
-
-  // initialze stream
-  z_stream stream;
-  bzero(&stream, sizeof(z_stream));
-
-  if (deflateInit2(&stream, -1, Z_DEFLATED, 31, 8, Z_DEFAULT_STRATEGY) != Z_OK) {
-    return nil;
-  }
-  stream.avail_in = (uint)length;
-  stream.next_in = (Bytef *)bytes;
-
-  int retCode;
-  NSMutableData *result = [NSMutableData dataWithCapacity:(length / 4)];
-  unsigned char output[kChunkSize];
-  do {
-    stream.avail_out = kChunkSize;
-    stream.next_out = output;
-    retCode = deflate(&stream, Z_FINISH);
-    if (retCode != Z_OK && retCode != Z_STREAM_END) {
-      deflateEnd(&stream);
-      return nil;
-    }
-    unsigned size = kChunkSize - stream.avail_out;
-    if (size > 0) {
-      [result appendBytes:output length:size];
-    }
-  } while (retCode == Z_OK);
-
-  deflateEnd(&stream);
-
-  return result;
-}
-
-+ (NSString *)anonymousID
-{
-  // Grab previously written anonymous ID and, if none have been generated, create and
-  // persist a new one which will remain associated with this app.
-  NSString *result = [[self class] retrievePersistedAnonymousID];
-  if (!result) {
-    // Generate a new anonymous ID.  Create as a UUID, but then prepend the fairly
-    // arbitrary 'XZ' to the front so it's easily distinguishable from IDFA's which
-    // will only contain hex.
-    result = [NSString stringWithFormat:@"XZ%@", [NSUUID UUID].UUIDString];
-
-    [self persistAnonymousID:result];
-  }
-  return result;
-}
-
-+ (NSString *)retrievePersistedAnonymousID
-{
-  NSString *file = [[self class] persistenceFilePath:FBSDK_BASICUTILITY_ANONYMOUSIDFILENAME];
-  NSString *content = [[NSString alloc] initWithContentsOfFile:file
-                                                      encoding:NSASCIIStringEncoding
-                                                         error:nil];
-  NSDictionary<NSString *, id> *results = [FBSDKBasicUtility objectForJSONString:content error:NULL];
-  return results[FBSDK_BASICUTILITY_ANONYMOUSID_KEY];
-}
-
-+ (NSString *)persistenceFilePath:(NSString *)filename
-{
-  NSSearchPathDirectory directory = NSLibraryDirectory;
-  NSArray<NSString *> *paths = NSSearchPathForDirectoriesInDomains(directory, NSUserDomainMask, YES);
-  NSString *docDirectory = paths[0];
-  return [docDirectory stringByAppendingPathComponent:filename];
-}
-
-+ (void)persistAnonymousID:(NSString *)anonymousID
-{
-  NSDictionary<NSString *, NSString *> *data = @{ FBSDK_BASICUTILITY_ANONYMOUSID_KEY : anonymousID };
-  NSString *content = [self JSONStringForObject:data error:NULL invalidObjectHandler:NULL];
-
-  [content writeToFile:[[self class] persistenceFilePath:FBSDK_BASICUTILITY_ANONYMOUSIDFILENAME]
-            atomically:YES
-              encoding:NSASCIIStringEncoding
-                 error:nil];
 }
 
 @end

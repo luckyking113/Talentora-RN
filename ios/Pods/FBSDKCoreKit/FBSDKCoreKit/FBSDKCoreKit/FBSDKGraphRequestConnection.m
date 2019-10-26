@@ -18,10 +18,9 @@
 
 #import "FBSDKGraphRequestConnection+Internal.h"
 
-#import <FBSDKCoreKit/FBSDKCoreKit+Internal.h>
-
 #import "FBSDKAppEvents+Internal.h"
 #import "FBSDKConstants.h"
+#import "FBSDKCoreKit+Internal.h"
 #import "FBSDKError.h"
 #import "FBSDKErrorConfiguration.h"
 #import "FBSDKGraphRequest+Internal.h"
@@ -105,7 +104,8 @@ NSURLSessionDataDelegate
 #endif
 >
 
-@property (nonatomic, strong) FBSDKURLSession *session;
+@property (nonatomic, strong) NSURLSession *session;
+@property (nonatomic, strong) FBSDKURLSessionTask *task;
 @property (nonatomic, retain) NSMutableArray *requests;
 @property (nonatomic, assign) FBSDKGraphRequestConnectionState state;
 @property (nonatomic, strong) FBSDKLogger *logger;
@@ -134,14 +134,13 @@ NSURLSessionDataDelegate
     _timeout = g_defaultTimeout;
     _state = kStateCreated;
     _logger = [[FBSDKLogger alloc] initWithLoggingBehavior:FBSDKLoggingBehaviorNetworkRequests];
-    _session = [[FBSDKURLSession alloc] initWithDelegate:self delegateQueue:_delegateQueue];
   }
   return self;
 }
 
 - (void)dealloc
 {
-  [self.session invalidateAndCancel];
+  [_session invalidateAndCancel];
 }
 
 #pragma mark - Public
@@ -190,7 +189,8 @@ NSURLSessionDataDelegate
 - (void)cancel
 {
   self.state = kStateCancelled;
-  [self.session invalidateAndCancel];
+  [self.task cancel];
+  [self cleanUpSession];
 }
 
 - (void)overrideGraphAPIVersion:(NSString *)version
@@ -214,7 +214,7 @@ NSURLSessionDataDelegate
     self.state = kStateCancelled;
     [self completeFBSDKURLSessionWithResponse:nil
                                          data:nil
-                                 networkError:[FBSDKError unknownErrorWithMessage:msg]];
+                                 networkError:[NSError fbUnknownErrorWithMessage:msg]];
 
     return;
   }
@@ -235,22 +235,22 @@ NSURLSessionDataDelegate
   [self logRequest:request bodyLength:0 bodyLogger:nil attachmentLogger:nil];
   _requestStartTime = [FBSDKInternalUtility currentTimeInMilliseconds];
 
-  FBSDKURLSessionTaskBlock completionHanlder = ^(NSData *responseDataV1, NSURLResponse *responseV1, NSError *errorV1) {
-    FBSDKURLSessionTaskBlock handler = ^(NSData *responseDataV2,
-                                         NSURLResponse *responseV2,
-                                         NSError *errorV2) {
-      [self completeFBSDKURLSessionWithResponse:responseV2
-                                           data:responseDataV2
-                                   networkError:errorV2];
-    };
-
-    if(errorV1) {
-      [self taskDidCompleteWithError:errorV1 handler:handler];
-    } else {
-      [self taskDidCompleteWithResponse:responseV1 data:responseDataV1 requestStartTime:self.requestStartTime handler:handler];
-    }
+  FBSDKURLSessionTaskBlock handler = ^(NSError *error,
+                                       NSURLResponse *response,
+                                       NSData *responseData) {
+    [self completeFBSDKURLSessionWithResponse:response
+                                         data:responseData
+                                 networkError:error];
   };
-  [self.session executeURLRequest:request completionHandler:completionHanlder];
+
+  if (!self.session) {
+    self.session = [self defaultSession];
+  }
+
+  self.task = [[FBSDKURLSessionTask alloc] initWithRequest:request
+                                               fromSession:self.session
+                                         completionHandler:handler];
+  [self.task start];
 
   id<FBSDKGraphRequestConnectionDelegate> delegate = self.delegate;
   if ([delegate respondsToSelector:@selector(requestConnectionWillBeginLoading:)]) {
@@ -271,7 +271,6 @@ NSURLSessionDataDelegate
 
 - (void)setDelegateQueue:(NSOperationQueue *)queue
 {
-  _session.delegateQueue = queue;
   _delegateQueue = queue;
 }
 
@@ -590,7 +589,7 @@ NSURLSessionDataDelegate
     NSInteger statusCode = _urlResponse.statusCode;
 
     if (!error && [response.MIMEType hasPrefix:@"image"]) {
-      error = [FBSDKError errorWithCode:FBSDKErrorGraphRequestNonTextMimeTypeReturned
+      error = [NSError fbErrorWithCode:FBSDKErrorGraphRequestNonTextMimeTypeReturned
                                 message:@"Response is a non-text MIME type; endpoints that return images and other "
                @"binary data should be fetched using NSURLRequest and NSURLSession"];
     } else {
@@ -599,13 +598,13 @@ NSURLSessionDataDelegate
                              statusCode:statusCode];
     }
   } else if (!error) {
-    error = [FBSDKError errorWithCode:FBSDKErrorUnknown
+    error = [NSError fbErrorWithCode:FBSDKErrorUnknown
                               message:@"Missing NSURLResponse"];
   }
 
   if (!error) {
     if (self.requests.count != results.count) {
-      error = [FBSDKError errorWithCode:FBSDKErrorGraphRequestProtocolMismatch
+      error = [NSError fbErrorWithCode:FBSDKErrorGraphRequestProtocolMismatch
                                 message:@"Unexpected number of results returned from server."];
     } else {
       [_logger appendFormat:@"Response <#%lu>\nDuration: %llu msec\nSize: %lu kB\nResponse Body:\n%@\n\n",
@@ -626,7 +625,7 @@ NSURLSessionDataDelegate
 
   [self completeWithResults:results networkError:error];
 
-  [self.session invalidateAndCancel];
+  [self cleanUpSession];
 }
 
 //
@@ -644,7 +643,7 @@ NSURLSessionDataDelegate
 //
 - (NSArray *)parseJSONResponse:(NSData *)data
                          error:(NSError **)error
-                    statusCode:(NSInteger)statusCode
+                    statusCode:(NSInteger)statusCode;
 {
   // Graph API can return "true" or "false", which is not valid JSON.
   // Translate that before asking JSON parser to look at it.
@@ -895,7 +894,7 @@ NSURLSessionDataDelegate
       FBSDKErrorRecoveryAttempter *attempter = [FBSDKErrorRecoveryAttempter recoveryAttempterFromConfiguration:recoveryConfiguration];
       [FBSDKBasicUtility dictionary:userInfo setObject:attempter forKey:NSRecoveryAttempterErrorKey];
 
-      return [FBSDKError errorWithCode:FBSDKErrorGraphRequestGraphAPI
+      return [NSError fbErrorWithCode:FBSDKErrorGraphRequestGraphAPI
                               userInfo:userInfo
                                message:nil
                        underlyingError:nil];
@@ -905,7 +904,7 @@ NSURLSessionDataDelegate
   return nil;
 }
 
-- (NSError *)errorWithCode:(FBSDKCoreError)code
+- (NSError *)errorWithCode:(FBSDKError)code
                 statusCode:(NSInteger)statusCode
         parsedJSONResponse:(id)response
                 innerError:(NSError *)innerError
@@ -931,93 +930,6 @@ NSURLSessionDataDelegate
                     userInfo:userInfo];
 
   return error;
-}
-
-#pragma mark - Private methods (logging and completion)
-
-- (void)logAndInvokeHandler:(FBSDKURLSessionTaskBlock)handler
-                      error:(NSError *)error
-{
-  if (error) {
-    NSString *logEntry = [NSString
-                          stringWithFormat:@"FBSDKURLSessionTask <#%lu>:\n  Error: '%@'\n%@\n",
-                          (unsigned long)[FBSDKLogger generateSerialNumber],
-                          error.localizedDescription,
-                          error.userInfo];
-
-    [self logMessage:logEntry];
-  }
-
-  [self invokeHandler:handler error:error response:nil responseData:nil];
-}
-
-- (void)logAndInvokeHandler:(FBSDKURLSessionTaskBlock)handler
-                   response:(NSURLResponse *)response
-               responseData:(NSData *)responseData
-           requestStartTime:(uint64_t)requestStartTime
-{
-  // Basic logging just prints out the URL.  FBSDKGraphRequest logging provides more details.
-  NSString *mimeType = response.MIMEType;
-  NSMutableString *mutableLogEntry = [NSMutableString stringWithFormat:@"FBSDKGraphRequestConnection <#%lu>:\n  Duration: %llu msec\nResponse Size: %lu kB\n  MIME type: %@\n",
-                                      (unsigned long)[FBSDKLogger generateSerialNumber],
-                                      [FBSDKInternalUtility currentTimeInMilliseconds] - requestStartTime,
-                                      (unsigned long)responseData.length / 1024,
-                                      mimeType];
-
-  if ([mimeType isEqualToString:@"text/javascript"]) {
-    NSString *responseUTF8 = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
-    [mutableLogEntry appendFormat:@"  Response:\n%@\n\n", responseUTF8];
-  }
-
-  [self logMessage:mutableLogEntry];
-
-  [self invokeHandler:handler error:nil response:response responseData:responseData];
-}
-
-- (void)invokeHandler:(FBSDKURLSessionTaskBlock)handler
-                error:(NSError *)error
-             response:(NSURLResponse *)response
-         responseData:(NSData *)responseData
-{
-  if (handler != nil) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      handler(responseData, response, error);
-    });
-  }
-}
-
-- (void)logMessage:(NSString *)message
-{
-  [FBSDKLogger singleShotLogEntry:FBSDKLoggingBehaviorNetworkRequests formatString:@"%@", message];
-}
-
-- (void)taskDidCompleteWithResponse:(NSURLResponse *)response
-                               data:(NSData *)data
-                   requestStartTime:(uint64_t)requestStartTime
-                            handler:(FBSDKURLSessionTaskBlock)handler
-{
-  @try {
-    [self logAndInvokeHandler:handler
-                     response:response
-                 responseData:data
-             requestStartTime:requestStartTime];
-  } @finally {}
-}
-
-- (void)taskDidCompleteWithError:(NSError *)error
-                         handler:(FBSDKURLSessionTaskBlock)handler
-{
-  @try {
-    if ([error.domain isEqualToString:NSURLErrorDomain] && error.code == kCFURLErrorSecureConnectionFailed) {
-      NSOperatingSystemVersion iOS9Version = { .majorVersion = 9, .minorVersion = 0, .patchVersion = 0 };
-      if ([FBSDKInternalUtility isOSRunTimeVersionAtLeast:iOS9Version]) {
-        [FBSDKLogger singleShotLogEntry:FBSDKLoggingBehaviorDeveloperErrors
-                               logEntry:@"WARNING: FBSDK secure network request failed. Please verify you have configured your "
-         "app for Application Transport Security compatibility described at https://developers.facebook.com/docs/ios/ios9"];
-      }
-    }
-    [self logAndInvokeHandler:handler error:error];
-  } @finally {}
 }
 
 #pragma mark - Private methods (miscellaneous)
@@ -1068,8 +980,6 @@ NSURLSessionDataDelegate
   }
 }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
 + (NSString *)userAgent
 {
   static NSString *agent = nil;
@@ -1077,21 +987,26 @@ NSURLSessionDataDelegate
   dispatch_once(&onceToken, ^{
     agent = [NSString stringWithFormat:@"%@.%@", kUserAgentBase, FBSDK_VERSION_STRING];
   });
-  NSString *agentWithSuffix = nil;
-  if ([FBSDKSettings userAgentSuffix]) {
-    agentWithSuffix = [NSString stringWithFormat:@"%@/%@", agent, [FBSDKSettings userAgentSuffix]];
-  }
-  if (@available(iOS 13.0, *)) {
-    NSProcessInfo *processInfo = [NSProcessInfo processInfo];
-    SEL selector = NSSelectorFromString(@"isMacCatalystApp");
-    if (selector && [processInfo respondsToSelector:selector] && [processInfo performSelector:selector]) {
-      return [NSString stringWithFormat:@"%@/%@", agentWithSuffix ?: agent, @"macOS"];
-    }
-  }
 
-  return agentWithSuffix ?: agent;
+  if ([FBSDKSettings userAgentSuffix]) {
+    return [NSString stringWithFormat:@"%@/%@", agent, [FBSDKSettings userAgentSuffix]];
+  }
+  return agent;
 }
-#pragma clang diagnostic pop
+
+- (NSURLSession *)defaultSession
+{
+    NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
+    return [NSURLSession sessionWithConfiguration:config
+                                         delegate:self
+                                    delegateQueue:_delegateQueue];
+}
+
+- (void)cleanUpSession
+{
+  [self.session invalidateAndCancel];
+  self.session = nil;
+}
 
 #pragma mark - NSURLSessionDataDelegate
 

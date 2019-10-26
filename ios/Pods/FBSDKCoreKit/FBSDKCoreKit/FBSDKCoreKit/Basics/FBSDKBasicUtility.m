@@ -16,30 +16,8 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#import <Foundation/Foundation.h>
+#import "FBSDKBasicUtility.h"
 
-typedef void (^FBSDKURLSessionTaskBlock)(NSData *responseData,
-                                         NSURLResponse *response,
-                                         NSError *error)
-NS_SWIFT_NAME(URLSessionTaskBlock);
-
-NS_SWIFT_NAME(URLSessionTask)
-@interface FBSDKURLSessionTask : NSObject
-
-@property (nonatomic, strong) NSURLSessionTask *task;
-@property (atomic, readonly) NSURLSessionTaskState state;
-@property (nonatomic, strong, readonly) NSDate *requestStartDate;
-@property (nonatomic, copy) FBSDKURLSessionTaskBlock handler;
-@property (nonatomic, assign) uint64_t requestStartTime;
-@property (nonatomic, assign) NSUInteger loggerSerialNumber;
-
-+ (instancetype)new NS_UNAVAILABLE;
-
-- (instancetype)initWithRequest:(NSURLRequest *)request
-                    fromSession:(NSURLSession *)session
-              completionHandler:(FBSDKURLSessionTaskBlock)handler;
-
-- (void)start;
-- (void)cancel;
+@implementation FBSDKBasicUtility
 
 @end

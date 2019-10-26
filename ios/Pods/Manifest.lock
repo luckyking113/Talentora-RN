@@ -1,36 +1,32 @@
 PODS:
-  - FBSDKCoreKit (5.8.0):
-    - FBSDKCoreKit/Basics (= 5.8.0)
-    - FBSDKCoreKit/Core (= 5.8.0)
-  - FBSDKCoreKit/Basics (5.8.0)
-  - FBSDKCoreKit/Core (5.8.0):
+  - FBSDKCoreKit (5.0.2):
+    - FBSDKCoreKit/Basics (= 5.0.2)
+    - FBSDKCoreKit/Core (= 5.0.2)
+  - FBSDKCoreKit/Basics (5.0.2)
+  - FBSDKCoreKit/Core (5.0.2):
     - FBSDKCoreKit/Basics
-  - FBSDKLoginKit (5.8.0):
-    - FBSDKLoginKit/Login (= 5.8.0)
-  - FBSDKLoginKit/Login (5.8.0):
+  - FBSDKLoginKit (5.0.2):
     - FBSDKCoreKit (~> 5.0)
-  - FBSDKShareKit (5.8.0):
-    - FBSDKShareKit/Share (= 5.8.0)
-  - FBSDKShareKit/Share (5.8.0):
+  - FBSDKShareKit (5.0.2):
     - FBSDKCoreKit (~> 5.0)
   - QBImagePickerController (3.4.0)
   - React (0.59.9):
     - React/Core (= 0.59.9)
   - react-native-camera (0.9.4):
     - React
-  - react-native-fbsdk (0.6.3):
+  - react-native-fbsdk (1.0.0-rc.4):
     - React
-    - react-native-fbsdk/Core (= 0.6.3)
-    - react-native-fbsdk/Login (= 0.6.3)
-    - react-native-fbsdk/Share (= 0.6.3)
-  - react-native-fbsdk/Core (0.6.3):
-    - FBSDKCoreKit
+    - react-native-fbsdk/Core (= 1.0.0-rc.4)
+    - react-native-fbsdk/Login (= 1.0.0-rc.4)
+    - react-native-fbsdk/Share (= 1.0.0-rc.4)
+  - react-native-fbsdk/Core (1.0.0-rc.4):
+    - FBSDKCoreKit (~> 5.0.0)
     - React
-  - react-native-fbsdk/Login (0.6.3):
-    - FBSDKLoginKit
+  - react-native-fbsdk/Login (1.0.0-rc.4):
+    - FBSDKLoginKit (~> 5.0.0)
     - React
-  - react-native-fbsdk/Share (0.6.3):
-    - FBSDKShareKit
+  - react-native-fbsdk/Share (1.0.0-rc.4):
+    - FBSDKShareKit (~> 5.0.0)
     - React
   - React/Core (0.59.9):
     - yoga (= 0.59.9.React)
@@ -42,7 +38,7 @@ DEPENDENCIES:
   - QBImagePickerController
   - React (from `../node_modules/react-native`)
   - react-native-camera (from `../node_modules/react-native-camera`)
-  - react-native-fbsdk (from `../node_modules/react-native-fbsdk/ios`)
+  - react-native-fbsdk (from `../node_modules/react-native-fbsdk`)
   - RSKImageCropper
   - XCDYouTubeKit (~> 2.5)
   - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
@@ -62,22 +58,22 @@ EXTERNAL SOURCES:
   react-native-camera:
     :path: "../node_modules/react-native-camera"
   react-native-fbsdk:
-    :path: "../node_modules/react-native-fbsdk/ios"
+    :path: "../node_modules/react-native-fbsdk"
   yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  FBSDKCoreKit: e7dcac0aabcfb09d0166998edd95fe3b05a0ce5d
-  FBSDKLoginKit: 1b0cf04df0370b37404213157b060d6666ede814
-  FBSDKShareKit: abc29e1bb4f9f59f679adf1ae191006d68455f96
+  FBSDKCoreKit: 3e41c402eb64ea7799c71833ff9e5690f27b9c42
+  FBSDKLoginKit: a88f36da648e4c5d60eb261c63eac067abb97130
+  FBSDKShareKit: 8695bbb97c18a381bbf2851a3f24f95a59121b82
   QBImagePickerController: d54cf93db6decf26baf6ed3472f336ef35cae022
   React: a86b92f00edbe1873a63e4a212c29b7a7ad5224f
   react-native-camera: 6aa5edd07fa18b7e80fc95bdd841a0270dc6257b
-  react-native-fbsdk: 6287fcddc3162c6e458e0e8a633188e5b51b4ebd
+  react-native-fbsdk: 5f9a64763f847f43f8f5d9d0b544a40e7b308762
   RSKImageCropper: a446db0e8444a036b34f3c43db01b2373baa4b2a
   XCDYouTubeKit: 4ca4e3322fa556ec1c32932d378365c15ce1386e
   yoga: 03ff42a6f223fb88deeaed60249020d80c3091ee
 
-PODFILE CHECKSUM: cab80e7a45653b8547e686c6668ba021681dec3c
+PODFILE CHECKSUM: 7ae07c1effd5cd19775a67cd5e432905d00df85f
 
 COCOAPODS: 1.8.3

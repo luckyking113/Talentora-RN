@@ -17,20 +17,19 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import <Foundation/Foundation.h>
-#import "FBSDKError.h"
 
-NS_ASSUME_NONNULL_BEGIN
+#import "FBSDKBridgeAPIRequest.h"
 
-@interface FBSDKErrorReport : NSObject
+NS_SWIFT_NAME(BridgeAPICrypto)
+@interface FBSDKBridgeAPICrypto : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
 
-+ (void)enable;
-+ (void)saveError:(NSInteger)errorCode
-      errorDomain:(NSErrorDomain)errorDomain
-          message:(nullable NSString *)message;
++ (void)addCipherKeyToQueryParameters:(NSMutableDictionary *)queryParameters;
++ (NSDictionary *)decryptResponseForRequest:(FBSDKBridgeAPIRequest *)request
+                            queryParameters:(NSDictionary *)queryParameters
+                                      error:(NSError *__autoreleasing *)errorRef;
++ (void)reset;
 
 @end
-
-NS_ASSUME_NONNULL_END

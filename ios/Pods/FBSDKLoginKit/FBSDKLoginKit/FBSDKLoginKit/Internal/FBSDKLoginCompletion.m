@@ -20,11 +20,7 @@
 
 #import <FBSDKCoreKit/FBSDKConstants.h>
 
-#ifdef COCOAPODS
-#import <FBSDKCoreKit/FBSDKCoreKit+Internal.h>
-#else
 #import "FBSDKCoreKit+Internal.h"
-#endif
 #import "FBSDKLoginConstants.h"
 #import "FBSDKLoginError.h"
 #import "FBSDKLoginManager+Internal.h"
@@ -218,7 +214,7 @@ static void FBSDKLoginRequestMeAndPermissions(FBSDKLoginCompletionParameters *pa
   }
 
   if ([FBSDKBridgeAPI sharedInstance].isActive) {
-    [loginManager logIn];
+    [loginManager logInWithBehavior:FBSDKLoginBehaviorBrowser];
   } else {
     // The application is active but due to notification ordering the FBSDKApplicationDelegate
     // doesn't know it yet. Wait one more turn of the run loop.
@@ -238,7 +234,7 @@ static void FBSDKLoginRequestMeAndPermissions(FBSDKLoginCompletionParameters *pa
   NSString *appID = [FBSDKSettings appID] ?: @"";
 
   if (nonce.length == 0 || appID.length == 0) {
-    _parameters.error = [FBSDKError errorWithCode:FBSDKErrorInvalidArgument message:@"Missing required parameters to exchange nonce for access token."];
+    _parameters.error = [NSError fbErrorWithCode:FBSDKErrorInvalidArgument message:@"Missing required parameters to exchange nonce for access token."];
 
     handler(_parameters);
     return;
@@ -259,17 +255,7 @@ static void FBSDKLoginRequestMeAndPermissions(FBSDKLoginCompletionParameters *pa
                                                           NSError *error) {
     if (!error) {
       parameters.accessTokenString = result[@"access_token"];
-      NSDate *expirationDate = [NSDate distantFuture];
-      if (result[@"expires_in"] && [result[@"expires_in"] integerValue] > 0) {
-        expirationDate = [NSDate dateWithTimeIntervalSinceNow:[result[@"expires_in"] integerValue]];
-      }
-      parameters.expirationDate = expirationDate;
-
-      NSDate *dataAccessExpirationDate = [NSDate distantFuture];
-      if (result[@"data_access_expiration_time"] && [result[@"data_access_expiration_time"] integerValue] > 0) {
-        dataAccessExpirationDate = [NSDate dateWithTimeIntervalSince1970:[result[@"data_access_expiration_time"] integerValue]];
-      }
-      parameters.dataAccessExpirationDate = dataAccessExpirationDate;
+      parameters.expirationDate = [NSDate dateWithTimeIntervalSinceNow:[result[@"expires_in"] integerValue]];
     } else {
       parameters.error = error;
     }

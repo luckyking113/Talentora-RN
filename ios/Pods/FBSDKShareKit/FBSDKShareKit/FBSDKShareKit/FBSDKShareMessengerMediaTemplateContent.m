@@ -18,11 +18,7 @@
 
 #import "FBSDKShareMessengerMediaTemplateContent.h"
 
-#ifdef COCOAPODS
-#import <FBSDKCoreKit/FBSDKCoreKit+Internal.h>
-#else
 #import "FBSDKCoreKit+Internal.h"
-#endif
 #import "FBSDKHashtag.h"
 #import "FBSDKShareConstants.h"
 #import "FBSDKShareMessengerContentUtility.h"
@@ -59,7 +55,6 @@ static NSString *_MediaTemplateURLSerializationKey(NSURL *mediaURL)
   }
 }
 
-DEPRECATED_FOR_MESSENGER
 static NSString *_MediaTypeString(FBSDKShareMessengerMediaTemplateMediaType mediaType)
 {
   switch (mediaType) {
@@ -70,7 +65,6 @@ static NSString *_MediaTypeString(FBSDKShareMessengerMediaTemplateMediaType medi
   }
 }
 
-DEPRECATED_FOR_MESSENGER
 static NSArray<NSDictionary<NSString *, id> *> *_SerializableMediaTemplateContentFromContent(FBSDKShareMessengerMediaTemplateContent *mediaTemplateContent)
 {
   NSMutableArray<NSDictionary<NSString *, id> *> *serializableMediaTemplateContent = [NSMutableArray array];
@@ -85,10 +79,7 @@ static NSArray<NSDictionary<NSString *, id> *> *_SerializableMediaTemplateConten
   return serializableMediaTemplateContent;
 }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-implementations"
 @implementation FBSDKShareMessengerMediaTemplateContent
-#pragma clang diagnostic pop
 
 #pragma mark - Properties
 
@@ -160,9 +151,9 @@ static NSArray<NSDictionary<NSString *, id> *> *_SerializableMediaTemplateConten
 {
   if (!_mediaURL && !_attachmentID) {
     if (errorRef != NULL) {
-      *errorRef = [FBSDKError requiredArgumentErrorWithDomain:FBSDKShareErrorDomain
-                                                         name:@"attachmentID/mediaURL"
-                                                      message:@"Must specify either attachmentID or mediaURL"];
+      *errorRef = [NSError fbRequiredArgumentErrorWithDomain:FBSDKShareErrorDomain
+                                                        name:@"attachmentID/mediaURL"
+                                                     message:@"Must specify either attachmentID or mediaURL"];
     }
     return NO;
   }

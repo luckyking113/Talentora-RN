@@ -31,7 +31,6 @@ typedef NS_ENUM(NSUInteger, FBSDKShareMessengerURLActionButtonWebviewHeightRatio
 /**
  A model for a Messenger share URL action button.
  */
-DEPRECATED_FOR_MESSENGER
 NS_SWIFT_NAME(ShareMessengerURLActionButton)
 @interface FBSDKShareMessengerURLActionButton : NSObject <FBSDKShareMessengerActionButton>
 

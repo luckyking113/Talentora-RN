@@ -18,11 +18,7 @@
 
 #import "FBSDKLoginManagerLogger.h"
 
-#ifdef COCOAPODS
-#import <FBSDKCoreKit/FBSDKCoreKit+Internal.h>
-#else
 #import "FBSDKCoreKit+Internal.h"
-#endif
 #import "FBSDKLoginError.h"
 #import "FBSDKLoginManagerLoginResult+Internal.h"
 #import "FBSDKLoginUtility.h"
@@ -97,8 +93,15 @@ static NSString *const FBSDKLoginManagerLoggerTryBrowser = @"trySafariAuth";
 {
   BOOL isReauthorize = ([FBSDKAccessToken currentAccessToken] != nil);
   BOOL willTryNative = NO;
-  BOOL willTryBrowser = YES;
-  NSString *behaviorString = @"FBSDKLoginBehaviorBrowser";
+  BOOL willTryBrowser = NO;
+  NSString *behaviorString = nil;
+
+  switch (loginManager.loginBehavior) {
+    case FBSDKLoginBehaviorBrowser:
+      willTryBrowser = YES;
+      behaviorString = @"FBSDKLoginBehaviorBrowser";
+      break;
+  }
 
   [_extras addEntriesFromDictionary:@{
     FBSDKLoginManagerLoggerTryNative : @(willTryNative),

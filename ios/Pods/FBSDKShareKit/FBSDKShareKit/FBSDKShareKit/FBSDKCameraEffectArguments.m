@@ -18,11 +18,7 @@
 
 #import "FBSDKCameraEffectArguments.h"
 
-#ifdef COCOAPODS
-#import <FBSDKCoreKit/FBSDKCoreKit+Internal.h>
-#else
 #import "FBSDKCoreKit+Internal.h"
-#endif
 #import "FBSDKShareUtility.h"
 
 static NSString *const FBSDKCameraEffectArgumentsArgumentsKey = @"arguments";

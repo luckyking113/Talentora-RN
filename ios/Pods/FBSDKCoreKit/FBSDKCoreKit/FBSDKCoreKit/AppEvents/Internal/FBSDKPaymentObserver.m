@@ -20,9 +20,8 @@
 
 #import <StoreKit/StoreKit.h>
 
-#import <FBSDKCoreKit/FBSDKCoreKit+Internal.h>
-
 #import "FBSDKAppEvents+Internal.h"
+#import "FBSDKCoreKit+Internal.h"
 #import "FBSDKDynamicFrameworkLoader.h"
 #import "FBSDKLogger.h"
 #import "FBSDKSettings.h"
@@ -39,14 +38,11 @@ static NSString *const FBSDKAppEventParameterNameOriginalTransactionID = @"fb_or
 static NSString *const FBSDKAppEventParameterNameTransactionID = @"fb_transaction_id";
 static NSString *const FBSDKAppEventParameterNameTransactionDate = @"fb_transaction_date";
 static NSString *const FBSDKAppEventParameterNameSubscriptionPeriod = @"fb_iap_subs_period";
-static NSString *const FBSDKAppEventParameterNameIsStartTrial = @"fb_iap_is_start_trial";
 static NSString *const FBSDKAppEventParameterNameHasFreeTrial = @"fb_iap_has_free_trial";
 static NSString *const FBSDKAppEventParameterNameTrialPeriod = @"fb_iap_trial_period";
 static NSString *const FBSDKAppEventParameterNameTrialPrice = @"fb_iap_trial_price";
 static int const FBSDKMaxParameterValueLength = 100;
 static NSMutableArray *g_pendingRequestors;
-
-static NSString *const FBSDKGateKeeperAppEventsIfAutoLogSubs = @"app_events_if_auto_log_subs";
 
 @interface FBSDKPaymentProductRequestor : NSObject<SKProductsRequestDelegate>
 
@@ -168,7 +164,7 @@ static NSString *const FBSDKGateKeeperAppEventsIfAutoLogSubs = @"app_events_if_a
     _formatter.dateFormat = @"yyyy-MM-dd HH:mm:ssZ";
     NSString *data = [[NSUserDefaults standardUserDefaults] stringForKey:FBSDKPaymentObserverOriginalTransactionKey];
     _eventsWithReceipt = [NSSet setWithArray:@[FBSDKAppEventNamePurchased, FBSDKAppEventNameSubscribe,
-                                               FBSDKAppEventNameStartTrial]];
+                                               FBSDKAppEventNameStartTrial, FBSDKAppEventNameSubscriptionHeartbeat]];
     if (data) {
       _originalTransactionSet = [NSMutableSet setWithArray:[data componentsSeparatedByString:FBSDKPaymentObserverDelimiter]];
     } else {
@@ -213,6 +209,7 @@ static NSString *const FBSDKGateKeeperAppEventsIfAutoLogSubs = @"app_events_if_a
 {
   if ([self isSubscription:product] &&
       [FBSDKGateKeeperManager boolForKey:FBSDKGateKeeperAppEventsIfAutoLogSubs
+                                   appID:[FBSDKSettings appID]
                             defaultValue:NO]) {
     [self logImplicitSubscribeTransaction:self.transaction ofProduct:product];
   } else {
@@ -223,7 +220,7 @@ static NSString *const FBSDKGateKeeperAppEventsIfAutoLogSubs = @"app_events_if_a
 - (BOOL)isSubscription:(SKProduct *)product
 {
 #if !TARGET_OS_TV
-#if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_11_1
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_11_2
   if (@available(iOS 11.2, *)) {
     return (product.subscriptionPeriod != nil) && ((unsigned long)product.subscriptionPeriod.numberOfUnits > 0);
   }
@@ -276,7 +273,6 @@ static NSString *const FBSDKGateKeeperAppEventsIfAutoLogSubs = @"app_events_if_a
       // subs inapp
       eventParameters[FBSDKAppEventParameterNameSubscriptionPeriod] = [self durationOfSubscriptionPeriod:product.subscriptionPeriod];
       eventParameters[FBSDKAppEventParameterNameInAppPurchaseType] = @"subs";
-      eventParameters[FBSDKAppEventParameterNameIsStartTrial] = [self isStartTrial:transaction ofProduct:product] ? @"1" : @"0";
       // trial information for subs
       SKProductDiscount *discount = product.introductoryPrice;
       if (discount) {
@@ -358,7 +354,7 @@ static NSString *const FBSDKGateKeeperAppEventsIfAutoLogSubs = @"app_events_if_a
 - (BOOL)hasStartTrial:(SKProduct *)product
 {
 #if !TARGET_OS_TV
-#if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_11_1
+#if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_11_2
 #if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_11_4
 #if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_12_1
   // promotional offer starting from iOS 12.2
@@ -453,10 +449,11 @@ static NSString *const FBSDKGateKeeperAppEventsIfAutoLogSubs = @"app_events_if_a
         [self clearOriginalTransactionID:originalTransactionID];
       } else {
         if (originalTransactionID && [_originalTransactionSet containsObject:originalTransactionID]) {
-          return;
+          eventName = FBSDKAppEventNameSubscriptionHeartbeat;
+        } else {
+          eventName = FBSDKAppEventNameSubscribe;
+          [self appendOriginalTransactionID:originalTransactionID];
         }
-        eventName = FBSDKAppEventNameSubscribe;
-        [self appendOriginalTransactionID:(originalTransactionID ?: transaction.transactionIdentifier)];
       }
       break;
     case SKPaymentTransactionStateFailed:

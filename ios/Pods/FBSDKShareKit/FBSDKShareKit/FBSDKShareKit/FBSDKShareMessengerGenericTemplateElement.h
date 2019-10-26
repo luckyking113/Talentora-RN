@@ -29,7 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
  https://developers.facebook.com/docs/messenger-platform/send-messages/template/generic for more details.
  */
 NS_SWIFT_NAME(ShareMessengerGenericTemplateElement)
-DEPRECATED_FOR_MESSENGER
 @interface FBSDKShareMessengerGenericTemplateElement : NSObject <FBSDKCopying, NSSecureCoding>
 
 /**

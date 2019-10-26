@@ -18,11 +18,7 @@
 
 #import <UIKit/UIKit.h>
 
-#ifdef COCOAPODS
-#import <FBSDKCoreKit/FBSDKCoreKit+Internal.h>
-#else
 #import "FBSDKCoreKit+Internal.h"
-#endif
 
 NS_SWIFT_NAME(MessengerIcon)
 @interface FBSDKMessengerIcon : FBSDKIcon

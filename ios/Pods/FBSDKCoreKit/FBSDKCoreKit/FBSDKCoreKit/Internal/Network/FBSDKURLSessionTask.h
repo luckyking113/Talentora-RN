@@ -16,31 +16,25 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#import "FBSDKInstrumentManager.h"
+#import <Foundation/Foundation.h>
 
-#import "FBSDKCrashObserver.h"
-#import "FBSDKErrorReport.h"
-#import "FBSDKFeatureManager.h"
-#import "FBSDKSettings.h"
+typedef void (^FBSDKURLSessionTaskBlock)(NSError *error,
+                                         NSURLResponse *response,
+                                         NSData *responseData)
+NS_SWIFT_NAME(URLSessionTaskBlock);
 
-@implementation FBSDKInstrumentManager
+NS_SWIFT_NAME(URLSessionTask)
+@interface FBSDKURLSessionTask : NSObject
 
-+ (void)enable
-{
-  if (![FBSDKSettings isAutoLogAppEventsEnabled]) {
-    return;
-  }
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
 
-  [FBSDKFeatureManager checkFeature:FBSDKFeatureCrashReport completionBlock:^(BOOL enabled) {
-    if (enabled) {
-      [FBSDKCrashObserver enable];
-    }
-  }];
-  [FBSDKFeatureManager checkFeature:FBSDKFeatureErrorReport completionBlock:^(BOOL enabled) {
-    if (enabled) {
-      [FBSDKErrorReport enable];
-    }
-  }];
-}
+- (instancetype)initWithRequest:(NSURLRequest *)request
+                    fromSession:(NSURLSession *)session
+              completionHandler:(FBSDKURLSessionTaskBlock)handler
+NS_DESIGNATED_INITIALIZER;
+
+- (void)cancel;
+- (void)start;
 
 @end
