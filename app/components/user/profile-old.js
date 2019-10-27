@@ -63,7 +63,7 @@ class Profile extends Component {
         });
 
     // If no detail items loaded, load now 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
 
 
     }

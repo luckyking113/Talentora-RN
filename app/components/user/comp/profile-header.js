@@ -250,7 +250,7 @@ export default class ProfileHeader extends Component {
         return _tmp;
     }
 
-    componentWillMount(){
+    UNSAFE_componentWillMount(){
         // https://github.com/wcandillon/react-native-img-cache
         // Remove cache entries and all physical files.
         // ImageCache.get().clear();

@@ -159,7 +159,7 @@ class Videos extends React.PureComponent {
 
     }
 
-    componentWillMount(){
+    UNSAFE_componentWillMount(){
 
         // DeviceEventEmitter.addListener('AllowViewVideo', (data) => {
         //     _SELF.setState({

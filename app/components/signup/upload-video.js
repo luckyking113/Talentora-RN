@@ -882,7 +882,7 @@ class UploadVideo extends Component{
     }
 
 
-    componentWillMount(){
+    UNSAFE_componentWillMount(){
         const _SELF = this;
 
         DeviceEventEmitter.addListener('uploadAfterTrim', (data) => {

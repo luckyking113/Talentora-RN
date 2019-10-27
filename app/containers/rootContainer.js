@@ -44,7 +44,7 @@ class Root extends Component {
     }
 
     // For Notification (OneSignal)
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         // count ++;
         // console.log('Panhna Seng ====================== Will Mount', count);
         OneSignal.addEventListener('received', this.onReceived);

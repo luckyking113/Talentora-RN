@@ -288,7 +288,7 @@ class JobDetail extends Component {
         _SELF = this; 
     }
 
-    componentWillMount(){
+    UNSAFE_componentWillMount(){
         DeviceEventEmitter.addListener('SpamReport', () => {
             _SELF.setState({
                 showModal: true

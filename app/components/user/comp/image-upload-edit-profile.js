@@ -583,7 +583,7 @@ export default class ImageUploadEditProfile extends Component {
         
     }
 
-    componentWillMount(){
+    UNSAFE_componentWillMount(){
         this._getPhoto();
     }
 

@@ -364,7 +364,7 @@ class JobRoot extends Component {
     
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         let that = this;
         DeviceEventEmitter.addListener('clearBadgeNumber', (data) => {
 

@@ -200,7 +200,7 @@ class Authenticate extends Component {
     }
 
     // start keyboard handle
-    componentWillMount () {
+    UNSAFE_UNSAFE_componentWillMount () {
         
         this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this.keyboardDidShow.bind(this))
         this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this.keyboardDidHide.bind(this))

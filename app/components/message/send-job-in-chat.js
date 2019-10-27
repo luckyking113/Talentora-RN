@@ -82,7 +82,7 @@ class SendJobInChat extends Component {
             />),
         })};
 
-    componentWillMount(){
+    UNSAFE_componentWillMount(){
 
     }
     

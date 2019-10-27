@@ -742,7 +742,7 @@ class MessageList extends Component {
         })
 	}
 
-	componentWillMount() {
+	UNSAFE_componentWillMount() {
 
         // no need func below if on send job modal
         if(this._isSendJob())

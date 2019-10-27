@@ -26,7 +26,7 @@ class FeedList extends Component {
 
     // Fetch detail items
     // Example only options defined
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         
         this.props.fetchDetailState({ limit: 10 })
         

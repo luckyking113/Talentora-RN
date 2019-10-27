@@ -330,7 +330,7 @@ class AllPeople extends React.PureComponent {
         }
     }
 
-    componentWillMount(){
+    UNSAFE_componentWillMount(){
         const { navigate, goBack, state, setParams } = this.props.navigation;
         
         // DeviceEventEmitter.addListener('FilterPeople', (data) => {

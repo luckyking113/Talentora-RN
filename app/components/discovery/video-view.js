@@ -149,7 +149,7 @@ class VideoView extends Component {
         }
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         AppState.addEventListener('change', this.appStateChange);
     }
 

@@ -330,7 +330,7 @@ class VideoTrimView extends Component {
         // this.getVideoInfo();
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         GoogleAnalyticsHelper._trackScreenView('Video Trim'); 
         // try{
 

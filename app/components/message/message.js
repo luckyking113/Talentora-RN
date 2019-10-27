@@ -800,7 +800,7 @@ class Message extends Component {
 		})
 	}
 
-	componentWillMount() {
+	UNSAFE_componentWillMount() {
 
 		// console.log('will mount');
 		// this.setState({

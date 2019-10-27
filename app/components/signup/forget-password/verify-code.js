@@ -176,7 +176,7 @@ class VerifyCode extends Component{
         dispatch(resetAction);
     }
 
-    componentWillMount () {
+    UNSAFE_componentWillMount () {
         this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this.keyboardDidShow.bind(this))
         this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this.keyboardDidHide.bind(this))
     }

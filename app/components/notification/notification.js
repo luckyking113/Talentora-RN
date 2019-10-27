@@ -83,7 +83,7 @@ class Notification extends Component {
 
   // Fetch detail items
   // Example only options defined
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     DeviceEventEmitter.addListener('refreshNoti', data => {
       if (this.props.notification.noti > 0) this._getNoti();
     });

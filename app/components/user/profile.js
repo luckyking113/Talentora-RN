@@ -677,7 +677,7 @@ class Profile extends React.PureComponent {
         }
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         let _SELF = this;
         DeviceEventEmitter.addListener('updateProfileInfo', (e)=>{ 
             // console.log('event',e);

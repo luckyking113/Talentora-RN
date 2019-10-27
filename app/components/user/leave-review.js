@@ -56,7 +56,7 @@ export default class LeaveReview extends Component{
             </TouchableOpacity>)
     });
 
-    componentWillMount(){
+    UNSAFE_componentWillMount(){
         _SELF = this;
     }
 

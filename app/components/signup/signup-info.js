@@ -313,7 +313,7 @@ class SignUpInfo extends Component {
   };
 
   // start keyboard handle
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     // console.log(Keyboard);
     this.keyboardDidShowListener = Keyboard.addListener(
       'keyboardDidShow',

@@ -29,7 +29,7 @@ class Detail extends Component {
         });
 
     // If no detail items loaded, load now
-    componentWillMount() {
+    UNSAFE_UNSAFE_componentWillMount() {
 
         const { detail, navigation } = this.props;
         const { index } = navigation.state.params.item;

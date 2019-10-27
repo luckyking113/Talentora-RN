@@ -120,7 +120,7 @@ class Review extends Component {
             )
     });
 
-    componentWillMount(){
+    UNSAFE_componentWillMount(){
         let _SELF = this;        
         DeviceEventEmitter.addListener('reloadReview', (_data) => {
             console.log('_data :', _data)

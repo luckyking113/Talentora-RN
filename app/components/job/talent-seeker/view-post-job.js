@@ -250,7 +250,7 @@ class ViewJobList extends Component {
 
     // Fetch detail items
     // Example only options defined
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         console.log('Image Cache: ', ImageCache.get());
         // ImageCache.get().clear();
 

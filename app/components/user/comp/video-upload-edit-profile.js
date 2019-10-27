@@ -836,7 +836,7 @@ export default class VideoUploadEditProfile extends Component {
         return _videoData ? true : false;
     }
 
-    componentWillMount(){
+    UNSAFE_componentWillMount(){
 
         if(UserHelper._getUserInfo()){
             this._getVideo();

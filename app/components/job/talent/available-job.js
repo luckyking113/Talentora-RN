@@ -149,7 +149,7 @@ class AvailableJob extends Component {
             ),
     });
 
-    componentWillMount(){
+    UNSAFE_componentWillMount(){
         let _SELF = this;
         DeviceEventEmitter.addListener('refreshJopListList', (data) => {
             _SELF._getVailableJob('', true);

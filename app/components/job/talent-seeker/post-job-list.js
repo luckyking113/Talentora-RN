@@ -101,7 +101,7 @@ class PostJobList extends Component {
             ),
     })};
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         let that = this;
         DeviceEventEmitter.addListener('reloadJobList', (data) => {
             that._getAllPostedJob();

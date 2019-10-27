@@ -32,7 +32,7 @@ export default class Message extends Component {
             headerTitle: 'Talentora',
         });
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
  
   }
 
