@@ -37,7 +37,7 @@ import _ from 'lodash'
 
 import { UserHelper, StorageData, Helper } from '@helper/helper';
 
-const dismissKeyboard = require('dismissKeyboard');
+const dismissKeyboard = require('react-native-dismiss-keyboard');
 const {width, height} = Dimensions.get('window')
 
 

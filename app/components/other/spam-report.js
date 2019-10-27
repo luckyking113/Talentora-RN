@@ -10,7 +10,7 @@ import Utilities from '@styles/extends/ultilities.style';
 import IconAwesome from 'react-native-vector-icons/FontAwesome';
 import _ from 'lodash';
 
-const dismissKeyboard = require('dismissKeyboard');
+const dismissKeyboard = require('react-native-dismiss-keyboard');
 
 export default class SpamReport extends Component{
 

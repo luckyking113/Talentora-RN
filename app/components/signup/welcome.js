@@ -22,7 +22,7 @@ import { UserHelper, StorageData, Helper, GoogleAnalyticsHelper } from '@helper/
 var func = require('@helper/validate');
 const Item = Picker.Item;
 
-const dismissKeyboard = require('dismissKeyboard');
+const dismissKeyboard = require('react-native-dismiss-keyboard');
 let originalGender=_.cloneDeep(genders);
 function mapStateToProps(state) {
     // console.log(state)

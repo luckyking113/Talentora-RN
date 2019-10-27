@@ -18,37 +18,37 @@ import OneSignal from 'react-native-onesignal';
 
 import { UserHelper, StorageData, GoogleAnalyticsHelper } from '@helper/helper';
 
-import _ from 'lodash'
+import _ from 'lodash';
 import { Colors } from '@themes/index';
 
-import Styles from '@styles/card.style'
+import Styles from '@styles/card.style';
 import Utilities from '@styles/extends/ultilities.style';
 
 import BoxWrap from '@styles/components/box-wrap.style';
 import Tabs from '@styles/tab.style';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { headerStyle, titleStyle } from '@styles/header.style'
-import ButtonRight from '@components/header/button-right'
-import ButtonLeft from '@components/header/button-left'
+import { titleStyle } from '@styles/header.style';
+import ButtonRight from '@components/header/button-right';
+import ButtonLeft from '@components/header/button-left';
 
 // import AvailableJob from '@components/job/talent/available-job'
 // import AppliedJob from '@components/job/talent/applied-job'
 // import Videos from '@components/discovery/video'
 // import People from '@components/discovery/people'
 
-import AllPeople from '@components/message/comp/all-people'
+import AllPeople from '@components/message/comp/all-people';
 
 // var ScrollableTabView = require('react-native-scrollable-tab-view'); 
 
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 import CustomizeTabBar from '@components/ui/scroll-tab-view-custom-tab/customize-tab-item';
-import { transparentHeaderStyle, defaultHeaderStyle, defaultHeaderWithShadowStyle } from '@styles/components/transparentHeader.style';
+import defaultHeaderWithShadowStyle from '@styles/components/transparentHeader.style';
 
-import Tab from '@components/tabs/tab'
+import Tab from '@components/tabs/tab';
 import ModalCustomHeader from '@components/header/modal-custom-header';
 
-const dismissKeyboard = require('dismissKeyboard');
+const dismissKeyboard = require('react-native-dismiss-keyboard');
 
 let _SELF = null;
 

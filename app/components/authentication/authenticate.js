@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import {
     View,
     Text,
@@ -11,10 +11,10 @@ import {
     Alert,
     Keyboard,
     Platform
-} from 'react-native'
+} from 'react-native';
 
-import { connect } from 'react-redux'
-import * as AuthActions from '@actions/authentication'
+import { connect } from 'react-redux';
+import * as AuthActions from '@actions/authentication';
 
 import { UserHelper, StorageData, Helper } from '@helper/helper';
 
@@ -24,8 +24,7 @@ import LogInForm from '../login/login-form';
 
 import _ from 'lodash'
 
-
-const dismissKeyboard = require('dismissKeyboard')
+const dismissKeyboard = require('react-native-dismiss-keyboard')
 
 const transparentHeaderStyle = Helper._isIOS() ? {
     

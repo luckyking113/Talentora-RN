@@ -24,7 +24,7 @@ import { postApi, putApi } from '@api/request';
 
 import _ from 'lodash'
 
-const dismissKeyboard = require('dismissKeyboard');
+const dismissKeyboard = require('react-native-dismiss-keyboard');
 
 function mapStateToProps(state) {
     // console.log(state)

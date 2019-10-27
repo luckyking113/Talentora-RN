@@ -19,7 +19,7 @@ import _ from 'lodash'
 var func = require('@helper/validate');
 const Item = Picker.Item;
 
-const dismissKeyboard = require('dismissKeyboard');
+const dismissKeyboard = require('react-native-dismiss-keyboard');
 
 function mapStateToProps(state) {
     // console.log(state)

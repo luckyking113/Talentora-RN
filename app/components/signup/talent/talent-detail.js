@@ -24,7 +24,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 var func = require('@helper/validate');
 
-const dismissKeyboard = require('dismissKeyboard');
+const dismissKeyboard = require('react-native-dismiss-keyboard');
 
 function mapStateToProps(state) {
     // console.log(state)

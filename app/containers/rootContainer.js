@@ -1,11 +1,11 @@
-import React, { Component} from 'react'
-import { connect } from 'react-redux'
-import * as AuthActions from '@actions/authentication'
-import RootNavigator from '@navigators/root'
-import RootAuthNavigator from '@navigators/auth-root'
+import React, { Component} from 'react';
+import { connect } from 'react-redux';
+import * as AuthActions from '@actions/authentication';
+import RootNavigator from '@navigators/root';
+import RootAuthNavigator from '@navigators/auth-root';
 import {Alert, DeviceEventEmitter, Linking } from 'react-native';
-import LoadingScreen from '@components/other/loading-screen'; 
-import OneSignal from 'react-native-onesignal'; 
+import LoadingScreen from '@components/other/loading-screen';
+import OneSignal from 'react-native-onesignal';
 import { UserHelper, StorageData, NotificationHelper, ChatHelper, Helper, GoogleAnalyticsHelper } from '@helper/helper';
 import { getApi } from '@api/request';
 import {notification_data} from '@api/response';

@@ -55,7 +55,7 @@ import {ProgressBar, ProgressCircle} from 'react-native-progress';
 import MessageDataMockUpLoading from '@components/other/message-data-mock-up-loading'  
 import RecommendDataMockUpLoading from '@components/other/recommend-data-mock-up-loading'  
 
-const dismissKeyboard = require('dismissKeyboard');
+const dismissKeyboard = require('react-native-dismiss-keyboard');
 
 function mapStateToProps(state) {
     return {

@@ -22,7 +22,7 @@ import { postApi } from '@api/request';
 import { UserHelper, StorageData, GoogleAnalyticsHelper } from '@helper/helper';
 
 
-const dismissKeyboard = require('dismissKeyboard');
+const dismissKeyboard = require('react-native-dismiss-keyboard');
 
 function mapStateToProps(state) {
     // console.log(state)

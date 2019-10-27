@@ -1,25 +1,21 @@
-import {   
-    NavigationActions,
-    createStackNavigator
-} from 'react-navigation';
+import {NavigationActions, createStackNavigator} from 'react-navigation';
+// talent seeker (employer)
+import _Notification from '@components/notification/notification';
+import JobDetail from '@components/job/talent-seeker/job-detail';
+import ViewPostJob from '@components/job/talent-seeker/view-post-job';
+import ProfileUser from '@components/user/profile';
+import MessageDetail from '@components/message/message';
+import CreatePostJob from '@components/job/talent-seeker/create-post-job';
 
-// talent seeker (employer)   
-import _Notification from '@components/notification/notification'
-import JobDetail from '@components/job/talent-seeker/job-detail'
-import ViewPostJob from '@components/job/talent-seeker/view-post-job'  
-import ProfileUser from '@components/user/profile'
-import MessageDetail from '@components/message/message'
-import CreatePostJob from '@components/job/talent-seeker/create-post-job'
-
-import { headerStyle, titleStyle } from '@styles/header.style'
-import { transparentHeaderStyle, defaultHeaderStyle, defaultHeaderWithShadowStyle } from '@styles/components/transparentHeader.style';
+import {headerStyle, titleStyle} from '@styles/header.style';
+import {transparentHeaderStyle, defaultHeaderStyle, defaultHeaderWithShadowStyle} from '@styles/components/transparentHeader.style';
 
 // console.log('sowowo : ', props);
 const TabBarComponent = (props) => {
-    console.log('TabBarComponent Props: ', props);
-}
+  console.log('TabBarComponent Props: ', props);
+};
 const options = {
-    initialRouteName: 'Notification',
+  initialRouteName: 'Notification',
     navigationOptions:{
         headerStyle: defaultHeaderWithShadowStyle,  
         headerTitleStyle: titleStyle,
@@ -27,7 +23,6 @@ const options = {
 }
 
 const notificationStack = createStackNavigator({
-
     Notification:   { screen: _Notification },
     JobDetail: { screen: JobDetail},
     ViewPostJob:   {  screen: ViewPostJob },

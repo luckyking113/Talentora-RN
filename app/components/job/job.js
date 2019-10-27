@@ -47,7 +47,7 @@ import { tsThisType } from '@babel/types'
 
 // import ImagePicker from 'react-native-image-crop-picker';
 
-const dismissKeyboard = require('dismissKeyboard');
+const dismissKeyboard = require('react-native-dismiss-keyboard');
 // import { GoogleAnalyticsTracker } from 'react-native-google-analytics-bridge'
 
 // const tracker = new GoogleAnalyticsTracker('UA-105076489-1')

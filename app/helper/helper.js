@@ -18,11 +18,11 @@ import moment from 'moment'
 const {width, height} = Dimensions.get('window');
 
 // You have access to three classes in this module:
-import {
-    GoogleAnalyticsTracker,
-    GoogleTagManager,
-    GoogleAnalyticsSettings
-  } from 'react-native-google-analytics-bridge';
+// import {
+//     GoogleAnalyticsTracker,
+//     GoogleTagManager,
+//     GoogleAnalyticsSettings
+//   } from 'react-native-google-analytics-bridge';
 
 const EMPLOYER_TYPE = 'employer';
 const USER_TYPE = 'user';
@@ -822,36 +822,36 @@ class NotificationCls{
 class GoogleAnalyticsCls{
 
     constructor(){
-        this.tracker =  new GoogleAnalyticsTracker(GoogleAnalyticsID, {});
+        // this.tracker =  new GoogleAnalyticsTracker(GoogleAnalyticsID, {});
 
         //Events, screen views, etc, are sent in batches to your tracker. 
         // This function allows you to configure how often (in seconds) the batches are sent to your tracker. 
         // Recommended to keep this around 20-120 seconds to preserve battery and network traffic. 
         // This is set to 20 seconds by default.
-        GoogleAnalyticsSettings.setDispatchInterval(30);
+        // GoogleAnalyticsSettings.setDispatchInterval(30);
 
         // console.log(' TRackker : ', this.tracker);
     }
 
     _trackScreenView = (_screenName) => {
         // let tracker1 =  new GoogleAnalyticsTracker(GoogleAnalyticsID);        
-        this.tracker.trackScreenView(_screenName);
+        // this.tracker.trackScreenView(_screenName);
     }
 
     _trackEvent = (_eventName, _eventVal, _data = {}) => {
-        this.tracker.trackEvent(_eventName,_eventVal,_data);        
+        // this.tracker.trackEvent(_eventName,_eventVal,_data);        
     }
 
     _trackSocialInteraction = (_socialName, _action) => {
-        this.tracker.trackSocialInteraction(_socialName,_action);        
+        // this.tracker.trackSocialInteraction(_socialName,_action);        
     }
 
     _setUser = (_userID) => {
-        this.tracker.setUser(_userID);        
+        // this.tracker.setUser(_userID);        
     }
 
     _trackException = (type, isFatal=false) => {
-        this.tracker.trackException(type, isFatal);   
+        // this.tracker.trackException(type, isFatal);   
     }
 
 }
