@@ -1,4 +1,4 @@
-package com.talentoranewversion;
+package co.talentora.app;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;

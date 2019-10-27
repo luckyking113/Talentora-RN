@@ -43,6 +43,9 @@
 		9C1B691023645C4B0019C06D /* RNVideoTrimmerBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1B690123645C4B0019C06D /* RNVideoTrimmerBridge.m */; };
 		9C1B691123645C4B0019C06D /* SDAVAssetExportSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1B690323645C4B0019C06D /* SDAVAssetExportSession.m */; };
 		9C1B691223645C4B0019C06D /* VideoProcessingGPUFilters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C1B690423645C4B0019C06D /* VideoProcessingGPUFilters.swift */; };
+		9CA41B9D2365E86B006B360B /* libFBSDKCoreKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CA41B9C2365E86B006B360B /* libFBSDKCoreKit.a */; };
+		9CA41B9F2365E86B006B360B /* libFBSDKLoginKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CA41B9E2365E86B006B360B /* libFBSDKLoginKit.a */; };
+		9CA41BA12365E86B006B360B /* libFBSDKShareKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CA41BA02365E86B006B360B /* libFBSDKShareKit.a */; };
 		9CF626982364A8C500A2D3B0 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CF626972364A8C500A2D3B0 /* CoreData.framework */; };
 		9CF6269A2364A8CD00A2D3B0 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CF626992364A8CD00A2D3B0 /* SystemConfiguration.framework */; };
 		9CF6269C2364A8D600A2D3B0 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CF6269B2364A8D600A2D3B0 /* libz.tbd */; };
@@ -97,7 +100,7 @@
 		03465F4351774703A36ED2A5 /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
 		093BE2B8B99947C9A99DF4BB /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
 		1127341669AD44F79DCD9DC4 /* Fontisto.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Fontisto.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Fontisto.ttf"; sourceTree = "<group>"; };
-		13B07F961A680F5B00A75B9A /* TalentoraNewVersion.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TalentoraNewVersion.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07F961A680F5B00A75B9A /* Talentora.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Talentora.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = TalentoraNewVersion/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = TalentoraNewVersion/AppDelegate.m; sourceTree = "<group>"; };
 		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -154,6 +157,12 @@
 		9C1B690223645C4B0019C06D /* SDAVAssetExportSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDAVAssetExportSession.h; sourceTree = "<group>"; };
 		9C1B690323645C4B0019C06D /* SDAVAssetExportSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDAVAssetExportSession.m; sourceTree = "<group>"; };
 		9C1B690423645C4B0019C06D /* VideoProcessingGPUFilters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoProcessingGPUFilters.swift; sourceTree = "<group>"; };
+		9CA41B912365E841006B360B /* libFBSDKCoreKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFBSDKCoreKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		9CA41B922365E841006B360B /* libFBSDKLoginKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFBSDKLoginKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		9CA41B932365E841006B360B /* libFBSDKShareKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFBSDKShareKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		9CA41B9C2365E86B006B360B /* libFBSDKCoreKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFBSDKCoreKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		9CA41B9E2365E86B006B360B /* libFBSDKLoginKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFBSDKLoginKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		9CA41BA02365E86B006B360B /* libFBSDKShareKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFBSDKShareKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CF626972364A8C500A2D3B0 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		9CF626992364A8CD00A2D3B0 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		9CF6269B2364A8D600A2D3B0 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
@@ -180,6 +189,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9CA41B9D2365E86B006B360B /* libFBSDKCoreKit.a in Frameworks */,
+				9CA41B9F2365E86B006B360B /* libFBSDKLoginKit.a in Frameworks */,
+				9CA41BA12365E86B006B360B /* libFBSDKShareKit.a in Frameworks */,
 				9CF626BA2364AE5700A2D3B0 /* MessageUI.framework in Frameworks */,
 				9CF626B82364AE4F00A2D3B0 /* Social.framework in Frameworks */,
 				9CF6269E2364A8DE00A2D3B0 /* libsqlite3.0.tbd in Frameworks */,
@@ -235,6 +247,12 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9CA41B9C2365E86B006B360B /* libFBSDKCoreKit.a */,
+				9CA41B9E2365E86B006B360B /* libFBSDKLoginKit.a */,
+				9CA41BA02365E86B006B360B /* libFBSDKShareKit.a */,
+				9CA41B912365E841006B360B /* libFBSDKCoreKit.a */,
+				9CA41B922365E841006B360B /* libFBSDKLoginKit.a */,
+				9CA41B932365E841006B360B /* libFBSDKShareKit.a */,
 				9CF626C12364ED2D00A2D3B0 /* libreact-native-google-analytics-bridge.a */,
 				9CF626B92364AE5700A2D3B0 /* MessageUI.framework */,
 				9CF626B72364AE4F00A2D3B0 /* Social.framework */,
@@ -305,7 +323,7 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13B07F961A680F5B00A75B9A /* TalentoraNewVersion.app */,
+				13B07F961A680F5B00A75B9A /* Talentora.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -428,7 +446,7 @@
 			);
 			name = TalentoraNewVersion;
 			productName = TalentoraNewVersion;
-			productReference = 13B07F961A680F5B00A75B9A /* TalentoraNewVersion.app */;
+			productReference = 13B07F961A680F5B00A75B9A /* Talentora.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -727,13 +745,14 @@
 					"$(inherited)",
 					"$(SDKROOT)/usr/lib/swift",
 				);
+				MARKETING_VERSION = 2.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = TalentoraNewVersion;
+				PRODUCT_BUNDLE_IDENTIFIER = co.talentora.janus;
+				PRODUCT_NAME = Talentora;
 				SWIFT_OBJC_BRIDGING_HEADER = "TalentoraNewVersion-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -781,13 +800,14 @@
 					"$(inherited)",
 					"$(SDKROOT)/usr/lib/swift",
 				);
+				MARKETING_VERSION = 2.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = TalentoraNewVersion;
+				PRODUCT_BUNDLE_IDENTIFIER = co.talentora.janus;
+				PRODUCT_NAME = Talentora;
 				SWIFT_OBJC_BRIDGING_HEADER = "TalentoraNewVersion-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";

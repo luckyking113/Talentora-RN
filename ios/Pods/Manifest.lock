@@ -205,6 +205,20 @@ PODS:
     - React
   - react-native-camera/RN (3.8.0):
     - React
+  - react-native-fbsdk (1.0.4):
+    - React
+    - react-native-fbsdk/Core (= 1.0.4)
+    - react-native-fbsdk/Login (= 1.0.4)
+    - react-native-fbsdk/Share (= 1.0.4)
+  - react-native-fbsdk/Core (1.0.4):
+    - FBSDKCoreKit (~> 5.5)
+    - React
+  - react-native-fbsdk/Login (1.0.4):
+    - FBSDKLoginKit (~> 5.5)
+    - React
+  - react-native-fbsdk/Share (1.0.4):
+    - FBSDKShareKit (~> 5.5)
+    - React
   - react-native-image-picker (1.1.0):
     - React
   - react-native-viewpager (2.0.1):
@@ -246,7 +260,7 @@ PODS:
     - ReactCommon/jscallinvoker (= 0.61.2)
   - rn-fetch-blob (0.11.2):
     - React-Core
-  - RNDeviceInfo (5.1.0):
+  - RNDeviceInfo (0.9.3):
     - React
   - RNFS (2.16.1):
     - React
@@ -285,6 +299,7 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - react-native-camera (from `../node_modules/react-native-camera`)
+  - react-native-fbsdk (from `../node_modules/react-native-fbsdk`)
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - "react-native-viewpager (from `../node_modules/@react-native-community/viewpager`)"
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
@@ -347,6 +362,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
   react-native-camera:
     :path: "../node_modules/react-native-camera"
+  react-native-fbsdk:
+    :path: "../node_modules/react-native-fbsdk"
   react-native-image-picker:
     :path: "../node_modules/react-native-image-picker"
   react-native-viewpager:
@@ -408,9 +425,10 @@ SPEC CHECKSUMS:
   React-jsi: 32285a21b1b24c36060493ed3057a34677d58d09
   React-jsiexecutor: 8909917ff7d8f21a57e443a866fd8d4560e50c65
   React-jsinspector: 111d7d342b07a904c400592e02a2b958f1098b60
-  react-native-camera: 3e52a28e4f437b566302e574bed0f77eeab3f737
-  react-native-image-picker: 3637d63fef7e32a230141ab4660d3ceb773c824f
-  react-native-viewpager: 619fc2602b1d6ab81804519564afdbaad6b6915a
+  react-native-camera: 21cf4ed26cf432ceb1fae959aa6924943fd6f714
+  react-native-fbsdk: 45e28bbab3e905cbc635c0bdd3444b372e933ae9
+  react-native-image-picker: 7a85cf7b0a53845f03ae52fb4592a2748ded069b
+  react-native-viewpager: f41b42bba71407e916654d64e87ff2680edecc92
   React-RCTActionSheet: 89b037c0fb7d2671607cb645760164e7e0c013f6
   React-RCTAnimation: e3cefa93c38c004c318f7ec04b883eb14b8b8235
   React-RCTBlob: d26ac0e313fbf14e7203473fd593ccaaeee8329e
@@ -422,7 +440,7 @@ SPEC CHECKSUMS:
   React-RCTVibration: fb54c732fd20405a76598e431aa2f8c2bf527de9
   ReactCommon: 5848032ed2f274fcb40f6b9ec24067787c42d479
   rn-fetch-blob: f525a73a78df9ed5d35e67ea65e79d53c15255bc
-  RNDeviceInfo: e84ae7f0fa03de9f80afc6d8c0f4094659284391
+  RNDeviceInfo: dc3cbee96cd2392cf03d6ff6191dc15f1606a166
   RNFS: 795866388a01de4e470f3b1041a99cf20a343844
   RNGestureHandler: 4cb47a93019c1a201df2644413a0a1569a51c8aa
   RNImageCropPicker: e1d8c3381e5b05a1bdcd13ea57a4f1c020a09cef
@@ -431,6 +449,6 @@ SPEC CHECKSUMS:
   RSKImageCropper: a446db0e8444a036b34f3c43db01b2373baa4b2a
   Yoga: 14927e37bd25376d216b150ab2a561773d57911f
 
-PODFILE CHECKSUM: 8654bde9463eae9cec71f5040a7eaea2ebdccb53
+PODFILE CHECKSUM: 9ddad149447eb4de7298f73e8b18fc097aaa072d
 
 COCOAPODS: 1.8.3
