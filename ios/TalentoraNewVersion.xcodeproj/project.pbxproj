@@ -27,22 +27,22 @@
 		9C1B68DE236458C70019C06D /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C1B68DD236458C70019C06D /* OpenGLES.framework */; };
 		9C1B68E0236458CF0019C06D /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C1B68DF236458CF0019C06D /* AVFoundation.framework */; };
 		9C1B68E2236458E10019C06D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C1B68E1236458E10019C06D /* QuartzCore.framework */; };
-		9C1B68E3236458F00019C06D /* GPUImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C1B68D6236457DE0019C06D /* GPUImage.framework */; };
 		9C1B68E5236458F80019C06D /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C1B68E4236458F80019C06D /* MobileCoreServices.framework */; };
-		9C1B690523645C4B0019C06D /* ICGRulerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1B68ED23645C4B0019C06D /* ICGRulerView.m */; };
-		9C1B690623645C4B0019C06D /* ICGThumbView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1B68EF23645C4B0019C06D /* ICGThumbView.m */; };
-		9C1B690723645C4B0019C06D /* ICGVideoTrimmerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1B68F223645C4B0019C06D /* ICGVideoTrimmerView.m */; };
-		9C1B690823645C4B0019C06D /* RNTrimmerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C1B68F523645C4B0019C06D /* RNTrimmerView.swift */; };
-		9C1B690923645C4B0019C06D /* RNTrimmerViewBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1B68F623645C4B0019C06D /* RNTrimmerViewBridge.m */; };
-		9C1B690A23645C4B0019C06D /* RNTrimmerViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C1B68F723645C4B0019C06D /* RNTrimmerViewManager.swift */; };
-		9C1B690B23645C4B0019C06D /* RNVideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C1B68F823645C4B0019C06D /* RNVideoPlayer.swift */; };
-		9C1B690C23645C4B0019C06D /* RNVideoProcessingBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1B68FB23645C4B0019C06D /* RNVideoProcessingBridge.m */; };
-		9C1B690D23645C4B0019C06D /* RNVideoProcessingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C1B68FC23645C4B0019C06D /* RNVideoProcessingManager.swift */; };
-		9C1B690E23645C4B0019C06D /* AVUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C1B68FE23645C4B0019C06D /* AVUtilities.swift */; };
-		9C1B690F23645C4B0019C06D /* RNVideoTrimmer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C1B690023645C4B0019C06D /* RNVideoTrimmer.swift */; };
-		9C1B691023645C4B0019C06D /* RNVideoTrimmerBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1B690123645C4B0019C06D /* RNVideoTrimmerBridge.m */; };
-		9C1B691123645C4B0019C06D /* SDAVAssetExportSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1B690323645C4B0019C06D /* SDAVAssetExportSession.m */; };
-		9C1B691223645C4B0019C06D /* VideoProcessingGPUFilters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C1B690423645C4B0019C06D /* VideoProcessingGPUFilters.swift */; };
+		9C351DDB2366F66800D6A2D6 /* ICGRulerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C351DD62366F66800D6A2D6 /* ICGRulerView.m */; };
+		9C351DDC2366F66800D6A2D6 /* ICGVideoTrimmerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C351DD72366F66800D6A2D6 /* ICGVideoTrimmerView.m */; };
+		9C351DDD2366F66800D6A2D6 /* ICGThumbView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C351DD92366F66800D6A2D6 /* ICGThumbView.m */; };
+		9C351DE32366F67E00D6A2D6 /* RNTrimmerViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C351DE02366F67E00D6A2D6 /* RNTrimmerViewManager.swift */; };
+		9C351DE42366F67E00D6A2D6 /* RNTrimmerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C351DE12366F67E00D6A2D6 /* RNTrimmerView.swift */; };
+		9C351DE52366F67E00D6A2D6 /* RNTrimmerViewBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C351DE22366F67E00D6A2D6 /* RNTrimmerViewBridge.m */; };
+		9C351DEC2366F68B00D6A2D6 /* SDAVAssetExportSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C351DE62366F68A00D6A2D6 /* SDAVAssetExportSession.m */; };
+		9C351DED2366F68B00D6A2D6 /* AVUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C351DE72366F68A00D6A2D6 /* AVUtilities.swift */; };
+		9C351DEE2366F68B00D6A2D6 /* RNVideoTrimmer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C351DEA2366F68A00D6A2D6 /* RNVideoTrimmer.swift */; };
+		9C351DEF2366F68B00D6A2D6 /* RNVideoTrimmerBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C351DEB2366F68B00D6A2D6 /* RNVideoTrimmerBridge.m */; };
+		9C351E012366F98A00D6A2D6 /* RNVideoProcessingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C351DFB2366F98A00D6A2D6 /* RNVideoProcessingManager.swift */; };
+		9C351E022366F98A00D6A2D6 /* VideoProcessingGPUFilters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C351DFC2366F98A00D6A2D6 /* VideoProcessingGPUFilters.swift */; };
+		9C351E032366F98A00D6A2D6 /* RNVideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C351DFD2366F98A00D6A2D6 /* RNVideoPlayer.swift */; };
+		9C351E042366F98A00D6A2D6 /* RNVideoProcessingBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C351E002366F98A00D6A2D6 /* RNVideoProcessingBridge.m */; };
+		9C351E132367017B00D6A2D6 /* GPUImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C1B68D6236457DE0019C06D /* GPUImage.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		9CA41B9D2365E86B006B360B /* libFBSDKCoreKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CA41B9C2365E86B006B360B /* libFBSDKCoreKit.a */; };
 		9CA41B9F2365E86B006B360B /* libFBSDKLoginKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CA41B9E2365E86B006B360B /* libFBSDKLoginKit.a */; };
 		9CA41BA12365E86B006B360B /* libFBSDKShareKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CA41BA02365E86B006B360B /* libFBSDKShareKit.a */; };
@@ -133,30 +133,31 @@
 		9C1B68E1236458E10019C06D /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		9C1B68E4236458F80019C06D /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		9C1B68E623645BEA0019C06D /* TalentoraNewVersion-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TalentoraNewVersion-Bridging-Header.h"; sourceTree = "<group>"; };
-		9C1B68EC23645C4B0019C06D /* ICGRulerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICGRulerView.h; sourceTree = "<group>"; };
-		9C1B68ED23645C4B0019C06D /* ICGRulerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICGRulerView.m; sourceTree = "<group>"; };
-		9C1B68EE23645C4B0019C06D /* ICGThumbView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICGThumbView.h; sourceTree = "<group>"; };
-		9C1B68EF23645C4B0019C06D /* ICGThumbView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICGThumbView.m; sourceTree = "<group>"; };
-		9C1B68F023645C4B0019C06D /* ICGVideoTrimmer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICGVideoTrimmer.h; sourceTree = "<group>"; };
-		9C1B68F123645C4B0019C06D /* ICGVideoTrimmerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ICGVideoTrimmerView.h; sourceTree = "<group>"; };
-		9C1B68F223645C4B0019C06D /* ICGVideoTrimmerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ICGVideoTrimmerView.m; sourceTree = "<group>"; };
-		9C1B68F323645C4B0019C06D /* RNTrimmerView-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RNTrimmerView-Bridging-Header.h"; sourceTree = "<group>"; };
-		9C1B68F423645C4B0019C06D /* RNTrimmerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNTrimmerView.h; sourceTree = "<group>"; };
-		9C1B68F523645C4B0019C06D /* RNTrimmerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RNTrimmerView.swift; sourceTree = "<group>"; };
-		9C1B68F623645C4B0019C06D /* RNTrimmerViewBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNTrimmerViewBridge.m; sourceTree = "<group>"; };
-		9C1B68F723645C4B0019C06D /* RNTrimmerViewManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RNTrimmerViewManager.swift; sourceTree = "<group>"; };
-		9C1B68F823645C4B0019C06D /* RNVideoPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RNVideoPlayer.swift; sourceTree = "<group>"; };
-		9C1B68F923645C4B0019C06D /* RNVideoProcessing-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RNVideoProcessing-Bridging-Header.h"; sourceTree = "<group>"; };
-		9C1B68FA23645C4B0019C06D /* RNVideoProcessing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNVideoProcessing.h; sourceTree = "<group>"; };
-		9C1B68FB23645C4B0019C06D /* RNVideoProcessingBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNVideoProcessingBridge.m; sourceTree = "<group>"; };
-		9C1B68FC23645C4B0019C06D /* RNVideoProcessingManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RNVideoProcessingManager.swift; sourceTree = "<group>"; };
-		9C1B68FE23645C4B0019C06D /* AVUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVUtilities.swift; sourceTree = "<group>"; };
-		9C1B68FF23645C4B0019C06D /* RNVideoTrimmer-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RNVideoTrimmer-Bridging-Header.h"; sourceTree = "<group>"; };
-		9C1B690023645C4B0019C06D /* RNVideoTrimmer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RNVideoTrimmer.swift; sourceTree = "<group>"; };
-		9C1B690123645C4B0019C06D /* RNVideoTrimmerBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNVideoTrimmerBridge.m; sourceTree = "<group>"; };
-		9C1B690223645C4B0019C06D /* SDAVAssetExportSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDAVAssetExportSession.h; sourceTree = "<group>"; };
-		9C1B690323645C4B0019C06D /* SDAVAssetExportSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDAVAssetExportSession.m; sourceTree = "<group>"; };
-		9C1B690423645C4B0019C06D /* VideoProcessingGPUFilters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoProcessingGPUFilters.swift; sourceTree = "<group>"; };
+		9C351DD42366F66800D6A2D6 /* ICGVideoTrimmer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ICGVideoTrimmer.h; path = "../../../../node_modules/react-native-video-processing/ios/RNVideoProcessing/RNTrimmerView/ICGVideoTrimmer/ICGVideoTrimmer.h"; sourceTree = "<group>"; };
+		9C351DD52366F66800D6A2D6 /* ICGRulerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ICGRulerView.h; path = "../../../../node_modules/react-native-video-processing/ios/RNVideoProcessing/RNTrimmerView/ICGVideoTrimmer/ICGRulerView.h"; sourceTree = "<group>"; };
+		9C351DD62366F66800D6A2D6 /* ICGRulerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ICGRulerView.m; path = "../../../../node_modules/react-native-video-processing/ios/RNVideoProcessing/RNTrimmerView/ICGVideoTrimmer/ICGRulerView.m"; sourceTree = "<group>"; };
+		9C351DD72366F66800D6A2D6 /* ICGVideoTrimmerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ICGVideoTrimmerView.m; path = "../../../../node_modules/react-native-video-processing/ios/RNVideoProcessing/RNTrimmerView/ICGVideoTrimmer/ICGVideoTrimmerView.m"; sourceTree = "<group>"; };
+		9C351DD82366F66800D6A2D6 /* ICGVideoTrimmerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ICGVideoTrimmerView.h; path = "../../../../node_modules/react-native-video-processing/ios/RNVideoProcessing/RNTrimmerView/ICGVideoTrimmer/ICGVideoTrimmerView.h"; sourceTree = "<group>"; };
+		9C351DD92366F66800D6A2D6 /* ICGThumbView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ICGThumbView.m; path = "../../../../node_modules/react-native-video-processing/ios/RNVideoProcessing/RNTrimmerView/ICGVideoTrimmer/ICGThumbView.m"; sourceTree = "<group>"; };
+		9C351DDA2366F66800D6A2D6 /* ICGThumbView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ICGThumbView.h; path = "../../../../node_modules/react-native-video-processing/ios/RNVideoProcessing/RNTrimmerView/ICGVideoTrimmer/ICGThumbView.h"; sourceTree = "<group>"; };
+		9C351DDE2366F67E00D6A2D6 /* RNTrimmerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNTrimmerView.h; path = "../../../node_modules/react-native-video-processing/ios/RNVideoProcessing/RNTrimmerView/RNTrimmerView.h"; sourceTree = "<group>"; };
+		9C351DDF2366F67E00D6A2D6 /* RNTrimmerView-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RNTrimmerView-Bridging-Header.h"; path = "../../../node_modules/react-native-video-processing/ios/RNVideoProcessing/RNTrimmerView/RNTrimmerView-Bridging-Header.h"; sourceTree = "<group>"; };
+		9C351DE02366F67E00D6A2D6 /* RNTrimmerViewManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RNTrimmerViewManager.swift; path = "../../../node_modules/react-native-video-processing/ios/RNVideoProcessing/RNTrimmerView/RNTrimmerViewManager.swift"; sourceTree = "<group>"; };
+		9C351DE12366F67E00D6A2D6 /* RNTrimmerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RNTrimmerView.swift; path = "../../../node_modules/react-native-video-processing/ios/RNVideoProcessing/RNTrimmerView/RNTrimmerView.swift"; sourceTree = "<group>"; };
+		9C351DE22366F67E00D6A2D6 /* RNTrimmerViewBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNTrimmerViewBridge.m; path = "../../../node_modules/react-native-video-processing/ios/RNVideoProcessing/RNTrimmerView/RNTrimmerViewBridge.m"; sourceTree = "<group>"; };
+		9C351DE62366F68A00D6A2D6 /* SDAVAssetExportSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SDAVAssetExportSession.m; path = "../../../node_modules/react-native-video-processing/ios/RNVideoProcessing/RNVideoTrimmer/SDAVAssetExportSession.m"; sourceTree = "<group>"; };
+		9C351DE72366F68A00D6A2D6 /* AVUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AVUtilities.swift; path = "../../../node_modules/react-native-video-processing/ios/RNVideoProcessing/RNVideoTrimmer/AVUtilities.swift"; sourceTree = "<group>"; };
+		9C351DE82366F68A00D6A2D6 /* SDAVAssetExportSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SDAVAssetExportSession.h; path = "../../../node_modules/react-native-video-processing/ios/RNVideoProcessing/RNVideoTrimmer/SDAVAssetExportSession.h"; sourceTree = "<group>"; };
+		9C351DE92366F68A00D6A2D6 /* RNVideoTrimmer-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RNVideoTrimmer-Bridging-Header.h"; path = "../../../node_modules/react-native-video-processing/ios/RNVideoProcessing/RNVideoTrimmer/RNVideoTrimmer-Bridging-Header.h"; sourceTree = "<group>"; };
+		9C351DEA2366F68A00D6A2D6 /* RNVideoTrimmer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RNVideoTrimmer.swift; path = "../../../node_modules/react-native-video-processing/ios/RNVideoProcessing/RNVideoTrimmer/RNVideoTrimmer.swift"; sourceTree = "<group>"; };
+		9C351DEB2366F68B00D6A2D6 /* RNVideoTrimmerBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNVideoTrimmerBridge.m; path = "../../../node_modules/react-native-video-processing/ios/RNVideoProcessing/RNVideoTrimmer/RNVideoTrimmerBridge.m"; sourceTree = "<group>"; };
+		9C351DFB2366F98A00D6A2D6 /* RNVideoProcessingManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RNVideoProcessingManager.swift; path = "../../../../../../../Users/love/Documents/TalentoraNewVersion/node_modules/react-native-video-processing/ios/RNVideoProcessing/RNVideoProcessingManager.swift"; sourceTree = "<group>"; };
+		9C351DFC2366F98A00D6A2D6 /* VideoProcessingGPUFilters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = VideoProcessingGPUFilters.swift; path = "../../../../../../../Users/love/Documents/TalentoraNewVersion/node_modules/react-native-video-processing/ios/RNVideoProcessing/VideoProcessingGPUFilters.swift"; sourceTree = "<group>"; };
+		9C351DFD2366F98A00D6A2D6 /* RNVideoPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RNVideoPlayer.swift; path = "../../../../../../../Users/love/Documents/TalentoraNewVersion/node_modules/react-native-video-processing/ios/RNVideoProcessing/RNVideoPlayer.swift"; sourceTree = "<group>"; };
+		9C351DFE2366F98A00D6A2D6 /* RNVideoProcessing-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RNVideoProcessing-Bridging-Header.h"; path = "../../../../../../../Users/love/Documents/TalentoraNewVersion/node_modules/react-native-video-processing/ios/RNVideoProcessing/RNVideoProcessing-Bridging-Header.h"; sourceTree = "<group>"; };
+		9C351DFF2366F98A00D6A2D6 /* RNVideoProcessing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNVideoProcessing.h; path = "../../../../../../../Users/love/Documents/TalentoraNewVersion/node_modules/react-native-video-processing/ios/RNVideoProcessing/RNVideoProcessing.h"; sourceTree = "<group>"; };
+		9C351E002366F98A00D6A2D6 /* RNVideoProcessingBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNVideoProcessingBridge.m; path = "../../../../../../../Users/love/Documents/TalentoraNewVersion/node_modules/react-native-video-processing/ios/RNVideoProcessing/RNVideoProcessingBridge.m"; sourceTree = "<group>"; };
+		9C351E072366FC1B00D6A2D6 /* RCTSwiftBridgeModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RCTSwiftBridgeModule.h; path = "../../node_modules/react-native-video-processing/ios/RNVideoProcessing/RCTSwiftBridgeModule.h"; sourceTree = "<group>"; };
 		9CA41B912365E841006B360B /* libFBSDKCoreKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFBSDKCoreKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CA41B922365E841006B360B /* libFBSDKLoginKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFBSDKLoginKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CA41B932365E841006B360B /* libFBSDKShareKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFBSDKShareKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -189,6 +190,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C1B68E5236458F80019C06D /* MobileCoreServices.framework in Frameworks */,
+				9C1B68E2236458E10019C06D /* QuartzCore.framework in Frameworks */,
+				9C1B68E0236458CF0019C06D /* AVFoundation.framework in Frameworks */,
+				9C1B68DE236458C70019C06D /* OpenGLES.framework in Frameworks */,
+				9C1B68DA236458AE0019C06D /* CoreVideo.framework in Frameworks */,
+				9C1B68DC236458B60019C06D /* CoreMedia.framework in Frameworks */,
 				9CA41B9D2365E86B006B360B /* libFBSDKCoreKit.a in Frameworks */,
 				9CA41B9F2365E86B006B360B /* libFBSDKLoginKit.a in Frameworks */,
 				9CA41BA12365E86B006B360B /* libFBSDKShareKit.a in Frameworks */,
@@ -196,15 +203,9 @@
 				9CF626B82364AE4F00A2D3B0 /* Social.framework in Frameworks */,
 				9CF6269E2364A8DE00A2D3B0 /* libsqlite3.0.tbd in Frameworks */,
 				9CF6269C2364A8D600A2D3B0 /* libz.tbd in Frameworks */,
+				9C351E132367017B00D6A2D6 /* GPUImage.framework in Frameworks */,
 				9CF6269A2364A8CD00A2D3B0 /* SystemConfiguration.framework in Frameworks */,
 				9CF626982364A8C500A2D3B0 /* CoreData.framework in Frameworks */,
-				9C1B68E5236458F80019C06D /* MobileCoreServices.framework in Frameworks */,
-				9C1B68E3236458F00019C06D /* GPUImage.framework in Frameworks */,
-				9C1B68E2236458E10019C06D /* QuartzCore.framework in Frameworks */,
-				9C1B68E0236458CF0019C06D /* AVFoundation.framework in Frameworks */,
-				9C1B68DE236458C70019C06D /* OpenGLES.framework in Frameworks */,
-				9C1B68DC236458B60019C06D /* CoreMedia.framework in Frameworks */,
-				9C1B68DA236458AE0019C06D /* CoreVideo.framework in Frameworks */,
 				77136F4753682D9ACA232EE9 /* libPods-TalentoraNewVersion.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -304,8 +305,8 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				9C351DC22366F43500D6A2D6 /* RNVideoProcessing */,
 				9CFF7A4A2365A50500C1B202 /* icomoon.ttf */,
-				9C1B68E923645C4B0019C06D /* RNVideoProcessing */,
 				9C1B68CD236457DD0019C06D /* GPUImage.xcodeproj */,
 				13B07FAE1A68108700A75B9A /* TalentoraNewVersion */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
@@ -346,60 +347,60 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		9C1B68E923645C4B0019C06D /* RNVideoProcessing */ = {
+		9C351DC22366F43500D6A2D6 /* RNVideoProcessing */ = {
 			isa = PBXGroup;
 			children = (
-				9C1B68EA23645C4B0019C06D /* RNTrimmerView */,
-				9C1B68F823645C4B0019C06D /* RNVideoPlayer.swift */,
-				9C1B68F923645C4B0019C06D /* RNVideoProcessing-Bridging-Header.h */,
-				9C1B68FA23645C4B0019C06D /* RNVideoProcessing.h */,
-				9C1B68FB23645C4B0019C06D /* RNVideoProcessingBridge.m */,
-				9C1B68FC23645C4B0019C06D /* RNVideoProcessingManager.swift */,
-				9C1B68FD23645C4B0019C06D /* RNVideoTrimmer */,
-				9C1B690423645C4B0019C06D /* VideoProcessingGPUFilters.swift */,
+				9C351E072366FC1B00D6A2D6 /* RCTSwiftBridgeModule.h */,
+				9C351DFD2366F98A00D6A2D6 /* RNVideoPlayer.swift */,
+				9C351DFE2366F98A00D6A2D6 /* RNVideoProcessing-Bridging-Header.h */,
+				9C351DFF2366F98A00D6A2D6 /* RNVideoProcessing.h */,
+				9C351E002366F98A00D6A2D6 /* RNVideoProcessingBridge.m */,
+				9C351DFB2366F98A00D6A2D6 /* RNVideoProcessingManager.swift */,
+				9C351DFC2366F98A00D6A2D6 /* VideoProcessingGPUFilters.swift */,
+				9C351DCE2366F5CA00D6A2D6 /* RNVideoTrimmer */,
+				9C351DC92366F58E00D6A2D6 /* RNTrimmerView */,
 			);
-			name = RNVideoProcessing;
-			path = "../node_modules/react-native-video-processing/ios/RNVideoProcessing";
+			path = RNVideoProcessing;
 			sourceTree = "<group>";
 		};
-		9C1B68EA23645C4B0019C06D /* RNTrimmerView */ = {
+		9C351DC92366F58E00D6A2D6 /* RNTrimmerView */ = {
 			isa = PBXGroup;
 			children = (
-				9C1B68EB23645C4B0019C06D /* ICGVideoTrimmer */,
-				9C1B68F323645C4B0019C06D /* RNTrimmerView-Bridging-Header.h */,
-				9C1B68F423645C4B0019C06D /* RNTrimmerView.h */,
-				9C1B68F523645C4B0019C06D /* RNTrimmerView.swift */,
-				9C1B68F623645C4B0019C06D /* RNTrimmerViewBridge.m */,
-				9C1B68F723645C4B0019C06D /* RNTrimmerViewManager.swift */,
+				9C351DDF2366F67E00D6A2D6 /* RNTrimmerView-Bridging-Header.h */,
+				9C351DDE2366F67E00D6A2D6 /* RNTrimmerView.h */,
+				9C351DE12366F67E00D6A2D6 /* RNTrimmerView.swift */,
+				9C351DE22366F67E00D6A2D6 /* RNTrimmerViewBridge.m */,
+				9C351DE02366F67E00D6A2D6 /* RNTrimmerViewManager.swift */,
+				9C351DD32366F61C00D6A2D6 /* ICGVideoTrimmer */,
 			);
 			path = RNTrimmerView;
 			sourceTree = "<group>";
 		};
-		9C1B68EB23645C4B0019C06D /* ICGVideoTrimmer */ = {
+		9C351DCE2366F5CA00D6A2D6 /* RNVideoTrimmer */ = {
 			isa = PBXGroup;
 			children = (
-				9C1B68EC23645C4B0019C06D /* ICGRulerView.h */,
-				9C1B68ED23645C4B0019C06D /* ICGRulerView.m */,
-				9C1B68EE23645C4B0019C06D /* ICGThumbView.h */,
-				9C1B68EF23645C4B0019C06D /* ICGThumbView.m */,
-				9C1B68F023645C4B0019C06D /* ICGVideoTrimmer.h */,
-				9C1B68F123645C4B0019C06D /* ICGVideoTrimmerView.h */,
-				9C1B68F223645C4B0019C06D /* ICGVideoTrimmerView.m */,
-			);
-			path = ICGVideoTrimmer;
-			sourceTree = "<group>";
-		};
-		9C1B68FD23645C4B0019C06D /* RNVideoTrimmer */ = {
-			isa = PBXGroup;
-			children = (
-				9C1B68FE23645C4B0019C06D /* AVUtilities.swift */,
-				9C1B68FF23645C4B0019C06D /* RNVideoTrimmer-Bridging-Header.h */,
-				9C1B690023645C4B0019C06D /* RNVideoTrimmer.swift */,
-				9C1B690123645C4B0019C06D /* RNVideoTrimmerBridge.m */,
-				9C1B690223645C4B0019C06D /* SDAVAssetExportSession.h */,
-				9C1B690323645C4B0019C06D /* SDAVAssetExportSession.m */,
+				9C351DE72366F68A00D6A2D6 /* AVUtilities.swift */,
+				9C351DE92366F68A00D6A2D6 /* RNVideoTrimmer-Bridging-Header.h */,
+				9C351DEA2366F68A00D6A2D6 /* RNVideoTrimmer.swift */,
+				9C351DEB2366F68B00D6A2D6 /* RNVideoTrimmerBridge.m */,
+				9C351DE82366F68A00D6A2D6 /* SDAVAssetExportSession.h */,
+				9C351DE62366F68A00D6A2D6 /* SDAVAssetExportSession.m */,
 			);
 			path = RNVideoTrimmer;
+			sourceTree = "<group>";
+		};
+		9C351DD32366F61C00D6A2D6 /* ICGVideoTrimmer */ = {
+			isa = PBXGroup;
+			children = (
+				9C351DD52366F66800D6A2D6 /* ICGRulerView.h */,
+				9C351DD62366F66800D6A2D6 /* ICGRulerView.m */,
+				9C351DDA2366F66800D6A2D6 /* ICGThumbView.h */,
+				9C351DD92366F66800D6A2D6 /* ICGThumbView.m */,
+				9C351DD42366F66800D6A2D6 /* ICGVideoTrimmer.h */,
+				9C351DD82366F66800D6A2D6 /* ICGVideoTrimmerView.h */,
+				9C351DD72366F66800D6A2D6 /* ICGVideoTrimmerView.m */,
+			);
+			path = ICGVideoTrimmer;
 			sourceTree = "<group>";
 		};
 		BB9EE6BEB7BD495DBD3B643A /* Resources */ = {
@@ -461,6 +462,7 @@
 					13B07F861A680F5B00A75B9A = {
 						DevelopmentTeam = K8V984KMCJ;
 						LastSwiftMigration = 1110;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -670,22 +672,22 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C351E012366F98A00D6A2D6 /* RNVideoProcessingManager.swift in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
-				9C1B690823645C4B0019C06D /* RNTrimmerView.swift in Sources */,
+				9C351DE52366F67E00D6A2D6 /* RNTrimmerViewBridge.m in Sources */,
+				9C351DEE2366F68B00D6A2D6 /* RNVideoTrimmer.swift in Sources */,
+				9C351DDC2366F66800D6A2D6 /* ICGVideoTrimmerView.m in Sources */,
+				9C351E042366F98A00D6A2D6 /* RNVideoProcessingBridge.m in Sources */,
+				9C351DDB2366F66800D6A2D6 /* ICGRulerView.m in Sources */,
+				9C351DEC2366F68B00D6A2D6 /* SDAVAssetExportSession.m in Sources */,
+				9C351E022366F98A00D6A2D6 /* VideoProcessingGPUFilters.swift in Sources */,
+				9C351DE42366F67E00D6A2D6 /* RNTrimmerView.swift in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
-				9C1B691223645C4B0019C06D /* VideoProcessingGPUFilters.swift in Sources */,
-				9C1B690C23645C4B0019C06D /* RNVideoProcessingBridge.m in Sources */,
-				9C1B690D23645C4B0019C06D /* RNVideoProcessingManager.swift in Sources */,
-				9C1B690B23645C4B0019C06D /* RNVideoPlayer.swift in Sources */,
-				9C1B690A23645C4B0019C06D /* RNTrimmerViewManager.swift in Sources */,
-				9C1B690E23645C4B0019C06D /* AVUtilities.swift in Sources */,
-				9C1B690523645C4B0019C06D /* ICGRulerView.m in Sources */,
-				9C1B690F23645C4B0019C06D /* RNVideoTrimmer.swift in Sources */,
-				9C1B691123645C4B0019C06D /* SDAVAssetExportSession.m in Sources */,
-				9C1B690723645C4B0019C06D /* ICGVideoTrimmerView.m in Sources */,
-				9C1B691023645C4B0019C06D /* RNVideoTrimmerBridge.m in Sources */,
-				9C1B690623645C4B0019C06D /* ICGThumbView.m in Sources */,
-				9C1B690923645C4B0019C06D /* RNTrimmerViewBridge.m in Sources */,
+				9C351DEF2366F68B00D6A2D6 /* RNVideoTrimmerBridge.m in Sources */,
+				9C351DE32366F67E00D6A2D6 /* RNTrimmerViewManager.swift in Sources */,
+				9C351E032366F98A00D6A2D6 /* RNVideoPlayer.swift in Sources */,
+				9C351DED2366F68B00D6A2D6 /* AVUtilities.swift in Sources */,
+				9C351DDD2366F66800D6A2D6 /* ICGThumbView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -710,9 +712,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = K8V984KMCJ;
+				ENABLE_BITCODE = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/Headers/Public\"",
@@ -745,7 +750,7 @@
 					"$(inherited)",
 					"$(SDKROOT)/usr/lib/swift",
 				);
-				MARKETING_VERSION = 2.1;
+				MARKETING_VERSION = 2.2;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -753,9 +758,11 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = co.talentora.janus;
 				PRODUCT_NAME = Talentora;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "TalentoraNewVersion-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -766,8 +773,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = K8V984KMCJ;
+				ENABLE_BITCODE = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"${PODS_ROOT}/Headers/Public\"",
@@ -800,7 +810,7 @@
 					"$(inherited)",
 					"$(SDKROOT)/usr/lib/swift",
 				);
-				MARKETING_VERSION = 2.1;
+				MARKETING_VERSION = 2.2;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -808,8 +818,10 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = co.talentora.janus;
 				PRODUCT_NAME = Talentora;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "TalentoraNewVersion-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;

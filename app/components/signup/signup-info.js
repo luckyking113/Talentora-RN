@@ -26,7 +26,10 @@ import Utilities from '@styles/extends/ultilities.style';
 import CountryPicker, {
   getAllCountries,
 } from 'react-native-country-picker-modal';
+
 import DeviceInfo from 'react-native-device-info';
+import * as RNLocalize from "react-native-localize";
+
 import ALL_COUNTRIES from '@store/data/cca2';
 import {postApi} from '@api/request';
 import {
@@ -51,7 +54,8 @@ function mapStateToProps(state) {
 class SignUpInfo extends Component {
   constructor(props) {
     super(props);
-    let userLocaleCountryCode = DeviceInfo.getDeviceCountry();
+    // let userLocaleCountryCode = DeviceInfo.getDeviceCountry();
+    let userLocaleCountryCode = RNLocalize.getLocales();
     const userCountryData = getAllCountries();
     let callingCode = null;
     let name = null;

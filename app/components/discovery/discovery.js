@@ -160,18 +160,18 @@ class DiscoveryRoot extends Component {
       <View style={[styles.justFlexContainer, styles.mainScreenBg]}>
         <ScrollableTabView
           style={[{marginTop: 0}]}
-          renderTabBar={() => (
-            <CustomizeTabBar
-              style={[{borderColor: Colors.componentBackgroundColor}]}
-            />
-          )}
+          // renderTabBar={() => (
+          //   <CustomizeTabBar
+          //     style={[{borderColor: Colors.componentBackgroundColor}]}
+          //   />
+          // )}
           // tabBarUnderlineStyle={[
           //   // eslint-disable-next-line react-native/no-inline-styles
           //   {backgroundColor: Colors.primaryColor, height: 2},
           // ]}
           tabBarUnderlineStyle={[
             // eslint-disable-next-line react-native/no-inline-styles
-            {backgroundColor: 'transparent', height: 2},
+            {backgroundColor: 'red', height: 2},
           ]}
           tabBarBackgroundColor="white"
           tabBarPosition="overlayTop"

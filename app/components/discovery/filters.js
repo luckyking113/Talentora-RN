@@ -33,7 +33,10 @@ import { talent_seeker_category, talent_category, filterData} from '@api/respons
 import { ethnicities, hair_colors, eye_colors, languages, ages,heights,weights,gendersFilter } from '@api/response'
 
 import CountryPicker, {getAllCountries} from 'react-native-country-picker-modal';
+
 import DeviceInfo from 'react-native-device-info';
+import * as RNLocalize from "react-native-localize";
+
 import MinMaxPicker from '@components/ui/minMaxPicker';
 import ALL_COUNTRIES from '@store/data/cca2'; 
 
@@ -56,7 +59,9 @@ class filters extends Component {
         super(props);
         //your codes ....
      
-        let userLocaleCountryCode = DeviceInfo.getDeviceCountry();
+        // let userLocaleCountryCode = DeviceInfo.getDeviceCountry();
+        let userLocaleCountryCode = RNLocalize.getLocales();
+
         const userCountryData = getAllCountries();
         let callingCode = null;
         let name = null;

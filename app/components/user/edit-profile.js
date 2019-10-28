@@ -50,7 +50,9 @@ import VideoUploadEditProfile from '@components/user/comp/video-upload-edit-prof
 import ImageUploadEditProfile from '@components/user/comp/image-upload-edit-profile'
 
 import CountryPicker, {getAllCountries} from 'react-native-country-picker-modal';
+
 import DeviceInfo from 'react-native-device-info';
+import * as RNLocalize from "react-native-localize";
 
 import ALL_COUNTRIES from '@store/data/cca2';
 
@@ -94,21 +96,20 @@ const videoOptions = {
 let originalLanguage = _.cloneDeep(languages);
 
 const appearance = {
-    id:1,
-    detail:{
-        first_name:'Jane',
-        last_name:'Wodtake',
-        age:'27',
-        gender:'Female',
-        country:'Singapore',
-        ethnicity:'Caucasian',
-        language:'English, Mandarin, Tamil',
-        height:'183cm',
-        weight:'64kg',
-        hair_color:'Black',
-        eyes_color:'Brown'
-    }
-    
+  id:1,
+  detail:{
+    first_name:'Jane',
+    last_name:'Wodtake',
+    age:'27',
+    gender:'Female',
+    country:'Singapore',
+    ethnicity:'Caucasian',
+    language:'English, Mandarin, Tamil',
+    height:'183cm',
+    weight:'64kg',
+    hair_color:'Black',
+    eyes_color:'Brown'
+  }
 };
 
 class EditProfile extends Component {
@@ -117,7 +118,8 @@ class EditProfile extends Component {
         super(props);
         var a = moment([moment().year(), 0]);
         var b = moment([UserHelper.UserInfo.profile.attributes.date_of_birth.value, 0]);
-        let userLocaleCountryCode = DeviceInfo.getDeviceCountry();
+        // let userLocaleCountryCode = DeviceInfo.getDeviceCountry();
+        let userLocaleCountryCode = RNLocalize.getLocales();
         const userCountryData = getAllCountries();
         let callingCode = null;
         let name = null;
