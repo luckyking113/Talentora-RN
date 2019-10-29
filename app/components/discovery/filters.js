@@ -7,8 +7,9 @@ import { connect } from 'react-redux'
 
 import * as AuthActions from '@actions/authentication'
 
-import { StyleSheet, Text, View, AsyncStorage, Alert, TouchableOpacity,ScrollView, TextInput, Modal,Picker, DeviceEventEmitter } from 'react-native';
+import { StyleSheet, Text, View, Alert, TouchableOpacity,ScrollView, TextInput, Modal,Picker, DeviceEventEmitter } from 'react-native';
 import { transparentHeaderStyle, defaultHeaderStyle } from '@styles/components/transparentHeader.style';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import { UserHelper, StorageData, Helper, GoogleAnalyticsHelper } from '@helper/helper';
 

@@ -9,22 +9,14 @@ import {
   Alert,
 } from 'react-native';
 import {Colors} from '../../themes/index';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import {IconCustom} from '@components/ui/icon-custom';
 
 const FBSDK = require('react-native-fbsdk');
-const {LoginButton, AccessToken, LoginManager} = FBSDK;
-import DeviceInfo from 'react-native-device-info';
+const {LoginManager} = FBSDK;
 import {postApi, loginFacebook} from '@api/request';
 
 import _ from 'lodash';
-
-import {
-  UserHelper,
-  StorageData,
-  Helper,
-  GoogleAnalyticsHelper,
-} from '@helper/helper';
+import {UserHelper, StorageData, GoogleAnalyticsHelper} from '@helper/helper';
 
 var func = require('@helper/validate');
 let _deviceId;
@@ -37,11 +29,11 @@ export default class LogInForm extends Component {
     // this._successLogin = this._successLogin.bind(this);
     this.state = {
       email: {
-        val: '',
+        val: 'TopDev19930328@outlook.com',
         isErrRequired: false,
       },
       password: {
-        val: '',
+        val: 'lucky113',
         isErrRequired: false,
       },
       fbLoading: false,
@@ -341,7 +333,7 @@ export default class LogInForm extends Component {
     let _SELF = this;
     let _userData = StorageData._loadInitialState('SignUpProcess');
 
-    GoogleAnalyticsHelper._trackEvent('Log In - Sign Up', 'Facebook');
+    // GoogleAnalyticsHelper._trackEvent('Log In - Sign Up', 'Facebook');
 
     _userData.then(function(result) {
       // console.log('result', JSON.parse(result));
@@ -352,14 +344,14 @@ export default class LogInForm extends Component {
           fbLoading: true,
         });
         loginFacebook().then(response => {
-          // console.log('reponse: ', response);
+          console.log('response:', response);
           if (response) {
             // this._goSignUp(response);
 
             // console.log('_result :', response.result);
             // return;
 
-            if (response.code == 200) {
+            if (response.code === 200) {
               let _result = response.result;
               // if user try to first signup with fb
               // we need to save signup process to prevent next time they try to login facebook again
@@ -394,6 +386,10 @@ export default class LogInForm extends Component {
         _SELF._verifyRouteToGo(JSON.parse(result));
       }
     });
+  };
+
+  instagramLogin = () => {
+    alert('test');
   };
 
   forgetPassword = () => {
@@ -507,6 +503,19 @@ export default class LogInForm extends Component {
           <IconCustom name="facebook-gray-logo" style={[styles.icon]} />
           <Text style={styles.fbLogin}> Log in with Facebook</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity
+          activeOpacity={0.8}
+          style={styles.fbContainer}
+          onPress={() => this.instagramLogin()}>
+          {/*<Icon
+                        name='facebook-square'
+                        style={[ styles.icon, ]}
+                    />*/}
+          <IconCustom name="instagram-outline-icon" style={[styles.icon]} />
+          <Text style={styles.fbLogin}> Log in with Instagram</Text>
+        </TouchableOpacity>
+
         <View>
           <ActivityIndicator
             animating={this.state.fbLoading}

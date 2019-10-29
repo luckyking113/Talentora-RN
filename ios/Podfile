@@ -64,6 +64,7 @@ target 'TalentoraNewVersion' do
   pod 'react-native-fbsdk', :path => '../node_modules/react-native-fbsdk'
 
   pod 'RNLocalize', :path => '../node_modules/react-native-localize'
+  pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
 
   post_install do |installer|
     installer.pods_project.targets.each do |target|

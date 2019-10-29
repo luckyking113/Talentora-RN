@@ -260,6 +260,8 @@ PODS:
     - ReactCommon/jscallinvoker (= 0.61.2)
   - rn-fetch-blob (0.11.2):
     - React-Core
+  - RNCAsyncStorage (1.6.2):
+    - React
   - RNDeviceInfo (5.2.1):
     - React
   - RNFS (2.16.1):
@@ -316,6 +318,7 @@ DEPENDENCIES:
   - ReactCommon/jscallinvoker (from `../node_modules/react-native/ReactCommon`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - rn-fetch-blob (from `../node_modules/rn-fetch-blob`)
+  - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - RNFS (from `../node_modules/react-native-fs`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
@@ -393,6 +396,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   rn-fetch-blob:
     :path: "../node_modules/rn-fetch-blob"
+  RNCAsyncStorage:
+    :path: "../node_modules/@react-native-community/async-storage"
   RNDeviceInfo:
     :path: "../node_modules/react-native-device-info"
   RNFS:
@@ -445,6 +450,7 @@ SPEC CHECKSUMS:
   React-RCTVibration: fb54c732fd20405a76598e431aa2f8c2bf527de9
   ReactCommon: 5848032ed2f274fcb40f6b9ec24067787c42d479
   rn-fetch-blob: f525a73a78df9ed5d35e67ea65e79d53c15255bc
+  RNCAsyncStorage: 60a80e72d95bf02a01cace55d3697d9724f0d77f
   RNDeviceInfo: 086e9644cc00dbe9bcf26de2fbcb1d9f475c84d0
   RNFS: 795866388a01de4e470f3b1041a99cf20a343844
   RNGestureHandler: 4cb47a93019c1a201df2644413a0a1569a51c8aa
@@ -455,6 +461,6 @@ SPEC CHECKSUMS:
   RSKImageCropper: a446db0e8444a036b34f3c43db01b2373baa4b2a
   Yoga: 14927e37bd25376d216b150ab2a561773d57911f
 
-PODFILE CHECKSUM: 4a46daaaf736813850343ab4ff63e6a0888699be
+PODFILE CHECKSUM: 30f87dcd79a167751fe2ff2e6fb752b6e284b925
 
 COCOAPODS: 1.8.3

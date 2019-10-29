@@ -10,7 +10,8 @@ import * as AuthActions from '@actions/authentication'
 import AllJobPosted from '@components/job/talent-seeker/post-job-list' // for talent seeker (employer)
 import AvailableJobApplied from '@navigators/tabs/job-tabs' // for talent (user)
 
-import { StyleSheet, Text, View, AsyncStorage, Alert, TouchableOpacity, Modal ,TouchableWithoutFeedback, DeviceEventEmitter } from 'react-native';
+import { StyleSheet, Text, View, Alert, TouchableOpacity, Modal ,TouchableWithoutFeedback, DeviceEventEmitter } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import Authenticate from '@components/authentication/authenticate';
 import LoadingScreen from '@components/other/loading-screen'; 

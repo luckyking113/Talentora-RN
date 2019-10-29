@@ -139,6 +139,10 @@ const loginFacebook = () => {
   );
 };
 
+const loginInstagram = () => {
+  return 'test login Instagram';
+};
+
 const postMedia = (url, data, uploadProgress) => {
   url = baseUrl + url;
   let auth = UserHelper._getToken(); // get user access token after login or register.
@@ -167,4 +171,12 @@ const postMedia = (url, data, uploadProgress) => {
     });
 };
 
-export {postApi, getApi, putApi, deleteApi, loginFacebook, postMedia};
+export {
+  postApi,
+  getApi,
+  putApi,
+  deleteApi,
+  loginFacebook,
+  loginInstagram,
+  postMedia,
+};

@@ -7,9 +7,13 @@ import TagsSelect from '@styles/components/tags-select.style';
 import FlatForm from '@styles/components/flat-form.style';
 import BoxWrap from '@styles/components/box-wrap.style';
 
-import { ChatHelper, Helper, GoogleAnalyticsHelper } from '@helper/helper';
+import {ChatHelper, Helper, GoogleAnalyticsHelper} from '@helper/helper';
 
-import { CachedImage, ImageCache, CustomCachedImage } from "react-native-img-cache";
+import {
+  CachedImage,
+  ImageCache,
+  CustomCachedImage,
+} from 'react-native-img-cache';
 import ImageProgress from 'react-native-image-progress';
 import {ProgressBar, ProgressCircle} from 'react-native-progress';
 
