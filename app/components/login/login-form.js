@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Alert,
+  Image,
 } from 'react-native';
 import {Colors} from '../../themes/index';
 import {IconCustom} from '@components/ui/icon-custom';
@@ -486,41 +487,55 @@ export default class LogInForm extends Component {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.orBar}>
-          <View style={styles.line}></View>
-          <Text style={styles.txtOR}>OR</Text>
-          <View style={styles.line}></View>
+        <View style={styles.orBar}>          
+          <Text style={styles.txtOR}>Or Log in with</Text>          
         </View>
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
           activeOpacity={0.8}
-          style={styles.fbContainer}
+          style={styles.socialIconContainer}
           onPress={() => this.facebookLogin()}>
-          {/*<Icon
-                        name='facebook-square'
-                        style={[ styles.icon, ]}
-                    />*/}
           <IconCustom name="facebook-gray-logo" style={[styles.icon]} />
           <Text style={styles.fbLogin}> Log in with Facebook</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           activeOpacity={0.8}
-          style={styles.fbContainer}
+          style={styles.socialIconContainer}
           onPress={() => this.instagramLogin()}>
-          {/*<Icon
-                        name='facebook-square'
-                        style={[ styles.icon, ]}
-                    />*/}
           <IconCustom name="instagram-outline-icon" style={[styles.icon]} />
           <Text style={styles.fbLogin}> Log in with Instagram</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
+
+        <View style={styles.socialLoginImg}>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            style={styles.socialIconContainer}
+            onPress={() => this.facebookLogin()}>
+            <Image source={require('@assets/facebook.png')} />                   
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            activeOpacity={0.8}
+            style={styles.socialIconContainer}
+            onPress={() => this.googleLogin()}>
+            <Image source={require('@assets/google-plus.png')} />     
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            activeOpacity={0.8}
+            style={styles.socialIconContainer}
+            onPress={() => this.instagramLogin()}>
+            <Image source={require('@assets/instagram.png')} />      
+          </TouchableOpacity>
+        </View>
+
 
         <View>
           <ActivityIndicator
             animating={this.state.fbLoading}
             style={[styles.centering, {marginTop: 20, height: 0}]}
-            /*size="large"*/
+
           />
         </View>
       </View>
@@ -608,6 +623,10 @@ var styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 60,
   },
+  socialLoginImg:{
+    flexDirection:'row',
+    justifyContent:'center',
+  },
 
   line: {
     height: 1,
@@ -631,12 +650,14 @@ var styles = StyleSheet.create({
     color: Colors.textColorDark,
   },
 
-  fbContainer: {
+  socialIconContainer: {
     // flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
     marginTop: 10,
+    marginLeft:5,
+    marginRight:5,
   },
 
   fbLogin: {

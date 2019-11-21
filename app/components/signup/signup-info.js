@@ -171,7 +171,7 @@ class SignUpInfo extends Component {
   });
 
   // continue button
-  joinUsNow() {
+  joinUsNow() {    
     // func('variable that is in the function global');
     console.log('after calling');
     // this.phoneResult=func(this.state.phone,'phone');
@@ -216,6 +216,7 @@ class SignUpInfo extends Component {
           !that.state.phone.isErrRequired
         ) {
           console.log('sign up press');
+          
           // Alert.alert('login now');
           // dismissKeyboard();
 
