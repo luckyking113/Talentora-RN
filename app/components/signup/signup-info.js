@@ -14,7 +14,8 @@ import {
   ActivityIndicator,
   ScrollView,
   Picker,
-  Modal
+  Modal,
+  Alert
 } from 'react-native';
 
 import ButtonBack from '@components/header/button-back';
@@ -22,6 +23,7 @@ import ButtonBack from '@components/header/button-back';
 import {Colors} from '@themes/index';
 import FlatForm from '@styles/components/flat-form.style';
 import Utilities from '@styles/extends/ultilities.style';
+
 import CountryPicker, {
   getAllCountries,
 } from 'react-native-country-picker-modal';
@@ -31,6 +33,7 @@ import * as RNLocalize from "react-native-localize";
 
 import ALL_COUNTRIES from '@store/data/cca2';
 import {postApi} from '@api/request';
+import { ethnicities, hair_colors, eye_colors, languages } from '@api/response';
 import {
   UserHelper,
   StorageData,
@@ -40,11 +43,13 @@ import {
 
 import _ from 'lodash';
 import { genders } from '@api/response';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const dismissKeyboard = require('react-native-dismiss-keyboard');
 var func = require('@helper/validate');
 const Item = Picker.Item;
 let originalGender=_.cloneDeep(genders);
+let originalLanguage = null;
 
 function mapStateToProps(state) {
   // console.log('wow',state)
@@ -57,6 +62,8 @@ function mapStateToProps(state) {
 class SignUpInfo extends Component {
   constructor(props) {
     super(props);
+
+    originalLanguage = _.cloneDeep(languages);
     
     let _userInfo = UserHelper.UserInfo;
     let _tmpFbDat = {
@@ -124,6 +131,12 @@ class SignUpInfo extends Component {
         val: _tmpFbDat.gender || '',
         isErrRequired: false
       }, 
+      languages: originalLanguage,
+      selectedLanguages: '',
+      displayLanguages: '',
+      selectedLanguagesCount: 0,
+      languageModalVisible: false,
+
       email: {
         val: '',
         isErrRequired: false,
@@ -225,7 +238,7 @@ class SignUpInfo extends Component {
     console.log('after calling');
     // this.phoneResult=func(this.state.phone,'phone');
 
-    if (!this.state.joining) {
+    if (!this.state.joining) {      
       if (this.state.selectedGender == '') {
 
         this.setState({
@@ -559,6 +572,115 @@ class SignUpInfo extends Component {
         return 'Female';
   }
 
+  setLanguageModalVisible(visible, type) {
+    if (type == 'ethnicity') {
+      this.setState({ ethnicityModalVisible: visible })
+    } else if (type == 'hair') {
+      this.setState({ hairModalVisible: visible })
+    } else if (type == 'eye') {
+      this.setState({ eyeModalVisible: visible })
+    } else if (type == 'language') {
+      this.setState({ languageModalVisible: visible })
+    }
+  }
+
+  onLanguageSearch(text) {
+    let _dataFilter = _.filter(originalLanguage, function (v, k) {
+      return _.includes(v.display_name.toLowerCase(), text.toLowerCase());
+    })
+    this.setState({ languages: _dataFilter })
+
+    // console.log('Languages: ', languages)
+    // console.log('Original Lang: ', originalLanguage);
+    // console.log('Filter Lang: ', _dataFilter);
+  }
+
+  generateLanguageList() {
+    return (
+      <Modal
+        onRequestClose={() => { }}        
+        visible={this.state.languageModalVisible}>
+        <View style={[styles.justFlexContainer, styles.mainVerticalPadding, { paddingBottom: 0 }]}>
+
+          <View style={[styles.languageNav,{flexDirection:'row',justifyContent:'space-between', width:'100%',paddingHorizontal:20, paddingTop:40}]} >
+            <TouchableOpacity style={[{ flex: 1 }]}
+              onPress={() => {
+                this.setLanguageModalVisible(false, 'language')
+                this.setState({ languages: originalLanguage });
+              }}>
+              <Icon name={"close"} style={[styles.languageNavIcon]} />
+            </TouchableOpacity>
+
+            <Text style={[styles.languageNavTitle, styles.inputLabelFontSize]} >Language</Text>
+            <Text style={[styles.languageNavStatus, styles.inputLabelFontSize,{marginLeft:10}]} >{this.state.selectedLanguagesCount} /3 selected</Text>
+          </View>
+
+          <View style={[styles.mainHorizontalPadding, { marginTop: 20 }]}>
+            <TextInput
+              style={[styles.inputValueFontSize, { height: Helper._isAndroid() ? 40 : 30, marginBottom: 7, borderColor: Colors.componentBackgroundColor, borderRadius: 5, textAlign: 'center', backgroundColor: Colors.componentBackgroundColor, borderWidth: 1 }]}
+              onChangeText={(text) => this.onLanguageSearch(text)}
+              value={this.state.text}
+              placeholder="Search"
+            />
+          </View>
+          <ScrollView contentContainerStyle={[styles.mainVerticalPadding, styles.mainHorizontalPadding]}>
+            {this.state.languages.map((lang, idx) => {
+              return (
+                <View key={idx} >
+                  {/*{console.log('Item ZIN: ', lang, idx)}*/}
+                  {/* {when search first time click on the row is not work cus not yet lost focus from text input */}
+                  <TouchableOpacity onPress={() => this.languageSelect(lang, idx)} activeOpacity={.8}
+                    style={[styles.flexVer, styles.rowNormal, { justifyContent: 'space-between' }]}>
+                    <Text style={[styles.itemText, styles.inputValueFontSize, {
+                      paddingTop: 7, paddingBottom: 7,
+                      color: lang.selected ? 'red' : 'black'
+                    }]}>
+                      {lang.display_name}
+                    </Text>
+                    {lang.selected && <Icon name="done" style={[styles.itemIcon, 3, { color: 'red' }]} />}
+                  </TouchableOpacity>
+                  <View style={[{ borderWidth: 1, borderColor: Colors.componentBackgroundColor }]}></View>
+                </View>
+              )
+            })}
+          </ScrollView>
+        </View>
+      </Modal>
+    )
+  }
+
+  languageSelect = (item, index) => {
+    console.log('This is selected language: ', item, index);
+    let temp = this.state.languages;
+    temp[index].selected = !temp[index].selected;
+    // console.log('This is data: ', this.state.languages);
+
+    let selectedCount = [];
+    _.map(originalLanguage, function (val) {
+      if (val.selected)
+        selectedCount.push(val);
+    });
+
+    if (selectedCount.length <= 3) {
+      // console.log('Filter for true object: ', selectedCount.length);
+      let displayLanguages;
+      _.map(selectedCount, function (val, key) {
+        displayLanguages = key == 0 ? val.display_name : displayLanguages + ',' + val.display_name;
+      });
+      this.setState({
+        languages: temp,
+        selectedLanguagesCount: selectedCount.length,
+        selectedLanguages: displayLanguages,
+        displayLanguages: displayLanguages ? displayLanguages.replace(/,/g, ', ') : ''
+      });
+
+    } else {
+      temp[index].selected = !temp[index].selected;
+      this.setState({ languages: temp });
+      Alert.alert('You can select three languages only')
+    }
+  }
+  
   render() {
     const {navigate, goBack, state} = this.props.navigation;
     return (
@@ -822,25 +944,14 @@ class SignUpInfo extends Component {
                     underlineColorAndroid = 'transparent'
                     textAlignVertical = 'bottom'
                   />
-                  <TextInput 
-                    onChangeText={(txtLastname) => this.setState({lastname:{
-                        val:txtLastname
-                    }})}
-                    value={this.state.lastname.val} 
-                    placeholder="Last Name"
-                    placeholderTextColor={ this.state.lastname.isErrRequired ? 'red' :"#B9B9B9"}
-                    returnKeyType="go"
-                    style={[styles.flatInputBox,styles.inputValueFontSize,{color:'black', width:'48.5%'}]}
-                    ref={(input) => this.lastname =  input}
-                    onFocus = {() => {
-                        this.keyboardDidShow(null)  
-                    }}
-                    onSubmitEditing={() => this.setState({
-                            modalVisible: true
-                        })}                                    
-                    underlineColorAndroid = 'transparent'
-                    textAlignVertical = 'bottom'
-                  />
+                  <TouchableOpacity                     
+                    style={[styles.flatInputBox,styles.inputValueFontSize,{color:'black',width:'48.5%', justifyContent:'center'}]}
+                    onPress={() => this.setLanguageModalVisible(true, 'language')}>
+                    <View>
+                      <Text style={[styles.flatInputBoxFont, styles.inputValueFontSize, { color: this.state.displayLanguages ? 'black' : '#9B9B9B' }]}>{this.state.displayLanguages || 'Select languages'}</Text>
+                    </View>
+                  </TouchableOpacity>
+                  {this.generateLanguageList()}
                 </View> 
                 <TextInput
                   ref="3"

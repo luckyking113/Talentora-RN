@@ -14,6 +14,7 @@ import ButtonBack from '@components/header/button-back'
 import { Colors } from '@themes/index';
 import FlatForm from '@styles/components/flat-form.style';
 import Utilities from '@styles/extends/ultilities.style';
+
 import { transparentHeaderStyle, titleStyle } from '@styles/components/transparentHeader.style'
 
 import _ from 'lodash'
