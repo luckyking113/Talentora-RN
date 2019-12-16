@@ -27,7 +27,7 @@ import CountryPicker, {
   getAllCountries,
 } from 'react-native-country-picker-modal';
 
-import DeviceInfo from 'react-native-device-info';
+import DeviceInfo from 'react-native-simple-device-info';
 import * as RNLocalize from "react-native-localize";
 
 import ALL_COUNTRIES from '@store/data/cca2';
@@ -54,16 +54,16 @@ function mapStateToProps(state) {
 class SignUpInfo extends Component {
   constructor(props) {
     super(props);
-    // let userLocaleCountryCode = DeviceInfo.getDeviceCountry();
-    let userLocaleCountryCode = RNLocalize.getLocales();
+    let userLocaleCountryCode = DeviceInfo.getDeviceCountry();
+    // let userLocaleCountryCode = RNLocalize.getLocales();
     const userCountryData = getAllCountries();
     let callingCode = null;
     let name = null;
     let cca2 = userLocaleCountryCode;
     if (!cca2 || !name || !userCountryData) {
-      // cca2 = 'US';
-      // name = 'United States';
-      // callingCode = '1';
+      cca2 = 'US';
+      name = 'United States';
+      callingCode = '1';
     } else {
       callingCode = userCountryData.callingCode;
     }

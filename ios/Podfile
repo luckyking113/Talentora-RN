@@ -43,7 +43,7 @@ target 'TalentoraNewVersion' do
   pod "Yoga", :path => "../node_modules/react-native/ReactCommon/yoga"
   pod 'RNFS', :path => '../node_modules/react-native-fs'
   pod 'react-native-viewpager', :path => '../node_modules/@react-native-community/viewpager'
-  pod 'RNDeviceInfo', :path => '../node_modules/react-native-device-info'
+  # pod 'RNDeviceInfo', :path => '../node_modules/react-native-device-info'
   # pod 'react-native-fetch-blob', :path => '../node_modules/react-native-fetch-blob'
 
 
@@ -65,6 +65,11 @@ target 'TalentoraNewVersion' do
 
   pod 'RNLocalize', :path => '../node_modules/react-native-localize'
   pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
+
+  pod 'RNGoogleSignin', :path => '../node_modules/react-native-google-signin'
+
+  pod 'GoogleSignIn', '~> 5.0.0'
+  pod 'RNDeviceInfo', :path => '../node_modules/react-native-simple-device-info'
 
   post_install do |installer|
     installer.pods_project.targets.each do |target|

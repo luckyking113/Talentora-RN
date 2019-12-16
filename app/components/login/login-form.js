@@ -19,6 +19,8 @@ import {postApi, loginFacebook} from '@api/request';
 import _ from 'lodash';
 import {UserHelper, StorageData, GoogleAnalyticsHelper} from '@helper/helper';
 
+import { GoogleSignin, GoogleSigninButton, statusCodes } from 'react-native-google-signin';
+
 var func = require('@helper/validate');
 let _deviceId;
 let that;
@@ -39,6 +41,11 @@ export default class LogInForm extends Component {
       },
       fbLoading: false,
       emailLoginLoading: false,
+
+      pushData: [],
+      loggedIn: false,
+      isGoogleSigninInProgress: false,
+      userInfo:[]
     };
   }
 
@@ -46,6 +53,13 @@ export default class LogInForm extends Component {
     LoginManager.logOut();
     GoogleAnalyticsHelper._trackScreenView('Log In');
     this.txtUsername.focus();
+
+    GoogleSignin.configure({
+      webClientId: '317975963205-hl8jj2i9v1s9s0te97aa8vq9lr3joivl.apps.googleusercontent.com', 
+      offlineAccess: true, 
+      hostedDomain: '', 
+      forceConsentPrompt: true, 
+    });
   }
 
   // check it user complete fill info
@@ -389,6 +403,60 @@ export default class LogInForm extends Component {
     });
   };
 
+  googleLogin = async () => {
+    let _SELF = this;
+    let _userData = StorageData._loadInitialState('SignUpProcess');
+    _userData.then(function(result) {      
+      if (!result || _.isEmpty(result) || !result.socialAccounts) {
+        _SELF._signIn();
+      } else alert('failed login');
+    });
+  };
+
+  _signIn = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      this.setState({ userInfo: userInfo, loggedIn: true });
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        // user cancelled the login flow
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        // operation (f.e. sign in) is in progress already
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        // play services not available or outdated
+      } else {
+        // some other error happened
+      }
+    }
+  };
+
+
+  getCurrentUserInfo = async () => {
+    try {
+      const userInfo = await GoogleSignin.signInSilently();
+      this.setState({ userInfo });      
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_REQUIRED) {
+        // user has not signed in yet
+        this.setState({ loggedIn: false });
+      } else {
+        // some other error
+        this.setState({ loggedIn: false });
+      }
+    }
+  };
+
+  signOut = async () => {
+    try {
+      await GoogleSignin.revokeAccess();
+      await GoogleSignin.signOut();
+      this.setState({ user: null, loggedIn: false }); // Remember to remove the user from your app's state as well
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   instagramLogin = () => {
     alert('test');
   };
@@ -491,22 +559,6 @@ export default class LogInForm extends Component {
           <Text style={styles.txtOR}>Or Log in with</Text>          
         </View>
 
-        {/* <TouchableOpacity
-          activeOpacity={0.8}
-          style={styles.socialIconContainer}
-          onPress={() => this.facebookLogin()}>
-          <IconCustom name="facebook-gray-logo" style={[styles.icon]} />
-          <Text style={styles.fbLogin}> Log in with Facebook</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          activeOpacity={0.8}
-          style={styles.socialIconContainer}
-          onPress={() => this.instagramLogin()}>
-          <IconCustom name="instagram-outline-icon" style={[styles.icon]} />
-          <Text style={styles.fbLogin}> Log in with Instagram</Text>
-        </TouchableOpacity> */}
-
         <View style={styles.socialLoginImg}>
           <TouchableOpacity
             activeOpacity={0.8}
@@ -518,9 +570,9 @@ export default class LogInForm extends Component {
           <TouchableOpacity
             activeOpacity={0.8}
             style={styles.socialIconContainer}
-            onPress={() => this.googleLogin()}>
+            onPress={this.googleLogin}>
             <Image source={require('@assets/google-plus.png')} />     
-          </TouchableOpacity>
+          </TouchableOpacity>         
 
           <TouchableOpacity
             activeOpacity={0.8}
