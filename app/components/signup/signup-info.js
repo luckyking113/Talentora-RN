@@ -10,12 +10,11 @@ import {
   TextInput,
   Keyboard,
   TouchableOpacity,
-  Alert,
-  StatusBar,
   TouchableWithoutFeedback,
   ActivityIndicator,
   ScrollView,
-  PixelRatio,
+  Picker,
+  Modal
 } from 'react-native';
 
 import ButtonBack from '@components/header/button-back';
@@ -40,9 +39,13 @@ import {
 } from '@helper/helper';
 
 import _ from 'lodash';
+import { genders } from '@api/response';
 
 const dismissKeyboard = require('react-native-dismiss-keyboard');
 var func = require('@helper/validate');
+const Item = Picker.Item;
+let originalGender=_.cloneDeep(genders);
+
 function mapStateToProps(state) {
   // console.log('wow',state)
   return {
@@ -54,6 +57,23 @@ function mapStateToProps(state) {
 class SignUpInfo extends Component {
   constructor(props) {
     super(props);
+    
+    let _userInfo = UserHelper.UserInfo;
+    let _tmpFbDat = {
+      firstname : '',
+      lastname : '',
+      gender : '',
+    }   
+
+    console.log('_userInfo.socialAccounts : ', _userInfo.socialAccounts);
+    if(!_.isEmpty(_userInfo.socialAccounts)){
+        _tmpFbDat = {
+            firstname : _userInfo.profile.first_name,
+            lastname : _userInfo.profile.last_name,
+            gender : _userInfo.profile.gender,
+        }
+    }
+
     let userLocaleCountryCode = DeviceInfo.getDeviceCountry();
     // let userLocaleCountryCode = RNLocalize.getLocales();
     const userCountryData = getAllCountries();
@@ -69,6 +89,14 @@ class SignUpInfo extends Component {
     }
     this.state = {
       joining: false,
+      firstname: {
+        val: _tmpFbDat.firstname || '',
+        isErrRequired: false
+      },
+      lastname: {
+          val: _tmpFbDat.lastname || '', 
+          isErrRequired: false
+      },
       cca2,
       name,
       callingCode,
@@ -78,6 +106,24 @@ class SignUpInfo extends Component {
         callingCode: '',
         isErrRequired: false,
       },
+      city: {
+        val: '',
+        isErrRequired: false,
+      },
+      age: {  
+        val: '',
+        isErrRequired: false
+      },
+      gendermale:{
+        isErrRequired:false
+      },
+      genderfemale:{
+          isErrRequired:false
+      },
+      gender: {  
+        val: _tmpFbDat.gender || '',
+        isErrRequired: false
+      }, 
       email: {
         val: '',
         isErrRequired: false,
@@ -90,8 +136,13 @@ class SignUpInfo extends Component {
         val: '',
         isErrRequired: false,
       },
+      selectedGender: _tmpFbDat.gender,
       errMessage: null,
+      mode: Picker.MODE_DIALOG,
+      prevoius_gender:'',
       isActionButton: true,
+      modalVisible: false,
+      Genders:originalGender
     };
     console.log(this.props);
 
@@ -159,9 +210,7 @@ class SignUpInfo extends Component {
   };
 
   componentDidMount() {
-    GoogleAnalyticsHelper._trackScreenView('Sign Up');
-
-    console.log('Test: ', this.props);
+    GoogleAnalyticsHelper._trackScreenView('Sign Up');    
     return;
   }
 
@@ -177,10 +226,62 @@ class SignUpInfo extends Component {
     // this.phoneResult=func(this.state.phone,'phone');
 
     if (!this.state.joining) {
+      if (this.state.selectedGender == '') {
+
+        this.setState({
+          gender: {
+            val: "",
+            isErrRequired: true
+          }
+        });
+      } else {
+
+        let _tmp = this.state.gender;
+
+        _tmp.val = this.state.selectedGender;
+        _tmp.isErrRequired = false;
+
+        this.setState({
+          selectedGender: _tmp.val,
+          gender: _tmp,
+          prevoius_gender: _tmp.val
+        });
+        // console.log('Gender State : ',this.state);
+      }
+      if(func(this.state.firstname,'firstname')){
+        this.setState({
+            firstname: {
+                isErrRequired:true
+            }
+        })
+      }
+      if(func(this.state.lastname,'lastname')){
+          this.setState({
+              lastname:{
+                  isErrRequired:true
+              }
+          })
+      }
       if (func(this.state.country, 'country')) {
         this.setState({
           country: {
             isErrRequired: true,
+          },
+        });
+      }
+      if (func(this.state.city, 'city')) {
+        this.setState({
+          city: {
+            isErrRequired: true,
+            val: this.state.city.val,
+          },
+        });
+      }
+      if (func(this.state.age, 'age')) {
+        this.setState({
+          age: {
+            isErrRequired: true,
+            val: this.state.age.val,
           },
         });
       }
@@ -208,21 +309,28 @@ class SignUpInfo extends Component {
       }
 
       let that = this;
+      
       setTimeout(function() {
+      
         if (
           !that.state.country.isErrRequired &&
           !that.state.email.isErrRequired &&
+          !that.state.city.isErrRequired &&
+          !that.state.age.isErrRequired &&
           !that.state.password.isErrRequired &&
           !that.state.phone.isErrRequired
-        ) {
-          console.log('sign up press');
-          
-          // Alert.alert('login now');
+        ) {      
+         
           // dismissKeyboard();
 
           // const { navigate, goBack, setParams, state } = that.props.navigation;
           let signUpInfo = {
+            first_name: that.state.firstname.val,
+            last_name: that.state.lastname.val,
             country: that.state.country.val,
+            city: that.state.city.val,
+            age: that.state.age.val,
+            gender: that.state.selectedGender,
             lang_code: that.state.country.langCode,
             phone_num_code: that.state.country.callingCode,
             phone_number: that.state.phone.val,
@@ -244,16 +352,19 @@ class SignUpInfo extends Component {
           postApi(
             API_URL,
             JSON.stringify({
+              first_name: signUpInfo.first_name,
+              last_name: signUpInfo.last_name,
+              phone: signUpInfo.phone_number,
+              country_code: signUpInfo.phone_num_code,
+              country: signUpInfo.country,
+              city:signUpInfo.city,
+              age:signUpInfo.age,
+              gender: signUpInfo.gender,
               email: signUpInfo.email,
               password: signUpInfo.password,
               confirm_password: signUpInfo.password,
               // "date_of_birth": '',
-              // "first_name": '',
-              // "last_name": '',
               // "gender": '',
-              phone: signUpInfo.phone_number,
-              country_code: signUpInfo.phone_num_code,
-              country: signUpInfo.country,
               is_register_completed: false,
             }),
           ).then(response => {
@@ -265,8 +376,9 @@ class SignUpInfo extends Component {
               let _result = response.result;
               let _userData = StorageData._saveUserData(
                 'SignUpProcess',
-                JSON.stringify(_result),
+                JSON.stringify(_result),                
               );
+
               UserHelper.UserInfo = _result; // assign for tmp user obj for helper
               _userData.then(function(result) {
                 console.log('complete save sign up process 1');
@@ -288,6 +400,31 @@ class SignUpInfo extends Component {
           });
         }
       }, 50);
+    }
+  }
+
+  onValueChange = (key, value) => {
+    console.log(key, value);
+    const newState = {};
+    newState[key] = value;
+    if(key == 'selectedGender'){
+        if(value != ''){
+            this.setState(newState);
+        }
+    }else{
+        this.setState(newState); 
+    }
+  };
+
+  onAgeChanged(text) {
+    let re = /^[0-9]{0,2}$/;
+
+    if (re.test(text)) {
+      this.setState({
+        age: {
+          val: text
+        }
+      })
     }
   }
 
@@ -352,8 +489,29 @@ class SignUpInfo extends Component {
       });
     }
   }
-  //   end keyboard handle
 
+  setModalVisible(visible) {
+    this.setState({ modalVisible: visible });
+  }
+  //   end keyboard handle
+  genderSelect=(item,index)=>{
+    console.log("my item in gender select",item);
+    console.log("state Genders",this.state.Genders);
+    let temp=this.state.Genders;
+    let selectedvalue;
+    _.map(temp,function(v,k){
+        if(v.id==item.id){
+            selectedvalue=v.display_name;
+        }
+    });
+    let _tmpStateObject=this.state.gender;
+    _tmpStateObject.val=selectedvalue;
+    _tmpStateObject.isErrRequired=false;
+    this.setState({selectedGender:selectedvalue=='Male'? 'M':'F',gender:_tmpStateObject},function(){
+        console.log("after setstate",this.state.gender,this.state.selectedGender);
+    });
+    this.setModalVisible(false);
+  }
   onChanged(text) {
     let reSing = /^[0-9]{0,8}$/;
     let re = /^[0-9]{0,20}$/;
@@ -378,6 +536,29 @@ class SignUpInfo extends Component {
     }
   }
 
+  validateGender = (_val) => {
+    // console.log(_val);
+    let _tmp = '';
+    if(_val != 'Male' && _val !='Female')
+        _tmp = false
+    else
+        _tmp = true;
+    // console.log('Tmp : ',_tmp);
+    return _tmp;
+  }
+
+  getValueGender = (_val) => {
+    // console.log(_val);
+
+    if(_.isEmpty(_val))
+        return 'Please select gender *';
+
+    if(_val == 'M')
+        return 'Male';
+    else
+        return 'Female';
+  }
+
   render() {
     const {navigate, goBack, state} = this.props.navigation;
     return (
@@ -387,19 +568,45 @@ class SignUpInfo extends Component {
             onPress={() => {
               dismissKeyboard();
             }}>
-            <View style={[styles.container, styles.mainScreenBg]}>
+            <View style={[styles.container, styles.mainScreenBg]}>              
               <View style={[styles.mainPadding]}>
-                {/*<TextInput 
-                                    placeholder="Country *"
-                                    placeholderTextColor="#B9B9B9"
-                                    returnKeyType="next"
-                                    keyboardType="email-address"
-                                    autoCorrect={false}
-                                    onSubmitEditing={() => this.passwordInput.focus()}
-                                    style={styles.flatInputBox}
-                                    underlineColorAndroid = 'transparent'
-                                    textAlignVertical = 'bottom
-                                />*/}
+                <View style={{width:'100%', flexDirection:'row', justifyContent:'space-between'}}>
+                  <TextInput 
+                    onChangeText={(txtFirstname) => this.setState({firstname:{
+                        val:txtFirstname
+                    }})}
+                    value={this.state.firstname.val}                        
+                    placeholder="First Name"
+                    placeholderTextColor={ this.state.firstname.isErrRequired ? 'red' :"#B9B9B9"}
+                    returnKeyType="next"
+                    keyboardType="email-address"
+                    autoCorrect={false}
+                    onFocus = { ()=> this.keyboardDidShow(null) }
+                    onSubmitEditing={() => this.lastname.focus()}
+                    style={[styles.flatInputBox,styles.inputValueFontSize,{color:'black', width:'48.5%'}]}
+                    underlineColorAndroid = 'transparent'
+                    textAlignVertical = 'bottom'
+                  />
+                  <TextInput 
+                    onChangeText={(txtLastname) => this.setState({lastname:{
+                        val:txtLastname
+                    }})}
+                    value={this.state.lastname.val} 
+                    placeholder="Last Name"
+                    placeholderTextColor={ this.state.lastname.isErrRequired ? 'red' :"#B9B9B9"}
+                    returnKeyType="go"
+                    style={[styles.flatInputBox,styles.inputValueFontSize,{color:'black', width:'48.5%'}]}
+                    ref={(input) => this.lastname =  input}
+                    onFocus = {() => {
+                        this.keyboardDidShow(null)  
+                    }}
+                    onSubmitEditing={() => this.setState({
+                            modalVisible: true
+                        })}                                    
+                    underlineColorAndroid = 'transparent'
+                    textAlignVertical = 'bottom'
+                  />
+                </View> 
                 <CountryPicker
                   countryList={ALL_COUNTRIES}
                   closeable={true}
@@ -418,7 +625,6 @@ class SignUpInfo extends Component {
                         isErrRequired: false,
                       },
                     });
-                    // console.log('onChange', value);
                   }}
                   cca2={this.state.cca2}
                   translation="eng">
@@ -444,7 +650,7 @@ class SignUpInfo extends Component {
                   <TextInput
                     onChangeText={text => this.onChanged(text)}
                     value={this.state.phone.val}
-                    placeholder="Phone number *"
+                    placeholder="Phone number"
                     placeholderTextColor={
                       this.state.phone.isErrRequired ? 'red' : '#B9B9B9'
                     }
@@ -457,7 +663,185 @@ class SignUpInfo extends Component {
                     keyboardType="phone-pad"
                   />
                 </View>
+                <TextInput
+                  ref="2"
+                  onChangeText={txtCity =>
+                    this.setState({
+                      city: {
+                        val: txtCity,
+                      },
+                    })
+                  }
+                  value={this.state.city.val}
+                  placeholder="City"
+                  onFocus={() => this.keyboardDidShow(null)}
+                  placeholderTextColor={
+                    this.state.city.isErrRequired ? 'red' : '#B9B9B9'
+                  }
+                  returnKeyType="next"
+                  style={[
+                    styles.flatInputBox,                    
+                    styles.inputValueFontSize,
+                    {color: this.state.city.isErrRequired ? 'red' : '#4a4a4a'},
+                  ]}
+                  onSubmitEditing={() => this.focusNextField('3')}
+                  underlineColorAndroid="transparent"
+                  textAlignVertical="bottom"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                />
 
+                <View style={{width:'100%', flexDirection:'row', justifyContent:'space-between'}}>
+                  <TextInput 
+                      onChangeText={(txtAge) => this.onAgeChanged(txtAge)}
+                      value={this.state.age.val}                     
+                      placeholder="Age"
+                      placeholderTextColor={ this.state.age.isErrRequired ? 'red' :"#B9B9B9"}
+                      returnKeyType="go"
+                      style={[styles.flatInputBox,styles.inputValueFontSize,{color:'black',width:'48.5%'}]}
+                      ref={(input) => this.ageInput =  input}
+                      onFocus = { ()=> this.keyboardDidShow(null) }
+                      onSubmitEditing={()=>this.joinUsNow()}
+                      underlineColorAndroid = 'transparent'
+                      textAlignVertical = 'bottom'
+                      keyboardType="phone-pad" 
+                  />
+
+                  { Helper._isAndroid()  && 
+
+                  <View style={[styles.flatInputBox,styles.inputValueFontSize,{color:'black',width:'48.5%', justifyContent:'center'}]}> 
+                      <View style = {[ {flex: 1} ]}>
+                          <Modal
+                              transparent={true}
+                              onRequestClose={() => {}}
+                              visible = {this.state.modalVisible}>
+                              <TouchableOpacity style={[ styles.justFlexContainer, styles.mainVerticalPadding, {flex:1,flexDirection:'column',paddingBottom:0,justifyContent:'center',alignItems:'center',backgroundColor:'rgba(0,0,0,0.8)'}]} onPressOut={() => {this.setModalVisible(false)}}>
+                                  <View style={{width:300,height:160,backgroundColor:'white'}}>
+                                      <View style={[styles.languageNav ]} >
+                                          <Text style={[ styles.languageNavTitle,styles.inputLabelFontSize,{textAlign:'left'} ]} >Please select gender</Text>
+                                      </View>
+                                      <ScrollView contentContainerStyle={[styles.mainVerticalPadding, styles.mainHorizontalPadding ]}>
+                                          {this.state.Genders.map((item, idx) => {
+                                              return (
+                                                  <View key={idx} >
+                                                      {/*{console.log('Item ZIN: ', lang, idx)}*/}
+                                                      {/* {when search first time click on the row is not work cus not yet lost focus from text input */}
+                                                      <TouchableOpacity onPress={() => this.genderSelect(item, idx) } activeOpacity={.8}
+                                                          style={[ styles.flexVer, styles.rowNormal, {justifyContent:'space-between'}]}>
+                                                          <Text style={[ styles.itemText,styles.inputValueFontSize, {paddingTop: 7, paddingBottom:7, 
+                                                              color: item.selected ? 'red' : 'black'} ]}>   
+                                                              { item.display_name }
+                                                          </Text>
+                                                          {item.selected && <Icon name={"done"} style={[ styles.itemIcon, 3, {color:'red' }]} /> }
+                                                      </TouchableOpacity>
+                                                      <View style={[{borderWidth:1,borderColor:Colors.componentBackgroundColor}]}></View>
+                                                  </View>
+                                              )
+                                          })}
+                                      </ScrollView>
+                                  </View>
+                              </TouchableOpacity>
+                          </Modal>
+                          {/*Old Picker*/}
+                          {/*<Picker
+                              ref = 'genderPicker'
+                              selectedValue={this.state.selectedGender}
+                              onValueChange={this.onValueChange.bind(this, 'selectedGender')}>
+                              <Item label="Please select gender" value=""/>  
+                              <Item label="Male" value="M" /> 
+                              <Item label="Female" value="F" />
+                          </Picker>*/}
+                      </View>
+                      <TouchableOpacity onPress={() => this.setModalVisible(true)} style={{backgroundColor: Colors.componentBackgroundColor, marginBottom: 10,borderRadius: 5}}>
+                          <View style = {[styles.itemPicker,{flex:0.7,paddingHorizontal:12}]}>
+                              <Text style={[ styles.flatInputBoxFont,styles.inputValueFontSize, {opacity:this.state.selectedGender? 1:(this.state.gender.isErrRequired? 1:0.8),color:this.state.selectedGender? 'black':(this.state.gender.isErrRequired? 'red':'#B9B9B9'),textAlign:'left',paddingVertical:12,backgroundColor: Colors.componentBackgroundColor}]}>{ Helper._getGenderLabel(this.state.selectedGender) || 'Please select gender' }</Text>
+                          </View>
+                      </TouchableOpacity>
+                  </View> 
+                  } 
+
+                  { Helper._isIOS()  && 
+                  <View style={[styles.flatInputBox,styles.inputValueFontSize,{color:'black',width:'48.5%', justifyContent:'center'}]}> 
+                      <Modal
+                          animationType={"slide"}
+                          transparent={true}
+                          onRequestClose={() => {}}
+                          visible={this.state.modalVisible}>
+
+                          <View onPress = {()=>{ }} style={{flex: 1, justifyContent: 'flex-end',marginTop: 22}}>
+                              <TouchableOpacity
+                                  style={[ {backgroundColor: Colors.componentDarkBackgroundColor, padding: 15} ]}
+                                  onPress={() => { 
+                                      this.setModalVisible(!this.state.modalVisible);
+                                      let _SELF = this;
+                                      setTimeout(function(){
+                                          _SELF.ageInput.focus();
+                                      },200)
+                                  }}>
+                                  <Text style={[styles.fontBold, styles.inputLabelFontSize,{textAlign: 'right', color: '#3b5998'} ]} >Done</Text>
+                              </TouchableOpacity>
+                              <View style={[ {backgroundColor: 'white'} ]}>
+                                  <Picker
+                                      selectedValue={this.state.selectedGender}
+                                      onValueChange={this.onValueChange.bind(this, 'selectedGender')}>
+                                      <Item label="Please select gender" value=""/>
+                                      <Item label="Male" value="M" /> 
+                                      <Item label="Female" value="F" />
+                                  </Picker>
+                              </View>
+                          </View>
+                      </Modal>
+
+                      <TouchableOpacity
+                          onPress={() => {
+                              this.setModalVisible(true)
+                          }}>
+                          <View style = {styles.genderPicker}>
+                              <Text style={[ styles.flatInputBoxFont, styles.inputValueFontSize,{color: this.state.gender.isErrRequired ? 'red': '#B9B9B9'} , !_.isEmpty(this.state.selectedGender) && {color: Colors.textBlack}  ]}>{ Helper._getGenderLabel(this.state.selectedGender) || 'Please select gender' }</Text>
+                          </View>
+                      </TouchableOpacity>
+                  </View>
+                  }
+                </View> 
+
+                <View style={{width:'100%', flexDirection:'row', justifyContent:'space-between'}}>
+                  <TextInput 
+                    onChangeText={(txtFirstname) => this.setState({firstname:{
+                        val:txtFirstname
+                    }})}
+                    value={this.state.firstname.val}                        
+                    placeholder="First Name"
+                    placeholderTextColor={ this.state.firstname.isErrRequired ? 'red' :"#B9B9B9"}
+                    returnKeyType="next"
+                    keyboardType="email-address"
+                    autoCorrect={false}
+                    onFocus = { ()=> this.keyboardDidShow(null) }
+                    onSubmitEditing={() => this.lastname.focus()}
+                    style={[styles.flatInputBox,styles.inputValueFontSize,{color:'black', width:'48.5%'}]}
+                    underlineColorAndroid = 'transparent'
+                    textAlignVertical = 'bottom'
+                  />
+                  <TextInput 
+                    onChangeText={(txtLastname) => this.setState({lastname:{
+                        val:txtLastname
+                    }})}
+                    value={this.state.lastname.val} 
+                    placeholder="Last Name"
+                    placeholderTextColor={ this.state.lastname.isErrRequired ? 'red' :"#B9B9B9"}
+                    returnKeyType="go"
+                    style={[styles.flatInputBox,styles.inputValueFontSize,{color:'black', width:'48.5%'}]}
+                    ref={(input) => this.lastname =  input}
+                    onFocus = {() => {
+                        this.keyboardDidShow(null)  
+                    }}
+                    onSubmitEditing={() => this.setState({
+                            modalVisible: true
+                        })}                                    
+                    underlineColorAndroid = 'transparent'
+                    textAlignVertical = 'bottom'
+                  />
+                </View> 
                 <TextInput
                   ref="3"
                   onChangeText={txtEmail =>
@@ -468,15 +852,14 @@ class SignUpInfo extends Component {
                     })
                   }
                   value={this.state.email.val}
-                  placeholder="Email *"
+                  placeholder="Email"
                   onFocus={() => this.keyboardDidShow(null)}
                   placeholderTextColor={
                     this.state.email.isErrRequired ? 'red' : '#B9B9B9'
                   }
                   returnKeyType="next"
                   style={[
-                    styles.flatInputBox,
-                    styles.marginTopBig,
+                    styles.flatInputBox,                    
                     styles.inputValueFontSize,
                     {color: this.state.email.isErrRequired ? 'red' : '#4a4a4a'},
                   ]}
@@ -498,7 +881,7 @@ class SignUpInfo extends Component {
                     })
                   }
                   value={this.state.password.val}
-                  placeholder="Password *"
+                  placeholder="Password"
                   placeholderTextColor={
                     this.state.password.isErrRequired ? 'red' : '#B9B9B9'
                   }
