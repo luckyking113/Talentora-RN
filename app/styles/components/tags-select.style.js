@@ -10,8 +10,23 @@ export default {
         // justifyContent: 'space-around',
         // alignItems: 'stretch', 
         justifyContent: 'space-between',
-        flexWrap: 'wrap', 
-        
+        flexWrap: 'wrap',        
+    },
+
+    detailTagContainer: {
+        flex: 2,
+        flexDirection: 'row',
+        // justifyContent: 'space-around',
+        // alignItems: 'stretch', 
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        backgroundColor:'red'
+    },
+
+    itemTagContainer: {
+        // flex:3,        
+        height:'100%'
+
     },
 
     tagsSelect: {  
@@ -101,6 +116,10 @@ export default {
 
     tagTitleSelected: {
         color: 'white',
+    },
+
+    tagDetailSelected:{
+      display:'none'
     },
 
     tagStatusContainer: {

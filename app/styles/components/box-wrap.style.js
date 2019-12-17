@@ -44,7 +44,7 @@ export default {
     },
     myWrapWhoAreYou:{
         flex:0.4,
-        height:170,
+        height:170,        
         margin:5,
         alignItems:'center'
     },

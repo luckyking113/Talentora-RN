@@ -177,7 +177,6 @@ class TalentCategory extends Component{
                                 </TouchableOpacity>     
                             )
                         })}
-
                     </View>
 
                 </View>

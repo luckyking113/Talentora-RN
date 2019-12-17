@@ -298,6 +298,16 @@ export default {
         bottom:0,
         left: 0,
     },
+    absoluteBox1: {
+        flex: 1,
+        flexDirection: 'row',
+        backgroundColor: Colors.componentBackgroundColor,
+        paddingTop: 15,
+        paddingBottom: 15,
+        position: 'absolute',
+        bottom:0,
+        // left: 0,
+    },
 
     // box absolute bottom
     absoluteBoxBottom: { 

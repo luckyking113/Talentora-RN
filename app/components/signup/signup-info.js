@@ -95,6 +95,10 @@ class SignUpInfo extends Component {
       callingCode = userCountryData.callingCode;
     }
     this.state = {
+      selectedEthnicity: '',
+      hair_color: '',
+      eye_color: '',
+      ethnicityModalVisible: false,
       joining: false,
       firstname: {
         val: _tmpFbDat.firstname || '',
@@ -347,6 +351,8 @@ class SignUpInfo extends Component {
             lang_code: that.state.country.langCode,
             phone_num_code: that.state.country.callingCode,
             phone_number: that.state.phone.val,
+            languages: that.state.selectedLanguages,
+            ethnicity: that.state.selectedEthnicity,
             email: that.state.email.val.trim(),
             password: that.state.password.val,
           };
@@ -373,6 +379,8 @@ class SignUpInfo extends Component {
               city:signUpInfo.city,
               age:signUpInfo.age,
               gender: signUpInfo.gender,
+              ethnicity: signUpInfo.ethnicity,
+              language: signUpInfo.languages,
               email: signUpInfo.email,
               password: signUpInfo.password,
               confirm_password: signUpInfo.password,
@@ -595,6 +603,21 @@ class SignUpInfo extends Component {
     // console.log('Filter Lang: ', _dataFilter);
   }
 
+  onEthnicityChange(text) {
+    // console.log('Ethnicity: ', text);
+    this.setState({ selectedEthnicity: text })
+  }
+
+  onPickerChange(text, type) {
+    if (type == 'ethnicity') {
+      this.setState({ selectedEthnicity: text })
+    } else if (type == 'hair') {
+      this.setState({ hair_color: text })
+    } else if (type == 'eye') {
+      this.setState({ eye_color: text })
+    }
+  }
+
   generateLanguageList() {
     return (
       <Modal
@@ -679,6 +702,143 @@ class SignUpInfo extends Component {
       this.setState({ languages: temp });
       Alert.alert('You can select three languages only')
     }
+  }
+
+  generatePicker(itemObject, type) {
+    let _prepareRenderPicker = (type == 'ethnicity' ? ethnicities : (type == 'hair' ? hair_colors : eye_colors));
+    return (
+      <View style={[styles.flatInputBox,styles.inputValueFontSize,{color:'black',width:'48.5%', justifyContent:'center'}]}>
+        {Helper._isAndroid() &&
+          <View>
+            <View style={[{ flex: 1 }]}>
+              <Modal
+                transparent={true}
+                onRequestClose={() => { }}
+                visible={type == 'ethnicity' ? this.state.ethnicityModalVisible : (type == 'hair' ? this.state.hairModalVisible : this.state.eyeModalVisible)}>
+                <TouchableOpacity style={[styles.justFlexContainer, styles.mainVerticalPadding, { flex: 1, flexDirection: 'column', paddingBottom: 0, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.8)' }]} onPressOut={() => { this.setModalVisible(false, type) }}>
+                  <View style={{ width: 300, height: type == 'genderAndroid' ? 200 : (type == 'ethnicity' ? 300 : (type == 'hair' ? 270 : 270)), backgroundColor: 'white' }}>
+                    <View style={[styles.languageNav]} >
+                      <Text style={[styles.languageNavTitle, styles.inputLabelFontSize, { textAlign: 'left' }]} >Please select {type == 'genderAndroid' ? 'gender' : type}</Text>
+                      {/*<Text style={[ styles.languageNavStatus ]} >{this.state.selectedLanguagesCount} /3 selected</Text>*/}
+                    </View>
+                    {/*Language Search*/}
+                    {/*<View style={[styles.mainHorizontalPadding, {marginTop: 20}]}>
+                                            <TextInput
+                                                style={{marginBottom:7, height: Helper._isAndroid()?40:30, borderColor:Colors.componentBackgroundColor, borderRadius:5,textAlign:'center', backgroundColor:Colors.componentBackgroundColor,borderWidth: 1}}
+                                                onChangeText={(text) => this.onLanguageSearch(text)}
+                                                value={this.state.text}
+                                                placeholder="Search"
+                                            />
+                                        </View>*/}
+                    <ScrollView contentContainerStyle={[styles.mainVerticalPadding, styles.mainHorizontalPadding]}>
+                      {_prepareRenderPicker.map((item, idx) => {
+                        return (
+                          <View key={idx} >
+                            {/*{console.log('Item ZIN: ', lang, idx)}*/}
+                            {/* {when search first time click on the row is not work cus not yet lost focus from text input */}
+                            <TouchableOpacity onPress={() => this.genderSelect(item, idx, type)} activeOpacity={.8}
+                              style={[styles.flexVer, styles.rowNormal, { justifyContent: 'space-between' }]}>
+                              <Text style={[styles.itemText, styles.inputValueFontSize, {
+                                paddingTop: 7, paddingBottom: 7,
+                                color: item.selected ? 'red' : 'black'
+                              }]}>
+                                {item.display_name}
+                              </Text>
+                              {item.selected && <Icon name={"done"} style={[styles.itemIcon, 3, { color: 'red' }]} />}
+                            </TouchableOpacity>
+                            <View style={[{ borderWidth: 1, borderColor: Colors.componentBackgroundColor }]}></View>
+                          </View>
+                        )
+                      })}
+                    </ScrollView>
+                  </View>
+                </TouchableOpacity>
+              </Modal>
+              {/*Old Picker*/}
+              {/*<Picker
+                                ref = 'genderPicker'
+                                selectedValue={this.state.selectedGender}
+                                onValueChange={this.onValueChange.bind(this, 'selectedGender')}>
+                                <Item label="Please select gender" value=""/>  
+                                <Item label="Male" value="M" /> 
+                                <Item label="Female" value="F" />
+                            </Picker>*/}
+            </View>
+            <TouchableOpacity onPress={() => this.setLanguageModalVisible(true, type)}>
+              <View style={[styles.itemPicker, { flex: 0.7 }]}>
+                <Text style={[styles.flatInputBoxFont, styles.inputValueFontSize, { color: type == "ethnicity" ? (this.state.selectedEthnicity ? 'black' : '#9B9B9B') : (type == "hair" ? (this.state.hair_color ? 'black' : '#9B9B9B') : (this.state.eye_color ? 'black' : '#9B9B9B')), textAlign: 'left' }]}>{type == 'ethnicity' ? this.state.selectedEthnicity || 'Ethnicity' : (type == 'hair' ? this.state.hair_color || 'Select Hair Color' : this.state.eye_color || 'Select Eye Color')}</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        }
+
+        {Helper._isIOS() &&
+          <View>
+            <Modal
+              animationType={"slide"}
+              transparent={true}
+              onRequestClose={() => { }}
+              visible={type == 'ethnicity' ? this.state.ethnicityModalVisible :
+                (type == 'hair' ? this.state.hairModalVisible : this.state.eyeModalVisible)}
+            >
+
+              <View onPress={() => { }} style={{ flex: 1, justifyContent: 'flex-end', marginTop: 22 }}>
+                <View style={styles.pickerTitleContainer}>
+                  <Text style={[styles.fontBold, styles.inputLabelFontSize, { textAlign: 'left', color: '#4a4a4a', padding: 10, left: 10 }]}>Select {type == 'ethnicity' ? type : type + ' color'} </Text>
+                  <TouchableOpacity activeOpacity={0.8}
+                    style={[{ backgroundColor: Colors.componentDarkBackgroundColor, position: 'absolute', padding: 10, right: 10 }]}
+                    onPress={() => {
+                      this.setLanguageModalVisible(false, type)
+                    }}>
+                    <Text style={[styles.fontBold, styles.inputLabelFontSize, { textAlign: 'right', color: '#3b5998' }]}>Done</Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={[{ backgroundColor: 'white' }]}>
+                  <Picker
+                    selectedValue={type == 'ethnicity' ? this.state.selectedEthnicity :
+                      (type == 'hair' ? this.state.hair_color : this.state.eye_color)}
+                    onValueChange={(item) => this.onPickerChange(item, type)}>
+                    {
+                      itemObject.map((item, index) => {
+                        return (
+                          <Item key={index} label={item.display_name} value={item.display_name} />
+                        )
+                      })
+                    }
+                  </Picker>
+                </View>
+              </View>
+            </Modal>
+
+            <TouchableOpacity
+              onPress={() => {
+                this.setLanguageModalVisible(true, type)
+                let val = type == 'ethnicity' ? this.state.selectedEthnicity :
+                  (type == 'hair' ? this.state.hair_color : this.state.eye_color);
+                if (val == '')
+                  this.onPickerChange(itemObject[0].display_name, type);
+              }}>
+              <View style={styles.itemPicker}>
+                {
+                  type == 'ethnicity' &&
+                  <Text style={[styles.flatInputBoxFont, styles.inputValueFontSize, { color: this.state.selectedEthnicity ? 'black' : '#9B9B9B' }]}>{this.state.selectedEthnicity || 'Ethnicity'}</Text>
+                }
+
+                {
+                  type == 'hair' &&
+                  <Text style={[styles.flatInputBoxFont, styles.inputValueFontSize, { color: this.state.hair_color ? 'black' : '#9B9B9B' }]}>{this.state.hair_color || 'Select hair color'}</Text>
+                }
+
+                {
+                  type == 'eye' &&
+                  <Text style={[styles.flatInputBoxFont, styles.inputValueFontSize, { color: this.state.eye_color ? 'black' : '#9B9B9B' }]}>{this.state.eye_color || 'Select eye color'}</Text>
+                }
+              </View>
+            </TouchableOpacity>
+          </View>
+        }
+      </View>
+    )
   }
   
   render() {
@@ -928,27 +1088,12 @@ class SignUpInfo extends Component {
                 </View> 
 
                 <View style={{width:'100%', flexDirection:'row', justifyContent:'space-between'}}>
-                  <TextInput 
-                    onChangeText={(txtFirstname) => this.setState({firstname:{
-                        val:txtFirstname
-                    }})}
-                    value={this.state.firstname.val}                        
-                    placeholder="First Name"
-                    placeholderTextColor={ this.state.firstname.isErrRequired ? 'red' :"#B9B9B9"}
-                    returnKeyType="next"
-                    keyboardType="email-address"
-                    autoCorrect={false}
-                    onFocus = { ()=> this.keyboardDidShow(null) }
-                    onSubmitEditing={() => this.lastname.focus()}
-                    style={[styles.flatInputBox,styles.inputValueFontSize,{color:'black', width:'48.5%'}]}
-                    underlineColorAndroid = 'transparent'
-                    textAlignVertical = 'bottom'
-                  />
+                  {this.generatePicker(ethnicities, 'ethnicity')}
                   <TouchableOpacity                     
                     style={[styles.flatInputBox,styles.inputValueFontSize,{color:'black',width:'48.5%', justifyContent:'center'}]}
                     onPress={() => this.setLanguageModalVisible(true, 'language')}>
                     <View>
-                      <Text style={[styles.flatInputBoxFont, styles.inputValueFontSize, { color: this.state.displayLanguages ? 'black' : '#9B9B9B' }]}>{this.state.displayLanguages || 'Select languages'}</Text>
+                      <Text style={[styles.flatInputBoxFont, styles.inputValueFontSize, { color: this.state.displayLanguages ? 'black' : '#9B9B9B' }]}>{this.state.displayLanguages || 'Languages'}</Text>
                     </View>
                   </TouchableOpacity>
                   {this.generateLanguageList()}
