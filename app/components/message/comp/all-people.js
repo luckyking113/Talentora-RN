@@ -118,7 +118,7 @@ class AllPeople extends React.PureComponent {
         _SELF = this;
         const { navigate, goBack, state } = this.props.navigation;
         
-        console.log('Nav State: ', state);
+      //  console.log('Nav State: ', state);
 
     }
     
@@ -128,7 +128,7 @@ class AllPeople extends React.PureComponent {
     }); 
 
     goToDetail = (item) => {
-        console.log('goToSetting: ', item);
+      //  console.log('goToSetting: ', item);
 
         GoogleAnalyticsHelper._trackEvent('View Profile', 'Job - Share - To - People', {user_id: item.userId, user_name: Helper._getUserFullName(item.attributes) });                                                 
 
@@ -138,7 +138,7 @@ class AllPeople extends React.PureComponent {
 
     selectedPeople = (itemSelected) => {
         let _stateData = _.cloneDeep(this.state.data);
-        console.log('itemSelected: ', itemSelected);
+       // console.log('itemSelected: ', itemSelected);
         // return;
         _.each(_stateData,function(v,k){
             if(itemSelected.user._id == v.user._id){
@@ -149,7 +149,7 @@ class AllPeople extends React.PureComponent {
         this.setState({
             data: _stateData,
         }, function(){
-            console.log('State after update : ',this.state);
+           // console.log('State after update : ',this.state);
         });
     }
 
@@ -159,7 +159,7 @@ class AllPeople extends React.PureComponent {
             return v.selected;
         })
 
-        console.log('_itemSelected: ', _itemSelected);
+       // console.log('_itemSelected: ', _itemSelected);
 
         // return;
 
@@ -182,17 +182,17 @@ class AllPeople extends React.PureComponent {
 
                 ChatHelper._createChannel(sb, {id: v_user_selected.user._id}, null, function(_channel){
                     
-                    console.log('send job in chat channel : ', _channel)
+                    //console.log('send job in chat channel : ', _channel)
                     // _SELF.getChannelInfo(_channel.url);
         
                     // return;
         
-                    console.log('data: ', _data);
+                    //console.log('data: ', _data);
                     // return;
         
                     _channel.sendUserMessage('', JSON.stringify(_data), customType, function (message, error) {
                         if (error) {
-                            console.log(error);
+                          //  console.log(error);
                             return;
                         }
         
@@ -205,13 +205,13 @@ class AllPeople extends React.PureComponent {
                     
                         };
         
-                        console.log('Message Obj Notify : ', _message);
+                       // console.log('Message Obj Notify : ', _message);
         
                         // get meta data for detech both user online + stay on chat room or not
                         // if online + stay on chat room both user no need to send notification. coz user already  saw the message
                         _channel.getMetaData(['chat_members'], function(response, error){
                             if (error) {
-                                console.log(error);
+                              //  console.log(error);
                                 return;
                             }
         
@@ -270,20 +270,20 @@ class AllPeople extends React.PureComponent {
 			channel_url: _messsage.channelUrl, 
 			chat_id: UserHelper.UserInfo._id
 		}
-		console.log('_data: ', _data);
+		//console.log('_data: ', _data);
 		// return;
 		let API_URL = '/api/notifications/customs';
 		postApi(API_URL,
 			JSON.stringify(_data)
 		).then((response) => {
 
-			console.log('Response Save Job: ', response);
+		//	console.log('Response Save Job: ', response);
 
 			if(response.code== 200){
-				console.log('Message Notification Send.');
+			//	console.log('Message Notification Send.');
 			}
 			else{
-				console.log('Message Notification Send Error');
+			//	console.log('Message Notification Send Error');
 			}
 
 		});
@@ -363,11 +363,11 @@ class AllPeople extends React.PureComponent {
         ChatHelper._sendBirdLogin(function(_sb){
             
             if(!_sb){
-                console.log('cannot login to send bird')
+             //   console.log('cannot login to send bird')
                 return;
             }
 
-            console.log('_sb : ', _sb);
+           // console.log('_sb : ', _sb);
 
             sb = _sb;
 
@@ -404,10 +404,10 @@ class AllPeople extends React.PureComponent {
 
         let API_URL = this._getPeopleJobURL(_offset) + _searchUrl;
 
-        console.log('API_URL _getPeopleList : ',API_URL);
+      //  console.log('API_URL _getPeopleList : ',API_URL);
 
         getApi(API_URL).then((_response) => {
-            console.log('All People : ', _response);
+        //    console.log('All People : ', _response);
             if(_response.status == 'success'){
 
                 // let _allAvailableJob = _response.result;
@@ -495,7 +495,7 @@ class AllPeople extends React.PureComponent {
 
     _getPeopleJobURL = (_offset) =>{
         if(this.state.filterData){
-            console.log('Data: ', this.state.filterData);
+          //  console.log('Data: ', this.state.filterData);
             let _SELF = this;
             let _dataFilter = this.state.filterData;
 
@@ -587,7 +587,7 @@ class AllPeople extends React.PureComponent {
 
     _onPressItem = (id) => {
         // updater functions are preferred for transactional updates
-        console.log('THIS IS MY ID WHEN PRESS ITEM: ', id);
+       // console.log('THIS IS MY ID WHEN PRESS ITEM: ', id);
         // console.log('this.state: ', this.state);
         // this.setState((state) => {
         // // copy the map rather than modifying state.
@@ -640,14 +640,14 @@ class AllPeople extends React.PureComponent {
             refreshing: true,
             page: 1,
         }, function(){
-            console.log('pull to refresh');
+        //    console.log('pull to refresh');
             this._getPeopleList();
         });
     }
 
     handleLoadMore = () => {
 
-        console.log(this.state.options.total,' == ',this.state.limit ,' this.state.loading', this.state.loading);
+     //   console.log(this.state.options.total,' == ',this.state.limit ,' this.state.loading', this.state.loading);
 
         let that = this;
 
@@ -678,7 +678,7 @@ class AllPeople extends React.PureComponent {
             //     },0)
             // })
 
-            console.log('call people list');
+           // console.log('call people list');
 
             this._getPeopleList(true, '', false);
             
@@ -688,7 +688,7 @@ class AllPeople extends React.PureComponent {
     }
 
     searchNow = (txtSearch, isEmpty=false) => {
-        console.log('Search Text: ', txtSearch);
+       // console.log('Search Text: ', txtSearch);
         if(!isEmpty){
             
             this.setState({

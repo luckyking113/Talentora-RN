@@ -46,7 +46,7 @@ export default class LogInForm extends Component {
       loggedIn: false,
       isGoogleSigninInProgress: false,
       userInfo:[]
-    };
+    };    
   }
 
   componentDidMount() {
@@ -88,7 +88,7 @@ export default class LogInForm extends Component {
       // user need to fill Talent Category (employer or user)
       navigate('WhoAreYou', {noBackButton: true});
     } else {
-      console.log(_userInfo);
+    //  console.log(_userInfo);
       const userRole = UserHelper._getFirstRole();
       if (_userInfo.profile.attributes) {
         if (_.isEmpty(_userInfo.profile.attributes.kind)) {
@@ -180,7 +180,7 @@ export default class LogInForm extends Component {
 
     UserHelper.UserInfo = _userInfo;
 
-    console.log('_saveUserData : ', UserHelper.UserInfo);
+    //console.log('_saveUserData : ', UserHelper.UserInfo);
 
     if (
       _userInfo.is_register_completed &&
@@ -194,7 +194,7 @@ export default class LogInForm extends Component {
       UserHelper.UserInfo = _userInfo;
 
       _userData.then(function(result) {
-        console.log('complete login : ', UserHelper.UserInfo);
+       // console.log('complete login : ', UserHelper.UserInfo);
 
         StorageData._removeStorage('SignUpProcess');
 
@@ -269,9 +269,9 @@ export default class LogInForm extends Component {
             password: that.state.password.val,
           }),
         ).then(response => {
-          console.log('response: ', response);
+          //console.log('response: ', response);
           if (response.status == 'success') {
-            console.log('Response Object: ', response);
+           // console.log('Response Object: ', response);
             that._saveUserData(response);
           } else {
             that.setState({
@@ -289,7 +289,7 @@ export default class LogInForm extends Component {
 
   addText = function() {
     Alert.alert('Get Help');
-    console.log('Hello Pressed');
+    //console.log('Hello Pressed');
     // console.log('This is device id: ', DeviceInfo.getUniqueID());
   };
 
@@ -359,7 +359,7 @@ export default class LogInForm extends Component {
           fbLoading: true,
         });
         loginFacebook().then(response => {
-          console.log('response:', response);
+          //console.log('response:', response);
           if (response) {
             // this._goSignUp(response);
 

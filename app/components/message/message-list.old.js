@@ -120,7 +120,7 @@ class MessageList extends Component {
         let _sendJob = false;
         if(typeof state.params !== 'undefined'){
             if(typeof state.params.shareJob !== 'undefined'){
-                console.log('send job info : ', state.params.shareJob);
+              //  console.log('send job info : ', state.params.shareJob);
                 _sendJob = true
             }
         }
@@ -144,7 +144,7 @@ class MessageList extends Component {
         this.setState({
             options: _stateData,
         }, function(){
-            console.log('State after update : ',this.state);
+            //console.log('State after update : ',this.state);
         });
     }
 
@@ -154,7 +154,7 @@ class MessageList extends Component {
             return v.selected;
         })
 
-        console.log('_itemSelected: ', _itemSelected);
+       // console.log('_itemSelected: ', _itemSelected);
 
         // return;
 
@@ -178,12 +178,12 @@ class MessageList extends Component {
         
                     // return;
         
-                    console.log('data: ', _data);
+                  //  console.log('data: ', _data);
                     // return;
         
                     _channel.sendUserMessage('', JSON.stringify(_data), customType, function (message, error) {
                         if (error) {
-                            console.log(error);
+                           // console.log(error);
                             return;
                         }
         
@@ -196,13 +196,13 @@ class MessageList extends Component {
                     
                         };
         
-                        console.log('Message Obj Notify : ', _message);
+                       // console.log('Message Obj Notify : ', _message);
         
                         // get meta data for detech both user online + stay on chat room or not
                         // if online + stay on chat room both user no need to send notification. coz user already  saw the message
                         _channel.getMetaData(['chat_members'], function(response, error){
                             if (error) {
-                                console.log(error);
+                               // console.log(error);
                                 return;
                             }
         
@@ -257,20 +257,20 @@ class MessageList extends Component {
 			channel_url: _messsage.channelUrl, 
 			chat_id: UserHelper.UserInfo._id
 		}
-		console.log('_data: ', _data);
+		//console.log('_data: ', _data);
 		// return;
 		let API_URL = '/api/notifications/customs';
 		postApi(API_URL,
 			JSON.stringify(_data)
 		).then((response) => {
 
-			console.log('Response Save Job: ', response);
+			//console.log('Response Save Job: ', response);
 
 			if(response.code== 200){
-				console.log('Message Notification Send.');
+			//	console.log('Message Notification Send.');
 			}
 			else{
-				console.log('Message Notification Send Error');
+				//console.log('Message Notification Send Error');
 			}
 
 		});
@@ -319,7 +319,7 @@ class MessageList extends Component {
 
     // go to message detail page
     _goToMessageDetail = (itemSelected) => {
-        console.log('itemSelected: ', itemSelected);
+        //console.log('itemSelected: ', itemSelected);
         // const resetAction = NavigationActions.reset({ index: 0, actions: [{type: NavigationActions.NAVIGATE, routeName: 'MessageList'}], key: null })
         // this.props.navigation.dispatch(resetAction);
  
@@ -342,7 +342,7 @@ class MessageList extends Component {
 
             // this.props.message(itemSelected); 
             
-            console.log('item selected: ', itemSelected);
+           // console.log('item selected: ', itemSelected);
 
             // check to clear dot below icon tab
             if(itemSelected.unreadMessageCount>0){
@@ -429,12 +429,12 @@ class MessageList extends Component {
             if (channelListQuery.hasNext) {
                 channelListQuery.next(function(channelList, error){
                     if (error) {
-                        console.log(error);
+                       // console.log(error);
                         return;
                     }
 
                     // returns channelA only.
-                    console.log('All Channel List : ', channelList); 
+                   // console.log('All Channel List : ', channelList); 
 
                     ChatHelper._storeAllChatMembers(channelList);
 
@@ -450,7 +450,7 @@ class MessageList extends Component {
             }
 
         }catch(e){
-            console.log('unmount chat list error :', e);
+            //console.log('unmount chat list error :', e);
         }
     }
 
@@ -570,7 +570,7 @@ class MessageList extends Component {
         this.setState({
             options: _tmpOption
         }, function(){
-            console.log('_tmpOption : ', this.state.options)
+           // console.log('_tmpOption : ', this.state.options)
         });
         // console.log('_allChannelData : ', _channelNeedToUpdate);
 
@@ -586,10 +586,10 @@ class MessageList extends Component {
     _initPushConfig = () => {
         AppState.addEventListener('change', function(currentAppState){
             if (currentAppState === 'active') {
-                console.log('foreground');
+               // console.log('foreground');
                 sb.setForegroundState();
             } else if (currentAppState === 'background') {
-                console.log('background');
+               // console.log('background');
                 sb.setBackgroundState();
             }
         });
@@ -660,11 +660,11 @@ class MessageList extends Component {
         ChatHelper._sendBirdLogin(function(_sb){
 
             if(!_sb){
-                console.log('cannot login to send bird')
+             //   console.log('cannot login to send bird')
                 return;
             }
 
-            console.log('_sb : ', _sb);
+           // console.log('_sb : ', _sb);
 
             sb = _sb;
 
@@ -682,7 +682,7 @@ class MessageList extends Component {
 
             ChannelHandler.onMessageReceived = function(channel, message){
                 // console.log('onMessageReceived Channel : ', channel);
-                console.log('onMessageReceived Message : ', message);
+              //  console.log('onMessageReceived Message : ', message);
 
                 // console.log('Action : ', _SELF.props);
 
@@ -788,7 +788,7 @@ class MessageList extends Component {
     searchNow = (txtSearch) => {
 
         let _SELF = this;
-        console.log('Search Text: ', txtSearch);
+        //console.log('Search Text: ', txtSearch);
         // this._getPeopleList(false, txtSearch, true);
 
         GoogleAnalyticsHelper._trackEvent('Chat', 'Search',{text_search: txtSearch});
@@ -799,7 +799,7 @@ class MessageList extends Component {
         })
         var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 
-        console.log('this.state.allChannelData : ', this.state.options.allChannelData);
+       // console.log('this.state.allChannelData : ', this.state.options.allChannelData);
 
         let _dataFilter = _.filter(this.state.options.allChannelData,function(v,k){
             // return _.includes(v.name, txtSearch);
@@ -808,7 +808,7 @@ class MessageList extends Component {
             // return v.name.indexOf(txtSearch) != -1;
         })
 
-        console.log('_dataFilter :', _dataFilter);
+       // console.log('_dataFilter :', _dataFilter);
 
         _tmpOption = _.cloneDeep(this.state.options);
  
@@ -828,7 +828,7 @@ class MessageList extends Component {
     }
 
     onRefresh = () => {
-        console.log('onRefresh');
+       // console.log('onRefresh');
         this.setState({
             refreshing: true
         }, function(){

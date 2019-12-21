@@ -246,7 +246,7 @@ export default class TalentFeedList extends React.PureComponent {
                     });
                 }
             }, error => {
-                console.log('error:', error);
+            //    console.log('error:', error);
             });
         }
     }
@@ -342,9 +342,9 @@ export default class TalentFeedList extends React.PureComponent {
                                     const _thumn = this.props.videoThum;
 
                                     ImageCache.get().clear(_thumn).then(function(e){
-                                        console.log('clear thum ', e)
+                                    //    console.log('clear thum ', e)
                                         ImageCache.get().bust(_thumn, function(e){
-                                            console.log('bust', e);
+                                      //      console.log('bust', e);
                                         });
                                     });
 

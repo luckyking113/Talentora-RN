@@ -12,7 +12,7 @@ import {
 import Icon from 'react-native-vector-icons/Entypo';
 import { Colors } from '@themes/index';
 import { IconCustom } from '@components/ui/icon-custom';
-import { UserHelper, Helper } from '@helper/helper';
+// import { UserHelper, Helper } from '@helper/helper';
 
 import { NavigationActions } from 'react-navigation';
 import _ from 'lodash'
@@ -43,7 +43,7 @@ class ButtonBack extends Component {
 
         const { icon, isGoBack, btnLabel, colBtn, screen  } = this.props;
 
-        console.log('state : ', isGoBack.state);
+        //console.log('state : ', isGoBack.state);
 
         const {state} = isGoBack;
         // state.params._callBack();

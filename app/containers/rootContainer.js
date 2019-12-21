@@ -49,7 +49,7 @@ class Root extends Component {
 
     this.onIds = this.onIds.bind(this);
     // console.log('Main Props: ', this.props);
-    console.log = () => {};
+    // console.log = () => {};
     // console.log('Main Props: ', this.props);
   }
 

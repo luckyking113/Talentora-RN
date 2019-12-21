@@ -122,7 +122,7 @@ class feedBack extends Component {
   onTabPress = _tabIndex => {};
 
   applyFeedBack = () => {
-    console.log('Apply Filter selectedGender', this.state);
+    //console.log('Apply Filter selectedGender', this.state);
   };
   setModalVisible(visible) {
     this.setState({modalVisible: visible});

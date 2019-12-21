@@ -142,7 +142,7 @@ class WhatAreYou extends Component {
 
       // **** pls dont fucking delete my beauty code. !! get out of my code ****
 
-      console.log('Role : ', this.state.user_type_select.role);
+      // console.log('Role : ', this.state.user_type_select.role);
 
       let that = this;
 
@@ -163,7 +163,7 @@ class WhatAreYou extends Component {
           let _userData = StorageData._saveUserData('SignUpProcess', JSON.stringify(_result));
           UserHelper.UserInfo = _result; // assign for tmp user obj for helper
           _userData.then(function (result) {
-            console.log('complete save sign up process 2');
+            //console.log('complete save sign up process 2');
           });
 
           let API_URL1 = '/api/users/me/customs';
@@ -183,7 +183,7 @@ class WhatAreYou extends Component {
               },
             })
           ).then((response) => {
-            console.log('Response Object: ', response);
+            console.log('Response Tab Object: ', response);
             if (response.status == "success") {
               let _result = response.result;
               let _userData = StorageData._saveUserData('SignUpProcess', JSON.stringify(_result));
@@ -194,7 +194,8 @@ class WhatAreYou extends Component {
             }            
           })
           
-          navigate('UploadPhoto', { sign_up_info: signUpInfo });
+          navigate('UploadVideo', { sign_up_info: signUpInfo });
+          
           // if (that.state.user_type_select) {
           //   if (that.state.user_type_select.type == 'talent-seeker')
           //     navigate('TalentSeekerCategory', { sign_up_info: signUpInfo });

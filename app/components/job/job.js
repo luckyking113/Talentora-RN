@@ -172,7 +172,7 @@ class JobRoot extends Component {
 
         _updateAppOption.then(function(result){
 
-            console.log('complete login : ', result);
+           // console.log('complete login : ', result);
 
         });
     }
@@ -188,7 +188,7 @@ class JobRoot extends Component {
             noti: 0
         });
 
-        console.log('JOB MAIN PROPS: ', this.props);
+        //console.log('JOB MAIN PROPS: ', this.props);
 
         let _SELF = this;
         
@@ -215,7 +215,7 @@ class JobRoot extends Component {
             
             // return;
             
-            console.log('args : ', args);
+          //  console.log('args : ', args);
 
             let _notiOption = {
                 job: that.props.notification.job,
@@ -224,7 +224,7 @@ class JobRoot extends Component {
                 noti: that.props.notification.noti
             }
             
-            console.log('that.props.notification :', that.props.notification);
+           // console.log('that.props.notification :', that.props.notification);
 
             if(args.action == 'new-job'){
                 _notiOption.job++;
@@ -240,7 +240,7 @@ class JobRoot extends Component {
                 _notiOption.noti++;
             }
 
-            console.log('_notiOption :', _notiOption);
+         //   console.log('_notiOption :', _notiOption);
             
             that.props.setNotification(_notiOption);
 
@@ -252,7 +252,7 @@ class JobRoot extends Component {
         ChatHelper._sendBirdLogin(function(_sb){
             
             if(!_sb){
-                console.log('cannot login to send bird')
+                //console.log('cannot login to send bird')
                 return;
             }
 
@@ -285,7 +285,7 @@ class JobRoot extends Component {
 
         getApi(API_URL).then((_response) => {
 
-            console.log('All Notification : ', _response);
+           // console.log('All Notification : ', _response);
 
             if(_response.code == 200){
                 let _result = _response.result;
@@ -302,7 +302,7 @@ class JobRoot extends Component {
                     _SELF.props.setNotification(_notiOption);
             
                 }
-                console.log('Noti Result: ', _result);
+              //  console.log('Noti Result: ', _result);
 
             }
 
@@ -333,7 +333,7 @@ class JobRoot extends Component {
             if (channelListQuery.hasNext) {
                 channelListQuery.next(function(channelList, error){
                     if (error) {
-                        console.log(error);
+                    //    console.log(error);
                         return;
                     }
 
@@ -360,7 +360,7 @@ class JobRoot extends Component {
             }
 
         }catch(e){
-            console.log('unmount chat list error :', e);
+           // console.log('unmount chat list error :', e);
         }
     
     }
@@ -409,7 +409,7 @@ class JobRoot extends Component {
 
     triggerNotificationDetail = (notif_data) => {
         if(notification_data.length > 0){
-            console.log('Notification Data: ', notification_data);
+           // console.log('Notification Data: ', notification_data);
             
             let REQ_API;
             switch (notification_data[0].type){

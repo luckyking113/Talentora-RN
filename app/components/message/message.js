@@ -127,7 +127,7 @@ class Message extends Component {
 		this.renderCustomActions = this.renderCustomActions.bind(this);
 		
 		// console.log('message state :', state.params.message_data);
-		console.log('props :', this.props);
+		//console.log('props :', this.props);
 	}
 
 	static navigationOptions = ({ navigation }) => ({
@@ -254,7 +254,7 @@ class Message extends Component {
 
 		openChannelListQuery.next(function (channels, error) {
 			if (error) {
-				console.log(error);
+			//	console.log(error);
 				return;
 			}
 
@@ -311,7 +311,7 @@ class Message extends Component {
 			// console.log('Create Channed 1-to-1 : ', channel); 
 
 			if (error) {
-				console.log(error);
+				//console.log(error);
 				return;
 			}
 
@@ -334,10 +334,10 @@ class Message extends Component {
 			// store meta data to check both user inside one room at the same time to cut down send notification while they are chating
 			userChannel.getMetaData(['chat_members'], function(response, error){
 				if (error) {
-					console.log(error);
+					//console.log(error);
 					return;
 				}
-				console.log('success get meta data: ', response);
+			//	console.log('success get meta data: ', response);
 
 				let _members = _.cloneDeep(userChannel.memberMap);
 				let _brokenData = false;
@@ -370,10 +370,10 @@ class Message extends Component {
 				// if first time create new meta data
 				if(!response.chat_members || _brokenData){
 					// console.log('success get meta data: ', JSON.parse(response.chat_members));
-					console.log('create');
+					//console.log('create');
 					userChannel.createMetaData({ chat_members : JSON.stringify(_members)} , function(response_create, error){
 						if (error) {
-							console.log(error);
+					//		console.log(error);
 							return;
 						}
 						// console.log('success create meta data: ', JSON.parse(response_create.chat_members));					
@@ -385,7 +385,7 @@ class Message extends Component {
 					userChannel.updateMetaData({ chat_members : JSON.stringify(_members)}, false, function(response_update, error){
 						// console.log('start update');
 						if (error) {
-							console.log(error);
+					//		console.log(error);
 							return;
 						}
 						// console.log('success update meta data: ', JSON.parse(response_update.chat_members));					
@@ -428,11 +428,11 @@ class Message extends Component {
 			messageListQuery.prev(_time || _SELF.state.last_message_timestamp, this.state.limit, true, function (messageList, error) {
 				
 				if (error) {
-					console.log(error);
+				//	console.log(error);
 					return;
 				}
 
-				console.log('Prev Message: ', messageList);
+			//	console.log('Prev Message: ', messageList);
 					
 				if(!_.isEmpty(messageList)){
 					// console.log('Prev Message: ', messageList[messageList.length-1]);
@@ -477,7 +477,7 @@ class Message extends Component {
 
 	_sendMessage = (messages) => {
 		let _SELF = this;
-		console.log(messages);
+		//console.log(messages);
 		
 
 		// let _msg = _.head(messages); // default gifted give 1 array. so need get message is: messages.text
@@ -506,7 +506,7 @@ class Message extends Component {
 
 			userChannel.sendUserMessage(messages, JSON.stringify(_data), customType, function (message, error) {
 				if (error) {
-					console.log(error);
+			//		console.log(error);
 					return;
 				}
 
@@ -528,7 +528,7 @@ class Message extends Component {
 				// if online + stay on chat room both user no need to send notification. coz user already  saw the message
 				userChannel.getMetaData(['chat_members'], function(response, error){
 					if (error) {
-						console.log(error);
+					//	console.log(error);
 						return;
 					}
 
@@ -560,7 +560,7 @@ class Message extends Component {
 
 
 				// onSent
-				console.log('Send To : ',message); 
+			//	console.log('Send To : ',message); 
 
 			});
 
@@ -592,20 +592,20 @@ class Message extends Component {
 			channel_url: state.params.message_data.channelUrl, 
 			chat_id: UserHelper.UserInfo._id
 		}
-		console.log('_data: ', _data);
+	//	console.log('_data: ', _data);
 		// return;
 		let API_URL = '/api/notifications/customs';
 		postApi(API_URL,
 			JSON.stringify(_data)
 		).then((response) => {
 
-			console.log('Response Save Job: ', response);
+		//	console.log('Response Save Job: ', response);
 
 			if(response.code== 200){
-				console.log('Message Notification Send.');
+		//		console.log('Message Notification Send.');
 			}
 			else{
-				console.log('Message Notification Send Error');
+			//	console.log('Message Notification Send Error');
 			}
 
 		});
@@ -621,7 +621,7 @@ class Message extends Component {
 				_nextIndexListItem = this.state.messages.length+1;
 			}
 
-			console.log('_index: ',_nextIndexListItem, ' === ', this.state.messages.length);
+		//	console.log('_index: ',_nextIndexListItem, ' === ', this.state.messages.length);
 
 			_.each(messageObj, function (v, k) {
 
@@ -631,7 +631,7 @@ class Message extends Component {
 					const _tmpMembers = _.cloneDeep(userChannel.memberMap);
 					_partnerCover = _tmpMembers[v._sender.userId].profileUrl;
 				}catch(e){
-					console.log('error get cover other partner: ', e);
+			//		console.log('error get cover other partner: ', e);
 				}
 				// console.log('partner cover: ',_partnerCover);
 				let _iconCover = Helper._getFileExtenstion(v._sender.profileUrl) ? _partnerCover || v._sender.profileUrl : 'https://dxstmhyqfqr1o.cloudfront.net/images/icon_profile.png';
@@ -678,7 +678,7 @@ class Message extends Component {
 				_tmpObj.push(giftedObj);
 			})
 
-			console.log('sendbirt to gifted data : ', _tmpObj);	
+	//		console.log('sendbirt to gifted data : ', _tmpObj);	
 
 			_tmpObj = _.uniqBy(_tmpObj,'messageId');
 
@@ -743,7 +743,7 @@ class Message extends Component {
 			// channel handler 
 			var ChannelHandler = new sb.ChannelHandler();
 			ChannelHandler.onMessageReceived = function(channel, message){
-				console.log('onMessageReceived : ',channel, message);
+			//	console.log('onMessageReceived : ',channel, message);
 
 				// check send exist in this room 
 				try{
@@ -769,11 +769,11 @@ class Message extends Component {
 			};
 
 			ChannelHandler.onUserJoined = function (groupChannel, user) {
-				console.log('onUserJoined :', groupChannel, ' user: ', user);
+		//		console.log('onUserJoined :', groupChannel, ' user: ', user);
 			};
 
 			ChannelHandler.onChannelChanged = function (groupChannel) {
-				console.log('onChannelChanged :', groupChannel);			
+		//		console.log('onChannelChanged :', groupChannel);			
 			};
 
 			ChannelHandler.onReadReceiptUpdated = function(channel, message){
@@ -886,7 +886,7 @@ class Message extends Component {
 				let REQ_API = '/api/jobs/' + data.job_id;
 				//console.log(REQ_API)
 				getApi(REQ_API).then((_response) => {
-					console.log('Job info: ', _response);
+			//		console.log('Job info: ', _response);
 					if(_response.code == 200){
 						const { navigate, goBack } = this.props.navigation;
 						navigate('JobDetail', { 

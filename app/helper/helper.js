@@ -171,14 +171,14 @@ class UserHelperCls {
   _logOutApi = () => {
     let API_URL = '/api/users/log-out';
     postApi(API_URL, JSON.stringify({})).then(response => {
-      console.log('LogOut Api: ', response);
+      // console.log('LogOut Api: ', response); 
     });
   };
 
   _logOut = that => {
     if (!UserHelper._isLogIn()) return;
 
-    console.log('LOG OUT: ', that);
+    // console.log('LOG OUT: ', that);
 
     // remove storage data
     StorageData._removeStorage('SignUpProcess');

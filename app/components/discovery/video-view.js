@@ -63,7 +63,7 @@ class VideoView extends Component {
         const { navigate, goBack, state } = this.props.navigation;
         // navigate('VideoScreen',{video_data: _videoData}); 
 
-        console.log('VideoScreen ', state.params);
+       // console.log('VideoScreen ', state.params);
 
         // if(state.params.fromVideoUpload){
         //     console.log('remove cache image')
@@ -79,18 +79,18 @@ class VideoView extends Component {
     }); 
 
     videoLoaded = (e) => {
-        console.log('video loaded :', e);
+     //   console.log('video loaded :', e);
         this.setState({
             isLoaded: true
         })
     }
 
     _onErrorVideoLoaded = (err) => {
-        console.log('Video Loaded Error: ', err);
+       // console.log('Video Loaded Error: ', err);
     }
 
     setTime = (_progress) => {
-        console.log('onProgress: ', _progress);
+       // console.log('onProgress: ', _progress);
         if(_progress.currentTime>0){
             if(this.state.showLoading){
                 this.setState({
@@ -105,7 +105,7 @@ class VideoView extends Component {
     }
 
     onBuffer = (err) => {
-        console.log('onBuffer: ', err);
+        //console.log('onBuffer: ', err);
 
         if(!this.state.showLoading && !this.state.isPaused){
             this.setState({
@@ -207,9 +207,9 @@ class VideoView extends Component {
                                     const _thumn = Helper._getVideoCover(state.params.video_data);
 
                                     ImageCache.get().clear(_thumn).then(function(e){
-                                        console.log('clear thum ', e)
+                                      //  console.log('clear thum ', e)
                                         ImageCache.get().bust(_thumn, function(e){
-                                            console.log('bust', e);
+                                         //   console.log('bust', e);
                                         });
                                     });
 

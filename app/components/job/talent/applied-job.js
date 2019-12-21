@@ -77,7 +77,7 @@ class AppliedJob extends Component {
 
         // console.log('chunk: ', _.chunk(_test, 2));
 
-        console.log('Applied Job Info : ',this.props);
+       // console.log('Applied Job Info : ',this.props);
 
     }
 
@@ -85,7 +85,7 @@ class AppliedJob extends Component {
     startApplying = () => {
         // const { navigate, goBack } = this.props.navigation;
         // navigate('CreatePostJob');
-        console.log('this.props: ', this.props);
+        //console.log('this.props: ', this.props);
         this.props.triggerTab(0);
     }
 
@@ -96,7 +96,7 @@ class AppliedJob extends Component {
     // }
 
     _onRowPress = (_row) => {
-        console.log('_onRowPress', _row);
+      //  console.log('_onRowPress', _row);
     }
 
     goToJobDetail = (_job) => { 
@@ -117,10 +117,10 @@ class AppliedJob extends Component {
             if(_response.code == 200){
                 let _allAppliedJob = _response.result;
 
-                console.log('All Applied Job : ', _response, ' refreshing :', _SELF.state.refreshing, ' isRefreshListAgain: ', isRefreshListAgain); 
-                console.log('_isLoadMore: ', _isLoadMore);
+                //('All Applied Job : ', _response, ' refreshing :', _SELF.state.refreshing, ' isRefreshListAgain: ', isRefreshListAgain); 
+                //console.log('_isLoadMore: ', _isLoadMore);
                 if((!_isLoadMore && !_.isEmpty(_allAppliedJob)) || _SELF.state.refreshing){
-                    console.log('condition 1');
+                  //  console.log('condition 1');
                     _SELF.setState({
                         data: _allAppliedJob,
                         options: _response.options,
@@ -128,7 +128,7 @@ class AppliedJob extends Component {
                     })
                 }
                 else{
-                    console.log('condition 2');
+                   // console.log('condition 2');
                     if(_isLoadMore){
                         _SELF.setState({
                             data: [..._SELF.state.data ,..._allAppliedJob ],
@@ -148,7 +148,7 @@ class AppliedJob extends Component {
                 isLoadMore: false,
                 extraData: [{_id : _SELF.state.extraData[0]._id++}]
             }, function(){
-                console.log('This is data lenght', this.state.data , this.state.page);
+               // console.log('This is data lenght', this.state.data , this.state.page);
             })
 
         });
@@ -212,13 +212,13 @@ class AppliedJob extends Component {
 
     handleLoadMore = () => {
 
-        console.log('isLoadMore: ', this.state.options);
+        //console.log('isLoadMore: ', this.state.options);
         // We're already fetching
         if (this.state.isLoadMore || this.state.options.total<=this.state.limit) {
-            console.log('no need load');
+           // console.log('no need load');
             return;
         }
-        console.log('still work')
+        //console.log('still work')
         this.setState({
             isLoadMore: true,
         }, function(){

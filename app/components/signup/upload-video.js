@@ -164,11 +164,11 @@ class UploadVideo extends Component{
 					username: '',
 					errorMessage: 'Login Error'
 				});
-				console.log(error);
+				// console.log(error);
 				return;
 			}
 
-			console.log('create sendbrid user : ', user);
+			// console.log('create sendbrid user : ', user);
 
 			// if (Platform.OS === 'ios') {
 			//   if (sb.getPendingAPNSToken()){
@@ -243,7 +243,7 @@ class UploadVideo extends Component{
             JSON.stringify({})
         ).then((response) => {
 
-            console.log('Response Object: ', response);
+            // console.log('Response Object: ', response);
             if(response.status=="success"){
 
                 let _result = response.result;
@@ -258,14 +258,14 @@ class UploadVideo extends Component{
                 // remove tmp storage
                 StorageData._removeStorage('SignUpProcess');
 
-                console.log('Final Sign Up Process: ', _userInfo);
+                //console.log('Final Sign Up Process: ', _userInfo);
                 
 
                 // save to final strorage key
                 let _userData =  StorageData._saveUserData('TolenUserData',JSON.stringify({_userInfo})); 
                 UserHelper.UserInfo = _result; // assign for tmp user obj for helper
                 _userData.then(function(result){
-                    console.log('complete final save sign up'); 
+                    //console.log('complete final save sign up'); 
 
                     // create sendbird user
                     that._createSendBirdUser(_result);
@@ -274,7 +274,7 @@ class UploadVideo extends Component{
 
                 
 
-                console.log('the most final data : ', UserHelper.UserInfo);
+                //console.log('the most final data : ', UserHelper.UserInfo);
 
                 // navigate('UploadPhoto', { sign_up_info: signUpInfo});
             }
@@ -308,10 +308,10 @@ class UploadVideo extends Component{
         postApi(API_URL,JSON.stringify({
             feature : _id
         })).then((_response) => {
-            console.log('success set photo cover response: ', _response);
+            //console.log('success set photo cover response: ', _response);
             let _tmp = _.cloneDeep(that.state.video);
             _.each(_tmp, function(v,k){
-                console.log(v.upload_session_key,' == ', _id)
+                //console.log(v.upload_session_key,' == ', _id)
                 if(v.uuid == _id){
                     v.is_featured = true;
                 }
@@ -319,7 +319,7 @@ class UploadVideo extends Component{
                     v.is_featured = false;
                 }
             })
-            console.log('_tmp : ', _tmp);
+            //console.log('_tmp : ', _tmp);
             this.setState({
                 video: _tmp,
             })
@@ -375,13 +375,13 @@ class UploadVideo extends Component{
 
         ImagePicker.launchImageLibrary(options, (response) => {
             if (response.didCancel) {
-                console.log('User cancelled image picker');
+               // console.log('User cancelled image picker');
             }
             else if (response.error) {
-                console.log('ImagePicker Error: ', response.error);
+                //console.log('ImagePicker Error: ', response.error);
             }
             else if (response.customButton) {
-                console.log('User tapped custom button: ', response.customButton);
+                //console.log('User tapped custom button: ', response.customButton);
             }
             else {
 
@@ -403,7 +403,7 @@ class UploadVideo extends Component{
 
     initStaticVideo = (response) => {
 
-        console.log('Response: ', response);
+        //console.log('Response: ', response);
         let source = { uri: response.uri };
         // console.log('The state: ', this.state);
         let arrVideo = this.state.video.slice();
@@ -439,7 +439,7 @@ class UploadVideo extends Component{
     }
 
     youtubeVideo = (youtubeLink, youtubeCaption) => {
-        console.log('youtubeLink : ', youtubeLink , ' == caption: ', youtubeCaption,' === ' ,Helper._geParamsUrl('v',youtubeLink));
+        //console.log('youtubeLink : ', youtubeLink , ' == caption: ', youtubeCaption,' === ' ,Helper._geParamsUrl('v',youtubeLink));
         const _youtubeId = Helper._geParamsUrl('v',youtubeLink);
         if(_youtubeId){
 
@@ -459,8 +459,8 @@ class UploadVideo extends Component{
 
     showActionSheetUploadVideo = () => {
         let _SELF = this;
-        _SELF.chooseVideo();
-        return;
+        // _SELF.chooseVideo();
+        // return;
         // console.log('Helper._isIOS() :', Helper._isIOS());
         if(Helper._isIOS()){ 
             // popup message from bottom with ios native component
@@ -474,7 +474,7 @@ class UploadVideo extends Component{
             },
             (buttonIndex) => {
 
-                console.log(buttonIndex);
+                //console.log(buttonIndex);
                 //   this.setState({ clicked: BUTTONS[buttonIndex] });
 
                 // Upload Normal Video
@@ -550,14 +550,14 @@ class UploadVideo extends Component{
             }
             data = JSON.stringify(data);
 
-            console.log('url: ', url, ' == data', data);
+           // console.log('url: ', url, ' == data', data);
 
             this.setState({
                 loadingSubmitLink: !this.state.loadingSubmitLink
             })
 
             postApi(url, data).then((response) => {
-                console.log('success response: ', response);
+               // console.log('success response: ', response);
     
                 if(response.code != 200){
                     alert('Can not upload the video. Please try again.');
@@ -587,14 +587,14 @@ class UploadVideo extends Component{
                     'paused': true
                 });
 
-                console.log('==== arrVideo :', arrVideo);
+                //console.log('==== arrVideo :', arrVideo);
 
                 that.setState({
                     video: arrVideo,
                     idx: vdo_idx,
                     loadingSubmitLink: !this.state.loadingSubmitLink
                 }, function(){
-                    console.log('==== this.state.video :', this.state.video);
+                    //console.log('==== this.state.video :', this.state.video);
                 });
 
                 
@@ -639,7 +639,7 @@ class UploadVideo extends Component{
 
             url +='?by_pass=1&caption=' +  encodeURI(caption);
 
-            console.log('Video Upload Url: ', url);
+            //console.log('Video Upload Url: ', url);
             // console.log('fileName: ', that.state.video[vdoIdx].fileName);
             postMedia(url, data, function(progress){
                 //console.log('Upload process: ', progress);
@@ -647,7 +647,7 @@ class UploadVideo extends Component{
                 that.setState({txtUploading: percentage})
             })
             .then((response) => {
-                console.log('success response: ', response);
+               // console.log('success response: ', response);
 
                 that.afterSuccessMediaPost(response, _videoUUID);
 
@@ -728,7 +728,7 @@ class UploadVideo extends Component{
             if(_response.code == 200){
                 let _allImg = _response.result;
 
-                console.log('User Video Already Uploaded : ', _response);
+                //console.log('User Video Already Uploaded : ', _response);
                 let _tmp = [];
                 _.each(_allImg,function(v,k){
 
@@ -748,7 +748,7 @@ class UploadVideo extends Component{
                     });
                 })
 
-                console.log('tmp: ', _tmp);
+               // console.log('tmp: ', _tmp);
 
                 that.setState({
                     disableSkip: _allImg.length>0 ? true: false,
@@ -787,7 +787,7 @@ class UploadVideo extends Component{
             // return;
 
             deleteApi(API_URL).then((_response) => {
-                console.log('Delete video : ', _response);
+               // console.log('Delete video : ', _response);
                 if(_response.code == 200){
 
                     var _videoFromApi = _.filter(_.cloneDeep(that.state.videoFromApi), function(v,k) {
@@ -886,7 +886,7 @@ class UploadVideo extends Component{
         const _SELF = this;
 
         DeviceEventEmitter.addListener('uploadAfterTrim', (data) => {
-            console.log('Start Upload Video: ', data);
+            //console.log('Start Upload Video: ', data);
             this.initStaticVideo(data);
         })
 
@@ -915,7 +915,7 @@ class UploadVideo extends Component{
 
     _playVideoPopup = (_item) => {
 
-        console.log('_playVideoPopup : ',_item);
+        //console.log('_playVideoPopup : ',_item);
         // this.setState({
         //     paused : !this.state.paused,
         // })
@@ -932,14 +932,14 @@ class UploadVideo extends Component{
             }
         })
 
-        console.log('_videoData : ', _videoData);
+        //console.log('_videoData : ', _videoData);
         const { navigate, goBack, state } = this.props.navigation;
         navigate('VideoScreen',{video_data: _videoData, fromVideoUpload: true}); 
 
     }
 
     _playVideo = (_item) => {
-        console.log('video item ',_item);
+       // console.log('video item ',_item);
         if(!_item.isLocal && (!_item.s3_url || !_item.formatted_video_thumbnail_url)){
             alert('Video is being processed on server side. Please wait.');
             return;

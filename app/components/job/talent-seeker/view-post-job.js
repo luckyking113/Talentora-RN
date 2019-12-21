@@ -183,7 +183,7 @@ class ViewJobList extends Component {
         // console.log('The job id: ', this.props.navigation.state.params);
         API_URL = '/api/jobs/' + this.props.navigation.state.params.job._id + '/candidate';
         getApi(API_URL).then((response) => {
-            console.log('Job Candidates (Recommend Applicants): ', response);
+            //console.log('Job Candidates (Recommend Applicants): ', response);
             let _allRecommendTalent = response.result;
             // console.log("all recommendtalent",_allRecommendTalent);
             let mainTmp = _.chunk(_.cloneDeep(_allRecommendTalent), 3);
@@ -219,7 +219,7 @@ class ViewJobList extends Component {
         API_URL = '/api/jobs/' + this.props.navigation.state.params.job._id + '/apply?v1';
         // return; 
         getApi(API_URL).then((response) => {
-            console.log('Job Applied: ', response);
+           // console.log('Job Applied: ', response);
 
             if(response.code == 401)
                 return;
@@ -251,7 +251,7 @@ class ViewJobList extends Component {
     // Fetch detail items
     // Example only options defined
     UNSAFE_componentWillMount() {
-        console.log('Image Cache: ', ImageCache.get());
+       // console.log('Image Cache: ', ImageCache.get());
         // ImageCache.get().clear();
 
         _SELF = this;
@@ -377,7 +377,7 @@ class ViewJobList extends Component {
                     "application_id": applicationItem._id
                 })
             ).then((response) => {
-                console.log('_updateStatusApplication: ', response);
+              //  console.log('_updateStatusApplication: ', response);
                 if(response.code == 200){
                     _SELF._updateApplicationList(_type, applicationItem._id, response.result.status, );
                 
@@ -627,7 +627,7 @@ class ViewJobList extends Component {
                             indicator={ProgressCircle} 
                             onError={(e) => {
 
-                                console.log('error image view post : ', e); 
+                              //  console.log('error image view post : ', e); 
                                 const _SELF = this;
                                 
                                 let _jobInfo = this.state.jobInfo;
@@ -636,7 +636,7 @@ class ViewJobList extends Component {
                                 ImageCache.get().clear(_thumn).then(function(){
 
                                     ImageCache.get().bust(_thumn, function(){
-                                        console.log('call back');
+                                       // console.log('call back');
                                         _jobInfo.cover.thumbnail_url_link = '';
 
                                         if(_SELF.refs['main_cover']){
@@ -644,12 +644,12 @@ class ViewJobList extends Component {
                                             _SELF.setState({
                                                 jobInfo: _jobInfo
                                             }, function(){
-                                                console.log('1-jobInfo', _jobInfo);
+                                            //    console.log('1-jobInfo', _jobInfo);
                                                 _jobInfo.cover.thumbnail_url_link = _thumn;
                                                 _SELF.setState({
                                                     jobInfo: _jobInfo,
                                                 }, function(){
-                                                    console.log('2-jobInfo', _jobInfo);
+                                                 //   console.log('2-jobInfo', _jobInfo);
                                                     
                                                 });
 

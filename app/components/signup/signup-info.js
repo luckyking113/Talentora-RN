@@ -72,7 +72,7 @@ class SignUpInfo extends Component {
       gender : '',
     }   
 
-    console.log('_userInfo.socialAccounts : ', _userInfo.socialAccounts);
+    // console.log('_userInfo.socialAccounts : ', _userInfo.socialAccounts);
     if(!_.isEmpty(_userInfo.socialAccounts)){
         _tmpFbDat = {
             firstname : _userInfo.profile.first_name,
@@ -161,19 +161,6 @@ class SignUpInfo extends Component {
       modalVisible: false,
       Genders:originalGender
     };
-    console.log(this.props);
-
-    // console.log('User Info : ',state.params);
-
-    // console.log(UserHelper);
-
-    // StorageData._saveUserData('test_data', 'panhna seng updated');
-
-    // UserHelper.token = 'panhna seng';
-
-    // console.log(UserHelper._getToken());
-
-    // StorageData._removeStorage('SignUpProcess');
   }
 
   // verfity which route user has to continue to complete their fill info
@@ -239,7 +226,7 @@ class SignUpInfo extends Component {
   // continue button
   joinUsNow() {    
     // func('variable that is in the function global');
-    console.log('after calling');
+    //console.log('after calling');
     // this.phoneResult=func(this.state.phone,'phone');
 
     if (!this.state.joining) {      
@@ -389,20 +376,21 @@ class SignUpInfo extends Component {
               is_register_completed: false,
             }),
           ).then(response => {
-            console.log('Response Object: ', response);
+            //console.log('Response Object: ', response);
             if (response.status == 'success') {
-              // console.log('Response Object: ', response);
+              console.log('Response Object: ', response);
               // that._saveUserData(response);
 
               let _result = response.result;
               let _userData = StorageData._saveUserData(
                 'SignUpProcess',
-                JSON.stringify(_result),                
+                JSON.stringify(_result),
               );
 
               UserHelper.UserInfo = _result; // assign for tmp user obj for helper
+              console.log('userheloper ===>', UserHelper.UserHelper);
               _userData.then(function(result) {
-                console.log('complete save sign up process 1');
+                //console.log('complete save sign up process 1');
                 // navigate('WhoAreYou',{ sign_up_info: signUpInfo});
                 // navigate('WhoAreYou',{ sign_up_info: _result});
                 that.replaceScreen(_result);
@@ -412,7 +400,7 @@ class SignUpInfo extends Component {
                 errMessage: response.result,
               });
 
-              console.log('last state : ', that.state);
+              //console.log('last state : ', that.state);
             }
 
             that.setState({
@@ -425,7 +413,7 @@ class SignUpInfo extends Component {
   }
 
   onValueChange = (key, value) => {
-    console.log(key, value);
+   // console.log(key, value);
     const newState = {};
     newState[key] = value;
     if(key == 'selectedGender'){
@@ -516,8 +504,8 @@ class SignUpInfo extends Component {
   }
   //   end keyboard handle
   genderSelect=(item,index)=>{
-    console.log("my item in gender select",item);
-    console.log("state Genders",this.state.Genders);
+    //console.log("my item in gender select",item);
+    //console.log("state Genders",this.state.Genders);
     let temp=this.state.Genders;
     let selectedvalue;
     _.map(temp,function(v,k){
@@ -529,7 +517,7 @@ class SignUpInfo extends Component {
     _tmpStateObject.val=selectedvalue;
     _tmpStateObject.isErrRequired=false;
     this.setState({selectedGender:selectedvalue=='Male'? 'M':'F',gender:_tmpStateObject},function(){
-        console.log("after setstate",this.state.gender,this.state.selectedGender);
+        //console.log("after setstate",this.state.gender,this.state.selectedGender);
     });
     this.setModalVisible(false);
   }
@@ -673,7 +661,7 @@ class SignUpInfo extends Component {
   }
 
   languageSelect = (item, index) => {
-    console.log('This is selected language: ', item, index);
+    //console.log('This is selected language: ', item, index);
     let temp = this.state.languages;
     temp[index].selected = !temp[index].selected;
     // console.log('This is data: ', this.state.languages);

@@ -79,7 +79,7 @@ class PostJobList extends Component {
 
     static navigationOptions = ({ navigation }) => {
         _SELF = navigation;
-        console.log('_SELF NAV: ',_SELF);
+        //console.log('_SELF NAV: ',_SELF);
         return ({
             // title: '', 
             // headerVisible: true,
@@ -139,7 +139,7 @@ class PostJobList extends Component {
                 result = _.filter(result,function(v,k){
                     return v.sub_reference_detail.status == 'open';
                 })
-                console.log('result : ', result);
+               // console.log('result : ', result);
                 this.setState({
                     // allJobList : result,
                     data : result,
@@ -346,9 +346,9 @@ class PostJobList extends Component {
                                                                 const _thumn = item.reference_detail[0].thumbnail_url_link;
                                                                 
                                                                 ImageCache.get().clear(_thumn).then(function(e){
-                                                                    console.log('clear thum ', e)
+                                                               //     console.log('clear thum ', e)
                                                                     ImageCache.get().bust(_thumn, function(e){
-                                                                        console.log('bust', e);
+                                                                   //     console.log('bust', e);
                                                                     });
                                                                 });
 

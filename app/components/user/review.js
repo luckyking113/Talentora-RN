@@ -170,7 +170,7 @@ class Review extends Component {
     getRecommendCount = () => {
         let url = '/api/contacts/' + this.props.navigation.state.params.user._id;
         getApi(url).then((response) => {
-            console.log(response);
+            // console.log(response);
             let tmpIcon = [];
             for(let i = 0; i < response.result.recommended_stats.length; i++){
                 tmpIcon.push({

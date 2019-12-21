@@ -169,7 +169,7 @@ class Videos extends React.PureComponent {
 
         DeviceEventEmitter.addListener('FilterVideos', (data) => {
             // _SELF.jobFilter(data);
-            console.log('Filter People Emitted')
+            //console.log('Filter People Emitted')
             _SELF.setState({
                 filterData: data.dataFilter,
                 data: null,
@@ -238,10 +238,10 @@ class Videos extends React.PureComponent {
         }
 
         // GET /api/media/public?type=video|photo 
-        console.log('Video Search : ',API_URL);
+        //console.log('Video Search : ',API_URL);
         getApi(API_URL).then((_response) => {
 
-            console.log('All Video : ', _response);
+            //console.log('All Video : ', _response);
 
             if(_response.status == 'success'){
 
@@ -346,7 +346,7 @@ class Videos extends React.PureComponent {
 
     _getURLVideo = (_offset) =>{
         if(this.state.filterData){
-            console.log('Data: ', this.state.filterData);
+            //console.log('Data: ', this.state.filterData);
             let _SELF = this;
             let _dataFilter = this.state.filterData;
 
@@ -439,7 +439,7 @@ class Videos extends React.PureComponent {
 
     _onPressItem = (id) => {
         // updater functions are preferred for transactional updates
-        console.log('ID: ', id);
+       // console.log('ID: ', id);
         // console.log('this.state: ', this.state);
         // this.setState((state) => {
         // // copy the map rather than modifying state.
@@ -459,7 +459,7 @@ class Videos extends React.PureComponent {
         // this.setState({
         //     paused : !this.state.paused,
         // })
-        console.log('allowViewVideo :', this.state.allowViewVideo);
+        //console.log('allowViewVideo :', this.state.allowViewVideo);
 
         // if(!this.state.allowViewVideo)
         //     return;
@@ -613,7 +613,7 @@ class Videos extends React.PureComponent {
     };
 
     handleRefresh = () => {
-        console.log('pull to refresh');
+        //console.log('pull to refresh');
         this.setState({
             refreshing: true,
         })
@@ -664,7 +664,7 @@ class Videos extends React.PureComponent {
     }
 
     searchNow = (txtSearch, isEmpty=false) => {
-        console.log('Search Text: ', txtSearch);
+       // console.log('Search Text: ', txtSearch);
         
         if(!isEmpty){
             
@@ -687,12 +687,12 @@ class Videos extends React.PureComponent {
 
     onViewableItemsChanged = (e) => {
         return;
-        console.log('onViewableItemsChanged :', e);
+       // console.log('onViewableItemsChanged :', e);
 
         clearTimeout();
 
         setTimeout(() => {
-            console.log('TIMEOUT : onViewableItemsChanged :', e);
+           // console.log('TIMEOUT : onViewableItemsChanged :', e);
             let _tmpData = _.cloneDeep(this.state.data);
 
             _.each(e.viewableItems,function(v,k){

@@ -119,7 +119,7 @@ class People extends React.PureComponent {
     }); 
 
     goToDetail = (item) => {
-        console.log('goToSetting: ', item);
+        //console.log('goToSetting: ', item);
 
         GoogleAnalyticsHelper._trackEvent('View Profile', 'Discover - People', {user_id: item.userId, user_name: Helper._getUserFullName(item.attributes) });                                                 
 
@@ -140,14 +140,14 @@ class People extends React.PureComponent {
         
         DeviceEventEmitter.addListener('FilterPeople', (data) => {
             // _SELF.jobFilter(data);
-            console.log('Filter People Emitted')            
+           // console.log('Filter People Emitted')            
             _SELF.setState({
                 filterData: data.dataFilter,
                 mockUpLoading: true,
                 page: 1,
             }, function(){
                 _SELF._getPeopleList();
-                console.log('state.params : ',state.params)
+                //console.log('state.params : ',state.params)
             })
         })
         
@@ -204,10 +204,10 @@ class People extends React.PureComponent {
 
         let API_URL = this._getPeopleJobURL(_offset) + _searchUrl;
 
-        console.log('API_URL _getPeopleList : ',API_URL);
+       // console.log('API_URL _getPeopleList : ',API_URL);
 
         getApi(API_URL).then((_response) => {
-            console.log('All People : ', _response);
+           // console.log('All People : ', _response);
             if(_response.status == 'success'){
 
                 // let _allAvailableJob = _response.result;
@@ -294,7 +294,7 @@ class People extends React.PureComponent {
 
     _getPeopleJobURL = (_offset) =>{
         if(this.state.filterData){
-            console.log('Data: ', this.state.filterData);
+           // console.log('Data: ', this.state.filterData);
             let _SELF = this;
             let _dataFilter = this.state.filterData;
 
@@ -386,7 +386,7 @@ class People extends React.PureComponent {
 
     _onPressItem = (id) => {
         // updater functions are preferred for transactional updates
-        console.log('THIS IS MY ID WHEN PRESS ITEM: ', id);
+        //console.log('THIS IS MY ID WHEN PRESS ITEM: ', id);
         // console.log('this.state: ', this.state);
         // this.setState((state) => {
         // // copy the map rather than modifying state.
@@ -439,7 +439,7 @@ class People extends React.PureComponent {
             refreshing: true,
             page: 1,
         }, function(){
-            console.log('pull to refresh');
+           // console.log('pull to refresh');
 
             // clear red dot when pull to refresh
             DeviceEventEmitter.emit('clearBadgeNumber', {
@@ -452,7 +452,7 @@ class People extends React.PureComponent {
 
     handleLoadMore = () => {
 
-        console.log(this.state.options.total,' == ',this.state.limit ,' this.state.loading', this.state.loading);
+        //console.log(this.state.options.total,' == ',this.state.limit ,' this.state.loading', this.state.loading);
 
         let that = this;
 
@@ -483,7 +483,7 @@ class People extends React.PureComponent {
             //     },0)
             // })
 
-            console.log('call people list');
+           // console.log('call people list');
 
             this._getPeopleList(true, '', false);
             
@@ -493,7 +493,7 @@ class People extends React.PureComponent {
     }
 
     searchNow = (txtSearch, isEmpty=false) => {
-        console.log('Search Text: ', txtSearch);
+       // console.log('Search Text: ', txtSearch);
         if(!isEmpty){
             
             this.setState({

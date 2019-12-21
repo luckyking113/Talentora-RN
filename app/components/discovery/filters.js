@@ -73,14 +73,14 @@ class filters extends Component {
         let allTalentCate=[];
         let tmptalent=[];
         if(state.params.filterType == 'job'){
-            console.log('Emit FilterJob');
+            //console.log('Emit FilterJob');
             _.forEach(talentcate,function(v,k){
                 tmptalent.push(v);
             });
             allTalentCate=tmptalent;
         }
         else if(state.params.filterType == 'discover'){
-            console.log('Emit FilterPeople');            
+            //console.log('Emit FilterPeople');            
             _.forEach(talentcate,function(v,k){
                 tmptalent.push(v);
             });
@@ -179,12 +179,12 @@ class filters extends Component {
         const { navigate, state, goBack } = this.props.navigation;
         _SELF = this;
         let langTmp="";
-        console.log("objct filterdata",filterData);
+        //console.log("objct filterdata",filterData);
         if(state.params.filterType == 'job'){
 
             GoogleAnalyticsHelper._trackScreenView('Job Filter'); 
 
-            console.log("blah");
+            //console.log("blah");
         }else if(state.params.filterType == 'discover'){
 
             //console.log('tabType: ', state.params.tabType);
@@ -396,18 +396,18 @@ class filters extends Component {
     }
 
     onLanguageSearch(text){
-        console.log("this is language from search box",text);
+       // console.log("this is language from search box",text);
         let _dataFilter = _.filter(originalLanguage, function(v,k){
             return _.includes(v.display_name.toLowerCase(), text.toLowerCase());
         })
         this.setState({languages:_dataFilter},function(){
-            console.log("Language state after search and choose",this.state.languages);
+            //console.log("Language state after search and choose",this.state.languages);
         })
 
     }  
     
     generateLanguageList(){
-        console.log("this state language before language is generated",this.state.languages);
+        //console.log("this state language before language is generated",this.state.languages);
         return(
             <Modal
                 onRequestClose={() => {}}
@@ -664,7 +664,7 @@ class filters extends Component {
                     val:value
                 }
             },function(){
-                console.log("Object AGE State",this.state.age);
+                //console.log("Object AGE State",this.state.age);
             })
         }
         if(type=="height"){
@@ -673,7 +673,7 @@ class filters extends Component {
                     val:value
                 }
             },function(){
-                console.log("Object HEIGHT State",this.state.myheight)
+                //console.log("Object HEIGHT State",this.state.myheight)
             })
         }
         if(type=="weight"){
@@ -682,7 +682,7 @@ class filters extends Component {
                     val:value
                 }
             },function(){
-                console.log("Object WEIGHT State",this.state.myweight)
+                //console.log("Object WEIGHT State",this.state.myweight)
             })
         }
     }
@@ -714,12 +714,12 @@ class filters extends Component {
         
         return;        
 
-        console.log('Clear Filters', _initState);
+        //console.log('Clear Filters', _initState);
         // this.state = _.cloneDeep(this._initState);
         this.setState({
             ..._.cloneDeep(_initState)
         },function(){
-            console.log('After Clear: ', this.state);
+          //  console.log('After Clear: ', this.state);
             DeviceEventEmitter.emit('FilterJob', { dataFilter: null});
             _SELF.applyFilter();
         })
@@ -728,10 +728,10 @@ class filters extends Component {
     // func for check which screen need to trigger
     triggerEmitFunc = (filterData) => { // null : mean reset data
         const { navigate, state, goBack } = this.props.navigation;
-        console.log('Filter State :', state.params);
+       // console.log('Filter State :', state.params);
         if(state.params.filterType == 'job'){
 
-            console.log('Emit FilterJob');
+            //console.log('Emit FilterJob');
             GoogleAnalyticsHelper._trackEvent('Job Filter', 'Apply', {custom_data: filterData});         
         
             DeviceEventEmitter.emit('FilterJob', { dataFilter: filterData});
@@ -742,7 +742,7 @@ class filters extends Component {
             
             if(state.params.tabType == 'Videos'){
 
-                console.log('Emit FilterVideo');
+                //console.log('Emit FilterVideo');
                 GoogleAnalyticsHelper._trackEvent('Video Filter', 'Apply', {custom_data: filterData});         
             
                 DeviceEventEmitter.emit('FilterVideos', { dataFilter: filterData});
@@ -779,8 +779,8 @@ class filters extends Component {
                 filterData.people = filterObj;
             }
         }
-        console.log('This is filter object: ', filterData);
-        console.log("this is state object",this.state);
+        //console.log('This is filter object: ', filterData);
+        //console.log("this is state object",this.state);
         this.triggerEmitFunc(this.state);
     }   
 
