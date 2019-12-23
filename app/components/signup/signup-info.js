@@ -61,7 +61,7 @@ function mapStateToProps(state) {
 }
 class SignUpInfo extends Component {
   constructor(props) {
-    super(props);
+    super(props);    
 
     originalLanguage = _.cloneDeep(languages);
     
@@ -74,11 +74,11 @@ class SignUpInfo extends Component {
 
     // console.log('_userInfo.socialAccounts : ', _userInfo.socialAccounts);
     if(!_.isEmpty(_userInfo.socialAccounts)){
-        _tmpFbDat = {
-            firstname : _userInfo.profile.first_name,
-            lastname : _userInfo.profile.last_name,
-            gender : _userInfo.profile.gender,
-        }
+      _tmpFbDat = {
+          firstname : _userInfo.profile.first_name,
+          lastname : _userInfo.profile.last_name,
+          gender : _userInfo.profile.gender,
+      }
     }
 
     let userLocaleCountryCode = DeviceInfo.getDeviceCountry();
@@ -160,7 +160,7 @@ class SignUpInfo extends Component {
       isActionButton: true,
       modalVisible: false,
       Genders:originalGender
-    };
+    };    
   }
 
   // verfity which route user has to continue to complete their fill info
@@ -399,10 +399,8 @@ class SignUpInfo extends Component {
               that.setState({
                 errMessage: response.result,
               });
-
               //console.log('last state : ', that.state);
             }
-
             that.setState({
               joining: false,
             });

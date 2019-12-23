@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import * as AuthActions from '@actions/authentication'
 
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, TouchableWithoutFeedback , Alert, StatusBar, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, TouchableWithoutFeedback, Alert, StatusBar, ActivityIndicator } from 'react-native';
 
 import { talent_category } from '@api/response'
 
@@ -27,232 +27,233 @@ import _ from 'lodash'
 const dismissKeyboard = require('react-native-dismiss-keyboard');
 
 function mapStateToProps(state) {
-    // console.log(state)
-    return {
-        user: state.user,
-        // navigation: state.navigation
-    }
+  // console.log(state)
+  return {
+    user: state.user,
+    // navigation: state.navigation
+  }
 }
 
-class TalentCategory extends Component{
+class TalentCategory extends Component {
 
-    constructor(props){
-        super(props);
-        //your codes ....
+  constructor(props) {
+    super(props);
+    //your codes ....
 
-        // this.selectedTag = this.selectedTag.bind(this);
-        this.state = {
-            talent_cate : _.cloneDeep(talent_category),
-            user_type_select: '',
-            joining: false
+    // this.selectedTag = this.selectedTag.bind(this);
+    this.state = {
+      talent_cate: _.cloneDeep(talent_category),
+      user_type_select: '',
+      joining: false
+    }
+
+    const { navigate, goBack, state } = this.props.navigation;
+    // console.log('User Info : ',state.params);
+    console.log('Back button: ', this.state.params);
+  }
+
+  static navigationOptions = ({ navigation }) => ({
+    // title: '',
+    headerVisible: true,
+    headerLeft: navigation.state.params.noBackButton ? null : (<ButtonBack
+      isGoBack={navigation}
+      btnLabel="Who are you"
+    />),
+  });
+
+  checkActiveTag = (item) => {
+    return item.selected;
+  }
+
+  selectedTag = (item, index) => {
+
+    let _tmp = this.state.talent_cate;
+    _tmp[index].selected = !_tmp[index].selected;
+    this.setState({
+      talent_cate: _tmp
+    });
+
+  }
+
+  getTalentSelected = () => {
+    // let _talentCate = this.state.talent_cate
+    return _.filter(this.state.talent_cate, function (_item) { return _item.selected; });
+  }
+
+  continue() {
+
+    let that = this;
+    const { navigate, goBack, state } = this.props.navigation;
+
+    // merge info from who-are-you signup info
+    var signUpInfo = _.extend({
+      talent_category: this.getTalentSelected(),
+      // from_route_name: 'Which talent are you?'
+    }, state.params ? state.params.sign_up_info : {});
+
+    if (signUpInfo.talent_category.length > 0) {
+
+      that.setState({
+        joining: true
+      });
+
+      let API_URL = '/api/users/me/customs';
+
+      let talentCateStringArray = _.map(signUpInfo.talent_category, function (v, k) {
+        return v.category;
+      });
+
+      // console.log('talentCateStringArray : ',talentCateStringArray);
+
+      putApi(API_URL,
+        JSON.stringify({
+          "kind": {
+            "value": talentCateStringArray,
+            "type": "register-category",
+            "privacy_type": "only-me"
+          },
+        })
+      ).then((response) => {
+        console.log('Response Object: ', response);
+        if (response.status == "success") {
+
+          let _result = response.result;
+
+          let _userData = StorageData._saveUserData('SignUpProcess', JSON.stringify(_result));
+          UserHelper.UserInfo = _result; // assign for tmp user obj for helper
+          _userData.then(function (result) {
+            // console.log('complete save sign up process 3'); 
+          });
+
+          navigate('TalentWelcome', { sign_up_info: signUpInfo });
+
         }
-
-        const { navigate, goBack, state } = this.props.navigation;
-        // console.log('User Info : ',state.params);
-        console.log('Back button: ', this.state.params);
-    }
-
-    static navigationOptions = ({ navigation }) => ({
-            // title: '',
-            headerVisible: true,
-            headerLeft: navigation.state.params.noBackButton ? null : (<ButtonBack
-                isGoBack={ navigation }
-                btnLabel= "Who are you"
-            />),
+        that.setState({
+          joining: false
         });
+      })
 
-    checkActiveTag = (item) => {
-        return item.selected;
+    } else {
+      Alert.alert('Please choose at least one type');
     }
+  }
 
-    selectedTag = (item, index) => {
-        
-        let _tmp = this.state.talent_cate;
-        _tmp[index].selected=!_tmp[index].selected;
-        this.setState({
-            talent_cate: _tmp
-        });
-
-    }
-
-    getTalentSelected = () => {
-        // let _talentCate = this.state.talent_cate
-        return _.filter(this.state.talent_cate, function(_item) { return _item.selected; });
-    }
-
-    continue() {
-
-        let that = this;
-        const { navigate, goBack, state } = this.props.navigation;
-
-        // merge info from who-are-you signup info
-        var signUpInfo = _.extend({
-            talent_category: this.getTalentSelected(),
-            // from_route_name: 'Which talent are you?'
-        }, state.params ? state.params.sign_up_info : {});
-
-        if(signUpInfo.talent_category.length > 0){
-            
-            that.setState({
-                joining: true
-            });
-
-            let API_URL = '/api/users/me/customs';
-
-            let talentCateStringArray = _.map(signUpInfo.talent_category, function(v, k) {
-                return v.category;
-            });
-
-            // console.log('talentCateStringArray : ',talentCateStringArray);
-
-            putApi(API_URL,
-                JSON.stringify({
-                    "kind": {
-                        "value": talentCateStringArray,
-                        "type":"register-category",
-                        "privacy_type": "only-me"
-                    },
-                })
-            ).then((response) => {
-                console.log('Response Object: ', response);
-                if(response.status=="success"){
-
-                    let _result = response.result;
-
-                    let _userData =  StorageData._saveUserData('SignUpProcess',JSON.stringify(_result)); 
-                    UserHelper.UserInfo = _result; // assign for tmp user obj for helper
-                    _userData.then(function(result){
-                        // console.log('complete save sign up process 3'); 
-                    });
-
-                    navigate('TalentWelcome',{ sign_up_info: signUpInfo});
-
-                }
-                that.setState({
-                    joining: false
-                });
-            })
-            
-        }else{
-            Alert.alert('Please choose at least one type');
-        }
-    }
-
-    componentDidMount() {
-        GoogleAnalyticsHelper._trackScreenView('Sign Up - Category - Talent');                                         
-    }
+  componentDidMount() {
+    GoogleAnalyticsHelper._trackScreenView('Sign Up - Category - Talent');
+  }
 
 
-    render() {
-        return (    
+  render() {
+    return (
 
-            <View style={[ styles.container,styles.mainScreenBg, styles.paddingTopNav ]}>
-                
-                <View style={[styles.mainPadding]}>
+      <View style={[styles.container, styles.mainScreenBg, styles.paddingTopNav]}>
 
-                    <Text style={[styles.blackText, styles.btFontSize]}>
-                       Which talent are you?
+        <View style={[styles.mainPadding]}>
+
+          <Text style={[styles.blackText, styles.btFontSize]}>
+            Which talent are you?
                     </Text>
 
-                    <Text style={[styles.grayLessText, styles.marginTopXS]}>
-                        You may select more than one option.
+          <Text style={[styles.grayLessText, styles.marginTopXS]}>
+            You may select more than one option.
                     </Text>
 
-                    <View style={[styles.tagContainerNormal,styles.marginTopLG]}> 
+          <View style={[styles.tagContainerNormal, styles.marginTopLG]}>
 
-                        {this.state.talent_cate.map((item, index) => {
-                            return (
-                                <TouchableOpacity
-                                    activeOpacity = {0.9}
-                                    key={ index } 
-                                    style={[styles.tagsSelectNormal, this.checkActiveTag(item) && styles.tagsSelected]} 
-                                    onPress={ () => this.selectedTag(item, index) }
-                                >
-                                    <Text style={[styles.tagTitle, styles.btFontSize, this.checkActiveTag(item) && styles.tagTitleSelected]}>
-                                        {item.display_name}
+            {this.state.talent_cate.map((item, index) => {
+              return (
+                <TouchableOpacity
+                  activeOpacity={0.9}
+                  key={index}
+                  style={[styles.tagsSelectNormal, this.checkActiveTag(item) && styles.tagsSelected]}
+                  onPress={() => this.selectedTag(item, index)}
+                >
+                  <Text style={[styles.tagTitle, styles.btFontSize, this.checkActiveTag(item) && styles.tagTitleSelected]}>
+                    {item.display_name}
 
-                                        {item.selected}
-                                    </Text>
-                                    
-                                </TouchableOpacity>     
-                            )
-                        })}
-                    </View>
+                    {item.selected}
+                  </Text>
 
-                </View>
-                
-                <View style={styles.absoluteBox}>
-                    <View style={[styles.txtContainer,styles.mainHorizontalPadding]}>
+                </TouchableOpacity>
+              )
+            })}
+          </View>
 
-                        <TouchableOpacity style={[styles.flatButton]} onPress={() => this.continue() }>
-                            {   
-                                !this.state.joining ? <Text style={[styles.btn, styles.btFontSize]}>Continue</Text> : <ActivityIndicator color="white" animating={true} /> 
-                            }
-                        </TouchableOpacity>
+        </View>
 
-                    </View>
-                </View>
+        <View style={styles.absoluteBox}>
+          <View style={[styles.txtContainer, styles.mainHorizontalPadding]}>
 
-            </View>
-        );
-    }
+            <TouchableOpacity style={[styles.flatButton]} onPress={() => this.continue()}>
+              {
+                !this.state.joining ? <Text style={[styles.btn, styles.btFontSize]}>Continue</Text> : <ActivityIndicator color="white" animating={true} />
+              }
+            </TouchableOpacity>
+
+          </View>
+        </View>
+
+      </View>
+    );
+  }
 }
 
 
-var styles = StyleSheet.create({ ...FlatForm, ...Utilities, ...TagsSelect,
-    container: {
-        flex: 1,
-        // padding: 20
-    },
+var styles = StyleSheet.create({
+  ...FlatForm, ...Utilities, ...TagsSelect,
+  container: {
+    flex: 1,
+    // padding: 20
+  },
 
-    btn: {
-        textAlign: 'center',
-        color: "white",
-        fontWeight: "700",
-    },
+  btn: {
+    textAlign: 'center',
+    color: "white",
+    fontWeight: "700",
+  },
 
-    help: {
-        justifyContent:'center',
-        flexDirection: 'row',
-        marginTop: 10,
-    },
+  help: {
+    justifyContent: 'center',
+    flexDirection: 'row',
+    marginTop: 10,
+  },
 
-    forget:{
-        color: Colors.textColorDark,  
-    },
+  forget: {
+    color: Colors.textColorDark,
+  },
 
-    gethelp:{
-        fontWeight: 'bold',
-        color: Colors.textColorDark,
-    },
+  gethelp: {
+    fontWeight: 'bold',
+    color: Colors.textColorDark,
+  },
 
 
-    icon:{
-        fontSize: 25,
-        fontWeight: 'bold',
-        color: Colors.textColorDark,
-    },
+  icon: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    color: Colors.textColorDark,
+  },
 
-    fbContainer:{
-        // flex: 1,
-        justifyContent:'center',
-        alignItems: 'center',
-        flexDirection: 'row',
-        marginTop: 10,
-    },
+  fbContainer: {
+    // flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginTop: 10,
+  },
 
-    fbLogin:{
-        fontWeight: 'bold',
-        color: Colors.textColor,
-        marginLeft: 10,
-    },
+  fbLogin: {
+    fontWeight: 'bold',
+    color: Colors.textColor,
+    marginLeft: 10,
+  },
 
-    txtContainer: {
-        flex:1,
-        flexDirection: 'column',
-        justifyContent:'center',
-        alignItems: 'stretch'
-    },
+  txtContainer: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'stretch'
+  },
 
 });
 
