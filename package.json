@@ -66,7 +66,7 @@
     "sendbird": "^3.0.111",
     "socket.io-client": "^2.3.0",
     "url-parse": "^1.1.9",
-    "yarn": "^1.19.1"
+    "yarn": "^1.22.0"
   },
   "devDependencies": {
     "@babel/core": "^7.6.4",
