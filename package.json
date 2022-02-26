@@ -65,7 +65,7 @@
     "rn-fetch-blob": "^0.11.2",
     "sendbird": "^3.0.111",
     "socket.io-client": "^2.3.0",
-    "url-parse": "^1.1.9",
+    "url-parse": "^1.5.8",
     "yarn": "^1.19.1"
   },
   "devDependencies": {
